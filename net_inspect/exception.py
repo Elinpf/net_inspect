@@ -1,0 +1,6 @@
+class Error(Exception):
+    ...
+
+
+class TemplateError(Error):
+    ...

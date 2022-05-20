@@ -127,6 +127,31 @@ checkqa-mypy = ["mypy (==v0.761)"]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
+name = "pytest-datadir"
+version = "1.3.1"
+description = "pytest plugin for test data directories and files"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+pytest = ">=2.7.0"
+
+[[package]]
+name = "pytest-mock"
+version = "3.7.0"
+description = "Thin-wrapper around the mock package for easier use with pytest"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+pytest = ">=5.0"
+
+[package.extras]
+dev = ["pre-commit", "tox", "pytest-asyncio"]
+
+[[package]]
 name = "rich"
 version = "12.4.1"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
@@ -181,7 +206,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ab84e14169b4f1176c9f567edc890c8b480a622ec0804243bf5497c039b9b8d0"
+content-hash = "395a2f29c057e33bf08cb84d9bc8fb4a9f9c3f64433599c31833a7dfc9790b9f"
 
 [metadata.files]
 atomicwrites = [
@@ -230,6 +255,14 @@ pyparsing = [
 pytest = [
     {file = "pytest-5.4.3-py3-none-any.whl", hash = "sha256:5c0db86b698e8f170ba4582a492248919255fcd4c79b1ee64ace34301fb589a1"},
     {file = "pytest-5.4.3.tar.gz", hash = "sha256:7979331bfcba207414f5e1263b5a0f8f521d0f457318836a7355531ed1a4c7d8"},
+]
+pytest-datadir = [
+    {file = "pytest-datadir-1.3.1.tar.gz", hash = "sha256:d3af1e738df87515ee509d6135780f25a15959766d9c2b2dbe02bf4fb979cb18"},
+    {file = "pytest_datadir-1.3.1-py2.py3-none-any.whl", hash = "sha256:1847ed0efe0bc54cac40ab3fba6d651c2f03d18dd01f2a582979604d32e7621e"},
+]
+pytest-mock = [
+    {file = "pytest-mock-3.7.0.tar.gz", hash = "sha256:5112bd92cc9f186ee96e1a92efc84969ea494939c3aead39c50f421c4cc69534"},
+    {file = "pytest_mock-3.7.0-py3-none-any.whl", hash = "sha256:6cff27cec936bf81dc5ee87f07132b807bcda51106b5ec4b90a04331cba76231"},
 ]
 rich = [
     {file = "rich-12.4.1-py3-none-any.whl", hash = "sha256:d13c6c90c42e24eb7ce660db397e8c398edd58acb7f92a2a88a95572b838aaa4"},

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import abc
-import re
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Type
+
+from .manufacturer import DefaultManufacturer
+from .exception import TemplateError
+from .logger import log
 
 
 class Cluster:
@@ -63,12 +66,20 @@ class Cluster:
 class DeviceList(list):
     """设备列表"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        self._devices: List[Device] = []
 
-    @property
-    def _devices(self) -> List[Device]:
-        return self
+    def __getitem__(self, index: int) -> Device:
+        return self._devices[index]
+
+    def __len__(self):
+        return len(self._devices)
+
+    def append(self, device: Device):
+        """添加设备
+
+        :param device: 设备"""
+        self._devices.append(device)
 
     def parse(self):
         """递归对每个设备的命令进行解析"""
@@ -107,7 +118,7 @@ class Device:
             cmd.content = content
             self.cmds[command] = cmd
 
-        if self.manufacturer is DefaultManufacturer:
+        if self.manufacturer is DefaultManufacturer:  # 最后再检查厂商
             self.check_manufacturer()
 
     def check_manufacturer(self):
@@ -122,46 +133,14 @@ class Device:
 
     def parse(self):
 
-        for cmd in self.cmds:
-            parse_result = self._plugin_manager.parse(
-                cmd, self.manufacturer.PLATFORM)
-            cmd.update_parse_result(parse_result)
-
-
-class DefaultManufacturer:
-    """默认厂商"""
-
-    PLATFORM = 'default'
-    VERSION_COMMAND = None
-    KEYWORD_REG = None
-
-    @classmethod
-    def check_manufacturer(cls, cmds: Dict[str, Cmd]) -> Type[DefaultManufacturer]:
-        """检查确认设备的厂商"""
-        for handler in cls.__subclasses__():
-            if handler._check_manufacturer(cmds):
-                return handler
-
-        return cls
-
-    @classmethod
-    def _check_manufacturer(cls, cmds: Dict[str, Cmd]) -> bool:
-        """子类用于检查设备的厂商"""
-        # TODO 需要有一个方法确认最小命令长度
-        if cls.VERSION_COMMAND in cmds.keys():
-            return (True if
-                    re.search(cls.KEYWORD_REG,
-                              cmds[cls.VERSION_COMMAND].content, re.IGNORECASE)
-                    else False)
-
-        return False
-
-
-class Huawei(DefaultManufacturer):
-
-    PLATFORM = 'huawei_os'
-    VERSION_COMMAND = 'display version'
-    KEYWORD_REG = r'Huawei'
+        for _, cmd in self.cmds.items():
+            try:
+                parse_result = self._plugin_manager.parse(
+                    cmd, self.manufacturer.PLATFORM)
+                cmd.update_parse_reslut(parse_result)
+            except TemplateError as e:
+                log.debug(str(e))
+                continue
 
 
 class Cmd:
@@ -172,7 +151,7 @@ class Cmd:
         """ :params: cmd: 命令的完整名称"""
         self.command: str = cmd
         self._content: str = ''
-        self._parse_result: dict = {}
+        self._parse_result: List[Dict[str, str]] = {}
 
     @property
     def content(self):
@@ -182,9 +161,9 @@ class Cmd:
     def content(self, stream: str):
         self._content = stream
 
-    def parse_reslut(self, result: Dict[str, str]):
+    def update_parse_reslut(self, result: List[Dict[str, str]]):
         """在取到解析结果后，更新解析结果，并且删除命令的内容释放空间"""
-        self._parse_result.update(result)
+        self._parse_result = result
         self._content = ''
 
 
