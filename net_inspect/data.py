@@ -17,7 +17,6 @@ class PyOption:
 class PyPath:
     def __init__(self):
         self.root_path = os.path.dirname(module_file)
-        self.templates_dir_path = os.path.join(self.root_path, 'templates')
 
 
 pystr = PyStr()
