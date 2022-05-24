@@ -40,7 +40,7 @@ command_line_reg = r'-------------------------(?P<cmd>.*?)----------------------
 command_line_reg2 = r'^------------------------------------------------------------$'
 
 
-class InputPluginWithSmarOne(InputPluginAbstract):
+class InputPluginWithSmartOne(InputPluginAbstract):
 
     def _run(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
         match = re.match(device_info_reg, os.path.basename(file_path))

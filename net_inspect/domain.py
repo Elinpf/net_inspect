@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import abc
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Type
+from typing import Dict, List, Tuple, Type, Optional
 
 from .manufacturer import DefaultManufacturer
-from .exception import TemplateError
+from .exception import TemplateError, NotPluginError
 from .logger import log
 
 
@@ -171,20 +171,30 @@ class PluginManagerAbc(abc.ABC):
     """对插件的管理的抽象接口, 管理output和parse"""
 
     def __init__(self,
-                 input_plugin: InputPluginAbstract = None,
-                 output_plugin: OutputPluginAbstract = None,
-                 parse_plugin: ParsePluginAbstract = None):
-        self._input_plugin = input_plugin
-        self._output_plugin = output_plugin
-        self._parse_plugin = parse_plugin
+                 input_plugin: Optional[Type[InputPluginAbstract]] = None,
+                 output_plugin: Optional[Type[OutputPluginAbstract]] = None,
+                 parse_plugin: Optional[Type[ParsePluginAbstract]] = None):
+        self._input_plugin = input_plugin() if input_plugin else None
+        self._output_plugin = output_plugin() if output_plugin else None
+        self._parse_plugin = parse_plugin() if parse_plugin else None
 
     def parse(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         """对单个命令的内容进行解析"""
+        if self._parse_plugin is None:
+            raise NotPluginError('parse plugin is None')
         return self._parse_plugin.run(cmd, platform)
 
     def input(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
         """对单个文件进行设备输入"""
+        if self._input_plugin is None:
+            raise NotPluginError('input plugin is None')
         return self._input_plugin.run(file_path)
+
+    def output(self, devices: DeviceList, file_path: str):
+        """对设备列表进行输出"""
+        if self._output_plugin is None:
+            raise NotPluginError('output plugin is None')
+        self._output_plugin.run(devices, file_path)
 
     @abc.abstractmethod
     def input_dir(self, dir_path: str, expend: str | List = None) -> List[Tuple[Dict[str, str], DeviceInfo]]:
