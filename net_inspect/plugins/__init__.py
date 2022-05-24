@@ -66,6 +66,10 @@ class PluginRepository():
         :param name: 插件名称"""
         lower_name = self._lower_name(name)
 
+        # 支持简写
+        if not lower_name.startswith(f"{ptype}pluginwith"):
+            lower_name = f"{ptype}pluginwith{lower_name}"
+
         if lower_name not in self._easy_plugin_name:
             raise NotPluginError('not found plugin: {}'.format(name))
 
