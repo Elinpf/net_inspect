@@ -28,6 +28,13 @@ class Cluster:
     def plugin_manager(self, obj: PluginManagerAbc):
         self._plugin_manager = obj
 
+    def search(self, device_name: str) -> List[Device]:
+        """搜索设备
+
+        :param device_name: 搜索字符串
+        :return: 设备列表"""
+        return self.devices.search(device_name)
+
     def input_dir(self, dir_path: str, expend: str | List[str] = None):
         """输入整个目录，对目录中的文件进行提取设备和命令, 并保存到self.devices中
 
@@ -85,6 +92,13 @@ class DeviceList(list):
         """递归对每个设备的命令进行解析"""
         for device in self._devices:  # type: Device
             device.parse()
+
+    def search(self, device_name: DeviceInfo) -> List[Device]:
+        """查找设备
+
+        :param device_name: 设备信息
+        :return: 设备列表"""
+        return [device for device in self._devices if device_name in device.device_info.name]
 
 
 @dataclass
@@ -174,9 +188,60 @@ class PluginManagerAbc(abc.ABC):
                  input_plugin: Optional[Type[InputPluginAbstract]] = None,
                  output_plugin: Optional[Type[OutputPluginAbstract]] = None,
                  parse_plugin: Optional[Type[ParsePluginAbstract]] = None):
-        self._input_plugin = input_plugin() if input_plugin else None
-        self._output_plugin = output_plugin() if output_plugin else None
-        self._parse_plugin = parse_plugin() if parse_plugin else None
+        self._input_plugin: Optional[InputPluginAbstract] = None
+        self._output_plugin: Optional[OutputPluginAbstract] = None
+        self._parse_plugin: Optional[ParsePluginAbstract] = None
+
+        if input_plugin:
+            self.input_plugin = input_plugin
+        if output_plugin:
+            self.output_plugin = output_plugin
+        if parse_plugin:
+            self.parse_plugin = parse_plugin
+
+    def check_cls(check_type: str):
+        """装饰器用来检测插件的类型, 如果插件不是指定的类型, 则抛出异常
+        如果是传入的是实例，改为类再传入
+        """
+
+        def wrapper(func):
+            def inner(self, plugin_cls: Type[PluginAbstract]):
+                if not hasattr(plugin_cls, '__name__'):  # 如果是实例
+                    plugin_cls = plugin_cls.__class__
+                # 如果不是指定的类型
+                if not issubclass(plugin_cls, globals()[check_type]):
+                    raise TypeError(
+                        f'{plugin_cls.__name__} is not {check_type}')
+                return func(self, plugin_cls)
+            return inner
+        return wrapper
+
+    @property
+    def input_plugin(self) -> Optional[InputPluginAbstract]:
+        return self._input_plugin
+
+    @input_plugin.setter
+    @check_cls("InputPluginAbstract")
+    def input_plugin(self, plugin_cls: Type[InputPluginAbstract]):
+        self._input_plugin = plugin_cls()
+
+    @property
+    def output_plugin(self) -> Optional[OutputPluginAbstract]:
+        return self._output_plugin
+
+    @output_plugin.setter
+    @check_cls("OutputPluginAbstract")
+    def output_plugin(self, plugin_cls: Type[OutputPluginAbstract]):
+        self._output_plugin = plugin_cls()
+
+    @property
+    def parse_plugin(self) -> Optional[ParsePluginAbstract]:
+        return self._parse_plugin
+
+    @parse_plugin.setter
+    @check_cls("ParsePluginAbstract")
+    def parse_plugin(self, plugin_cls: Type[ParsePluginAbstract]):
+        self._parse_plugin = plugin_cls()
 
     def parse(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         """对单个命令的内容进行解析"""

@@ -7,6 +7,7 @@ class PyStr:
         self.software = 'net_inspect'
         self.logger_format = "%(message)s"
         # self.logger_format = "%(asctime)-15s - %(levelname)s - %(message)s"
+        self.default_parse_plugin = 'ntc_templates'
 
 
 class PyOption:

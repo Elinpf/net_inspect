@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 import re
 
-from typing import Dict, TYPE_CHECKING, List, Optional
+from typing import Dict, TYPE_CHECKING, List, Optional, Type
 
 from . import __file__ as plugin_file
 
