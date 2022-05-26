@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from .domain import Cmd
 
 
-class DefaultManufacturer:
+class DefaultVendor:
     """默认厂商"""
 
     PLATFORM = 'default'
@@ -16,16 +16,16 @@ class DefaultManufacturer:
     KEYWORD_REG = None
 
     @classmethod
-    def check_manufacturer(cls, cmds: Dict[str, Cmd]) -> Type[DefaultManufacturer]:
+    def check_vendor(cls, cmds: Dict[str, Cmd]) -> Type[DefaultVendor]:
         """检查确认设备的厂商"""
         for handler in cls.__subclasses__():
-            if handler._check_manufacturer(cmds):
+            if handler._check_vendor(cmds):
                 return handler
 
         return cls
 
     @classmethod
-    def _check_manufacturer(cls, cmds: Dict[str, Cmd]) -> bool:
+    def _check_vendor(cls, cmds: Dict[str, Cmd]) -> bool:
         """子类用于检查设备的厂商以及平台"""
         # TODO 需要有一个方法确认最小命令长度
         version_cmd = cls._check_version_command(cmds)
@@ -48,14 +48,14 @@ class DefaultManufacturer:
         return ''
 
 
-class Huawei(DefaultManufacturer):
+class Huawei(DefaultVendor):
 
     PLATFORM = 'huawei_vrp'
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'Huawei Versatile Routing Platform'
 
 
-class H3C(DefaultManufacturer):
+class H3C(DefaultVendor):
 
     PLATFORM = 'h3c_comware'
     VERSION_COMMAND = 'dis version'

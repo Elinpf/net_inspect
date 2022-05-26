@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Dict, Iterator, List, Tuple, Type, Optional, Iterator
 from thefuzz import process, fuzz
 
-from .manufacturer import DefaultManufacturer
+from .vendor import DefaultVendor
 from .exception import TemplateError, NotPluginError
 from .logger import log
 
@@ -117,7 +117,7 @@ class Device:
 
     def __init__(self):
         self.cmds: Dict[str, Cmd] = {}
-        self._manufacturer: DefaultManufacturer = DefaultManufacturer
+        self._vendor: DefaultVendor = DefaultVendor
         self._plugin_manager: PluginManagerAbc = None
         self._device_info: DeviceInfo = None
 
@@ -136,25 +136,25 @@ class Device:
             cmd.content = content
             self.cmds[command] = cmd
 
-        if self.manufacturer is DefaultManufacturer:  # 最后再检查厂商
-            self.check_manufacturer()
+        if self.vendor is DefaultVendor:  # 最后再检查厂商
+            self.check_vendor()
 
-    def check_manufacturer(self):
+    def check_vendor(self):
         """检查厂商"""
-        manufacturer = self.manufacturer.check_manufacturer(self.cmds)
-        self._manufacturer = manufacturer
+        vendor = self.vendor.check_vendor(self.cmds)
+        self._vendor = vendor
 
     @property
-    def manufacturer(self) -> Type[DefaultManufacturer]:
+    def vendor(self) -> Type[DefaultVendor]:
         """返回厂商类"""
-        return self._manufacturer
+        return self._vendor
 
     def parse(self):
 
         for _, cmd in self.cmds.items():
             try:
                 parse_result = self._plugin_manager.parse(
-                    cmd, self.manufacturer.PLATFORM)
+                    cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except TemplateError as e:
                 log.debug(str(e))
