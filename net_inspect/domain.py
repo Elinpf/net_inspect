@@ -64,11 +64,11 @@ class Cluster:
         device_cls.device_info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
         self.devices.append(device_cls)
 
-    def output(self, file_path: str):
+    def output(self, file_path: str, params: Optional[Dict[str, str]] = None):
         """输出到文件
 
         :param file_path: 文件路径"""
-        self.plugin_manager._output_plugin.run(self.devices, file_path)
+        self.plugin_manager._output_plugin.run(self.devices, file_path, params)
 
 
 class DeviceList(list):
@@ -160,14 +160,14 @@ class Device:
                 log.debug(str(e))
                 continue
 
-    def search_cmd(self, cmd_name: str) -> Cmd | None:
+    def search_cmd(self, cmd_name: str) -> Cmd:
         """使用模糊查询
 
         :param cmd_name: 命令名称
         :return: 命令"""
         search_result = process.extract(cmd_name, self.cmds.keys(
         ), scorer=fuzz.token_set_ratio)
-        cmd_len = len(cmd_name.split(' '))
+        cmd_len = len(cmd_name.strip().split(' '))
 
         for cmd, score in search_result:  # 判断命令的长度是否符合
             if score >= 60 and len(cmd.split(' ')) == cmd_len:
@@ -305,6 +305,7 @@ class InputPluginAbstract(PluginAbstract):
             stream = f.read()
         return self._run(file_path, stream)
 
+    @abc.abstractmethod
     def _run(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
         """输入插件的具体实现
         :params: file_path: 文件的路径
@@ -314,10 +315,15 @@ class InputPluginAbstract(PluginAbstract):
 
 
 class OutputPluginAbstract(PluginAbstract):
-    def run(self, devices: DeviceList[Device], file_path: str):
-        return self._run(devices, file_path)
+    def run(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
+        """对设备列表进行输出
+        :params: devices: 设备列表
+        :params: path: 输出文件的路径
+        :params: params: 输出文件的参数"""
+        return self._run(devices, path, params)
 
-    def _run(self, devices: DeviceList[Device], file_path: str):
+    @abc.abstractmethod
+    def _run(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
         raise NotImplementedError
 
 
@@ -325,5 +331,6 @@ class ParsePluginAbstract(PluginAbstract):
     def run(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         return self._run(cmd, platform)
 
+    @abc.abstractmethod
     def _run(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         raise NotImplementedError

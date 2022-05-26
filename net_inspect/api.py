@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, TYPE_CHECKING, Type, List
+from typing import Dict, TYPE_CHECKING, Type, List, Optional
 import os
 
 from .bootstrap import bootstrap
@@ -64,13 +64,14 @@ class NetInspect:
         self._plugin_manager.parse_plugin = plugin_cls
 
     def set_plugins(self,
-                    input_plugin: Type[InputPluginAbstract],
-                    output_plugin: Type[OutputPluginAbstract],
-                    parse_plugin: Type[ParsePluginAbstract]):
+                    input_plugin: Type[InputPluginAbstract] | str,
+                    output_plugin: Type[OutputPluginAbstract] | str,
+                    parse_plugin: Optional[Type[ParsePluginAbstract]] | str = None):
         """设置插件"""
         self.set_input_plugin(input_plugin)
         self.set_output_plugin(output_plugin)
-        self.set_parse_plugin(parse_plugin)
+        if parse_plugin:
+            self.set_parse_plugin(parse_plugin)
 
     def run_input(self, path: str) -> Cluster:
         """运行输入插件
@@ -90,16 +91,18 @@ class NetInspect:
         self.cluster.parse()
         return self.cluster
 
-    def run_output(self):
+    def run_output(self, file_path: str, params: Optional[Dict[str, str]] = None):
         """运行输出插件"""
-        self.cluster.output()
+        self.cluster.output(file_path, params)
 
-    def run(self, path: str) -> Cluster:
+    def run(self, path: str, output_file_path: str, output_plugin_params: Optional[Dict[str, str]] = None) -> Cluster:
         """运行输入解析输出插件
-        :param path: 文件或者目录路径"""
+        :param path: 文件或者目录路径
+        :param output_file_path: 输出文件路径
+        :param output_plugin_params: 输出插件参数"""
         self.run_input(path)
         self.run_parse()
-        self.run_output()
+        self.run_output(output_file_path, output_plugin_params)
 
         return self.cluster
 
