@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import abc
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Type, Optional
+from typing import Dict, Iterator, List, Tuple, Type, Optional, Iterator
+from thefuzz import process, fuzz
 
 from .manufacturer import DefaultManufacturer
 from .exception import TemplateError, NotPluginError
@@ -79,6 +80,9 @@ class DeviceList(list):
     def __getitem__(self, index: int) -> Device:
         return self._devices[index]
 
+    def __iter__(self) -> Iterator[Device]:
+        return self._devices.__iter__()
+
     def __len__(self):
         return len(self._devices)
 
@@ -93,7 +97,7 @@ class DeviceList(list):
         for device in self._devices:  # type: Device
             device.parse()
 
-    def search(self, device_name: DeviceInfo) -> List[Device]:
+    def search(self, device_name: str) -> List[Device]:
         """查找设备
 
         :param device_name: 设备信息
@@ -155,6 +159,21 @@ class Device:
             except TemplateError as e:
                 log.debug(str(e))
                 continue
+
+    def search_cmd(self, cmd_name: str) -> Cmd | None:
+        """使用模糊查询
+
+        :param cmd_name: 命令名称
+        :return: 命令"""
+        search_result = process.extract(cmd_name, self.cmds.keys(
+        ), scorer=fuzz.token_set_ratio)
+        cmd_len = len(cmd_name.split(' '))
+
+        for cmd, score in search_result:  # 判断命令的长度是否符合
+            if score >= 60 and len(cmd.split(' ')) == cmd_len:
+                return self.cmds[cmd]
+
+        return None
 
 
 class Cmd:

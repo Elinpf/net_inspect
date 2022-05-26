@@ -24,21 +24,21 @@ class NetInspect:
             pystr.default_parse_plugin)
         self.cluster._plugin_manager = self._plugin_manager
 
-    def get_all_plugins(self) -> Dict[str, Dict[str, PluginAbstract]]:
+    def get_all_plugins(self) -> Dict[str, Dict[str, Type[PluginAbstract]]]:
         """获取所有插件"""
-        return {'input_plugins': self.get_input_plugins,
-                'output_plugins': self.get_output_plugins,
-                'parse_plugins': self.get_parse_plugins}
+        return {'input_plugins': self.get_input_plugins(),
+                'output_plugins': self.get_output_plugins(),
+                'parse_plugins': self.get_parse_plugins()}
 
-    def get_input_plugins(self) -> Dict[str, PluginAbstract]:
+    def get_input_plugins(self) -> Dict[str, Type[PluginAbstract]]:
         """取得所有的输入插件"""
         return self._plugins.input_plugins
 
-    def get_output_plugins(self) -> Dict[str, PluginAbstract]:
+    def get_output_plugins(self) -> Dict[str, Type[PluginAbstract]]:
         """取得所有的输出插件"""
         return self._plugins.output_plugins
 
-    def get_parse_plugins(self) -> Dict[str, PluginAbstract]:
+    def get_parse_plugins(self) -> Dict[str, Type[PluginAbstract]]:
         """取得所有的解析插件"""
         return self._plugins.parse_plugins
 

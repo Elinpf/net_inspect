@@ -8,6 +8,8 @@ authors = ["Elin <365433079@qq.com>"]
 python = "^3.8"
 rich = "^12.4.1"
 textfsm = "^1.1.2"
+python-Levenshtein-wheels = "^0.13.2"
+thefuzz = "^0.19.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
