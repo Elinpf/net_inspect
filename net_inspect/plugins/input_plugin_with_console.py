@@ -15,7 +15,7 @@ simialr_huawei_reg = r'[\<|\[](?P<device_name>[\w_]+)(?:\-(?:.+?))?[\]|>]\s*(?P<
 
 
 class InputPluginWithConsole(InputPluginAbstract):
-    def _run(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
         device_name = ''
         command = ''
         cmd_dict = {}

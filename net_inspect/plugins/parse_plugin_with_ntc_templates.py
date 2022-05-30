@@ -44,7 +44,7 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
 
         return commands
 
-    def _run(self, cmd: Cmd, platform: str) -> Dict[str, str]:
+    def main(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         """对命令进行解析
         :param cmd: 命令对象
         :param platform: 命令所属平台, e.g. huawei_os"""

@@ -42,7 +42,7 @@ command_line_reg2 = r'^---------------------------------------------------------
 
 class InputPluginWithSmartOne(InputPluginAbstract):
 
-    def _run(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
         match = re.match(device_info_reg, os.path.basename(file_path))
         device_info = DeviceInfo(
             name=match.group('name'), ip=match.group('ip'))

@@ -302,10 +302,10 @@ class PluginAbstract(abc.ABC):
     """插件的抽象"""
 
     def run(self):
-        return self.run()
+        return self.main()
 
     @abc.abstractmethod
-    def _run(self):
+    def main(self):
         raise NotImplementedError
 
 
@@ -315,10 +315,10 @@ class InputPluginAbstract(PluginAbstract):
 
         with open(file_path, 'r') as f:
             stream = f.read()
-        return self._run(file_path, stream)
+        return self.main(file_path, stream)
 
     @abc.abstractmethod
-    def _run(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
         """输入插件的具体实现
         :params: file_path: 文件的路径
         :params: stream: 文件的内容"""
@@ -332,17 +332,17 @@ class OutputPluginAbstract(PluginAbstract):
         :params: devices: 设备列表
         :params: path: 输出文件的路径
         :params: params: 输出文件的参数"""
-        return self._run(devices, path, params)
+        return self.main(devices, path, params)
 
     @abc.abstractmethod
-    def _run(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
+    def main(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
         raise NotImplementedError
 
 
 class ParsePluginAbstract(PluginAbstract):
     def run(self, cmd: Cmd, platform: str) -> Dict[str, str]:
-        return self._run(cmd, platform)
+        return self.main(cmd, platform)
 
     @abc.abstractmethod
-    def _run(self, cmd: Cmd, platform: str) -> Dict[str, str]:
+    def main(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         raise NotImplementedError
