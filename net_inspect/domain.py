@@ -182,9 +182,21 @@ class Cmd:
 
     def __init__(self, cmd: str):
         """ :params: cmd: 命令的完整名称"""
-        self.command: str = cmd
+        self._command: str = ''
         self._content: str = ''
         self._parse_result: List[Dict[str, str]] = {}
+
+        self.command = cmd
+
+    @property
+    def command(self) -> str:
+        return self._command
+
+    @command.setter
+    def command(self, cmd: str):
+        """设置命令名称
+        自动合并多个空格"""
+        self._command = ' '.join(cmd.split())
 
     @property
     def content(self):
