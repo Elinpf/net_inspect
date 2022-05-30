@@ -27,7 +27,6 @@ class DefaultVendor:
     @classmethod
     def _check_vendor(cls, cmds: Dict[str, Cmd]) -> bool:
         """子类用于检查设备的厂商以及平台"""
-        # TODO 需要有一个方法确认最小命令长度
         version_cmd = cls._check_version_command(cmds)
         if version_cmd:
             return (True if
