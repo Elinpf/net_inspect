@@ -58,5 +58,12 @@ class Huawei(DefaultVendor):
 class H3C(DefaultVendor):
 
     PLATFORM = 'h3c_comware'
-    VERSION_COMMAND = 'dis version'
+    VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'H3C Comware Platform Software'
+
+
+class Cisco(DefaultVendor):
+
+    PLATFORM = 'cisco_ios'
+    VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
+    KEYWORD_REG = r'Cisco IOS Software'
