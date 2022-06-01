@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import abc
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Tuple, Type, Optional, Iterator
+from typing import Dict, Iterator, List, Tuple, Type, Optional, Iterator, TYPE_CHECKING
 from thefuzz import process, fuzz
 
 from . import exception
 from .vendor import DefaultVendor
 from .logger import log
+
+if TYPE_CHECKING:
+    from .analysis_plugin import AlarmLevel
 
 
 class Cluster:
@@ -126,9 +129,11 @@ class Device:
 
     def __init__(self):
         self.cmds: Dict[str, Cmd] = {}
-        self._vendor: DefaultVendor = DefaultVendor
+        self._vendor = DefaultVendor
         self._plugin_manager: PluginManagerAbc = None
         self._device_info: DeviceInfo = None
+
+        self._analysis_result = AnalysisResult()
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -173,6 +178,7 @@ class Device:
         """对设备进行分析, 需要在parse之后"""
         # TODO 解析完成后，对结果进行存储，AnalysisResult
         res = self._plugin_manager.analysis(self)
+        self._analysis_result.append(res)
 
     def search_cmd(self, cmd_name: str) -> Cmd | None:
         """使用模糊查询
@@ -233,11 +239,11 @@ class PluginManagerAbc(abc.ABC):
                  input_plugin: Optional[Type[InputPluginAbstract]] = None,
                  output_plugin: Optional[Type[OutputPluginAbstract]] = None,
                  parse_plugin: Optional[Type[ParsePluginAbstract]] = None,
-                 analysis_plugin: Optional[Type[AnalysisPluginAbstract]] = None):
+                 analysis_plugin: List[Type[AnalysisPluginAbstract]] = []):
         self._input_plugin: Optional[InputPluginAbstract] = None
         self._output_plugin: Optional[OutputPluginAbstract] = None
         self._parse_plugin: Optional[ParsePluginAbstract] = None
-        self._analysis_plugin: Optional[AnalysisPluginAbstract] = None
+        self._analysis_plugin: List[AnalysisPluginAbstract] = []
 
         if input_plugin:
             self.input_plugin = input_plugin
@@ -262,6 +268,26 @@ class PluginManagerAbc(abc.ABC):
                     raise TypeError(
                         f'{plugin_cls.__name__} is not {check_type}')
                 return func(self, plugin_cls)
+            return inner
+        return wrapper
+
+    def check_cls_list(check_type: str):
+        """装饰器用来检测插件的类型, 如果插件不是指定的类型, 则抛出异常
+        如果是传入的是实例，改为类再传入
+        """
+
+        def wrapper(func):
+            def inner(self, plugin_cls_list: List[Type[PluginAbstract]]):
+                cls_list = []
+                for plugin_cls in plugin_cls_list:
+                    if not hasattr(plugin_cls, '__name__'):  # 如果是实例
+                        plugin_cls = plugin_cls.__class__
+                    # 如果不是指定的类型
+                    if not issubclass(plugin_cls, globals()[check_type]):
+                        raise TypeError(
+                            f'{plugin_cls.__name__} is not {check_type}')
+                    cls_list.append(plugin_cls)
+                return func(self, cls_list)
             return inner
         return wrapper
 
@@ -297,9 +323,10 @@ class PluginManagerAbc(abc.ABC):
         return self._analysis_plugin
 
     @analysis_plugin.setter
-    @check_cls("AnalysisPluginAbstract")
-    def analysis_plugin(self, plugin_cls: Type[AnalysisPluginAbstract]):
-        self._analysis_plugin = plugin_cls()
+    @check_cls_list("AnalysisPluginAbstract")
+    def analysis_plugin(self, plugin_cls_list: List[Type[AnalysisPluginAbstract]]):
+        self._analysis_plugin = [plugin_cls()
+                                 for plugin_cls in plugin_cls_list]
 
     def parse(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         """对单个命令的内容进行解析"""
@@ -307,11 +334,15 @@ class PluginManagerAbc(abc.ABC):
             raise exception.NotPluginError('parse plugin is None')
         return self._parse_plugin.run(cmd, platform)
 
-    def analysis(self, device: Device):
-        """对设备进行分析"""
-        if self._analysis_plugin is None:
-            raise exception.NotPluginError('analysis plugin is None')
-        return self._analysis_plugin.run(device)
+    def analysis(self, device: Device) -> AnalysisResult:
+        """对设备进行分析, 返回分析结果列表"""
+        res = AnalysisResult()
+        if not self._analysis_plugin:
+            raise exception.NotPluginError('analysis plugin list is empty')
+        for plugin in self._analysis_plugin:
+            res.append(plugin.run(device))
+
+        return res
 
     def input(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
         """对单个文件进行设备输入"""
@@ -329,6 +360,30 @@ class PluginManagerAbc(abc.ABC):
     def input_dir(self, dir_path: str, expend: str | List = None) -> List[Tuple[Dict[str, str], DeviceInfo]]:
         """对目录中的文件进行设备输入"""
         raise NotImplementedError
+
+
+class AnalysisResult:
+    """分析结果"""
+
+    def __init__(self):
+        self._result: List[AlarmLevel] = []
+
+    def append(self, result: AnalysisResult):
+        """合并分析结果"""
+        self._result.extend(result._result)
+
+    def add(self, level: AlarmLevel):
+        """添加分析结果"""
+        self._result.append(level)
+
+    def __getitem__(self, index) -> AlarmLevel:
+        return self._result[index]
+
+    def __iter__(self) -> Iterator[AlarmLevel]:
+        return iter(self._result)
+
+    def __len__(self) -> int:
+        return len(self._result)
 
 
 class PluginAbstract(abc.ABC):
@@ -384,7 +439,7 @@ class ParsePluginAbstract(PluginAbstract):
 class AnalysisPluginAbstract(PluginAbstract):
 
     @abc.abstractmethod
-    def run(self, device: Device):
+    def run(self, device: Device) -> AnalysisResult:
         raise NotImplementedError
 
     @abc.abstractmethod

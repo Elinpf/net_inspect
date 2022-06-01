@@ -1,26 +1,29 @@
 from __future__ import annotations
 import abc
-from typing import Dict, TYPE_CHECKING, List, Tuple
+from typing import Dict, TYPE_CHECKING, List
 
 from . import exception
-from .domain import AnalysisPluginAbstract
+from .domain import AnalysisPluginAbstract, AnalysisResult
 from .logger import log
 
 if TYPE_CHECKING:
-    from .domain import DefaultVendor, Cmd, Device
+    from .domain import DefaultVendor, Device
 
 TEMPLATE = str
 VALUE = str
 
-Level_1 = 0
-Level_2 = 1
-Level_3 = 2
-
 
 class Level:
-    def __init__(self, level: int, desc: str):
+    Normal = 0
+    Focus = 1
+    Warning = 2
+
+
+class AlarmLevel:
+    def __init__(self, level: int, message: str = '', plugin_name: str = ''):
         self._level = level
-        self.desc = desc
+        self.message = message
+        self.plugin_name = plugin_name
 
     @property
     def level(self):
@@ -28,7 +31,7 @@ class Level:
 
     @level.setter
     def level(self, level: int):
-        if level < Level_1 or level > Level_3:
+        if level < Level.Normal or level > Level.Warning:
             raise exception.AnalysisLevelError
         self._level = level
 
@@ -84,6 +87,7 @@ class TemplateValue:
 
 class AnalysisPluginAbc(AnalysisPluginAbstract):
 
+    @abc.abstractmethod
     def __init__(self, ntc_templates:
                  Dict[DefaultVendor, Dict[TEMPLATE, List[VALUE]]]):
         self._ntc_templates = ntc_templates
@@ -114,11 +118,21 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
 
                     self.template.update(template_file, temp_list)
 
-    def run(self, device: Device) -> Level:
+    def run(self, device: Device) -> AnalysisResult:
         self._init_templates_value(device)
         self.template._vendor_platform = device.vendor.PLATFORM
-        return self.main(device.vendor, self.template)
+        result = self.main(device.vendor, self.template, AnalysisResult())
+
+        for alarm in result:  # 设置告警所属插件名称
+            if not alarm.plugin_name:
+                alarm.plugin_name = self.__class__.__name__
+
+        return result
 
     @abc.abstractmethod
-    def main(self, vendor: DefaultVendor, template: TemplateValue) -> Level:
+    def main(
+            self, vendor: DefaultVendor,
+            template: TemplateValue,
+            result: AnalysisResult
+    ) -> AnalysisResult:
         raise NotImplementedError
