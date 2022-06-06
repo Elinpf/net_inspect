@@ -1,0 +1,188 @@
+-------------------------dis clock-------------------------
+
+17:05:11 bj Mon 02/21/2022
+Time Zone : bj add 08:00:00
+
+
+
+-------------------------dis version-------------------------
+
+H3C Comware Platform Software
+Comware Software, Version 5.20, Release 2202
+Copyright (c) 2004-2010 Hangzhou H3C Tech. Co., Ltd. All rights reserved.
+H3C S5500-28C-EI uptime is 115 weeks, 1 day, 8 hours, 37 minutes
+
+H3C S5500-28C-EI with 1 Processor
+256M    bytes SDRAM
+32768K  bytes Flash Memory
+
+Hardware Version is REV.C
+CPLD Version is 002
+Bootrom Version is 609
+[SubSlot 0] 24GE+4SFP Hardware Version is REV.C
+
+
+
+-------------------------dis cpu-usage-------------------------
+
+Slot 1 CPU usage: 
+      17% in last 5 seconds
+       6% in last 1 minute
+       6% in last 5 minutes
+
+
+
+-------------------------dis mem-------------------------
+
+System Total Memory(bytes): 172377200
+Total Used Memory(bytes): 76451468
+Used Rate: 44%
+
+
+
+-------------------------dis fan-------------------------
+
+Slot 1 
+      FAN    1 
+      State    : Normal
+
+
+
+-------------------------dis power-------------------------
+
+Slot 1 
+      Power    1 
+      State    : Normal 
+      Type     : AC
+
+
+
+-------------------------dis device man-------------------------
+
+slot 1
+DEVICE_NAME          : S5500-28C-EI
+DEVICE_SERIAL_NUMBER : 210235AXXXXXXXXX0355
+MAC_ADDRESS          : 3822-D662-E5EA
+MANUFACTURING_DATE   : 2011-04-09
+VENDOR_NAME          : H3C
+
+
+
+-------------------------dis ip interface bri-------------------------
+
+*down: administratively down
+(s): spoofing
+Interface                     Physical Protocol IP Address      Description 
+LoopBack0                     up       up(s)    11.223.68.250   LoopBack0...
+Vlan-interface2               up       up       11.223.64.3     Vlan-inte...
+Vlan-interface3               up       up       11.223.64.3     Vlan-inte...
+Vlan-interface30              up       up       11.44.110.3     TM-LAN      
+Vlan-interface104             up       up       11.223.95.26    Link-to-A...
+
+
+
+-------------------------dis ip routing-table statistics-------------------------
+
+Proto      route       active      added       deleted     freed
+DIRECT     12          12          16          4           4          
+STATIC     0           0           2           2           2          
+RIP        0           0           0           0           0          
+OSPF       2440        2435        288897      286457      286457     
+IS-IS      0           0           0           0           0          
+BGP        0           0           0           0           0          
+Total      2452        2447        288915      286463      286463
+
+
+
+-------------------------dis ospf peer-------------------------
+
+OSPF Process 1 with Router ID 11.22.68.250
+                        Neighbor Brief Information
+ 
+ Area: 0.0.0.0        
+ Router ID       Address         Pri Dead-Time Interface       State
+ 11.22.68.249   11.22.64.2     1   36        Vlan3           Full/BDR
+ 11.22.68.252   11.22.95.25    1   38        Vlan104         Full/DR
+ 11.22.68.249   11.44.110.2     1   36        Vlan30          Full/DR
+
+
+
+-------------------------dis vrrp verbose-------------------------
+
+IPv4 Standby Information:
+
+ Run Method      : VIRTUAL-MAC   
+
+ Total number of virtual routers: 3 
+
+ Interface       : Vlan-interface2                 
+ VRID            : 2                    Adver. Timer    : 1                    
+ Admin Status    : UP                   State           : Master               
+ Config Pri      : 110                  Run Pri         : 110       
+ Preempt Mode    : YES                  Delay Time      : 0          
+ Auth Type       : NONE                
+ Virtual IP      : 44.113.64.1         
+ Virtual MAC     : 0000-5e00-0102      
+ Master IP       : 44.113.64.3          
+
+
+ Interface       : Vlan-interface3                 
+ VRID            : 3                    Adver. Timer    : 1                    
+ Admin Status    : UP                   State           : Backup               
+ Config Pri      : 100                  Run Pri         : 100       
+ Preempt Mode    : YES                  Delay Time      : 0          
+ Auth Type       : NONE                
+ Virtual IP      : 11.22.64.1         
+ Master IP       : 11.22.64.2          
+
+
+ Interface       : Vlan-interface30                
+ VRID            : 4                    Adver. Timer    : 1                    
+ Admin Status    : UP                   State           : Backup               
+ Config Pri      : 100                  Run Pri         : 100       
+ Preempt Mode    : YES                  Delay Time      : 0          
+ Auth Type       : NONE                
+ Virtual IP      : 11.44.110.1         
+ Master IP       : 11.44.110.2
+
+
+
+-------------------------dis link-aggregation summary-------------------------
+
+Aggregation Interface Type: 
+BAGG -- Bridge-Aggregation, RAGG -- Route-Aggregation 
+Aggregation Mode: S -- Static, D -- Dynamic 
+Loadsharing Type: Shar -- Loadsharing, NonS -- Non-Loadsharing
+Actor System ID: 0x8000, 3822-d662-e5ea
+ 
+AGG         AGG       Partner ID               Select Unselect   Share 
+Interface   Mode                               Ports  Ports      Type 
+-------------------------------------------------------------------------------
+BAGG1       S         none                     2      0          Shar
+
+
+
+-------------------------dis log-------------------------
+
+Logging buffer configuration and contents:enabled
+Allowed max buffer size : 1024
+Actual buffer size : 512
+Channel number : 4 , Channel name : logbuffer
+Dropped messages : 0
+Overwritten messages : 28036
+Current messages : 512
+
+%Feb 11 02:06:40:553 2022 B_XXYYY_CAM_DS02 SSH/4/AUTHSUCC:SSH user nat (IP:33.220.121.23) success to process PASSWORD Authentication!
+%Feb 11 02:06:40:605 2022 B_XXYYY_CAM_DS02 SSH/4/LOGIN:STEL user nat (IP:33.220.121.23) login succeeded!
+%Feb 11 02:06:40:719 2022 B_XXYYY_CAM_DS02 SHELL/4/LOGIN: nat login from 33.220.121.23
+%Feb 11 02:06:41:684 2022 B_XXYYY_CAM_DS02 SHELL/4/CMD:task:vt0 ip:33.220.121.23 user:nat command:undo terminal monitor
+%Feb 11 02:06:42:516 2022 B_XXYYY_CAM_DS02 SHELL/4/CMD:task:vt0 ip:33.220.121.23 user:nat command:display version
+%Feb 11 02:06:43:08 2022 B_XXYYY_CAM_DS02 SHELL/4/CMD:task:vt0 ip:33.220.121.23 user:nat command:display device manuinfo
+%Feb 11 02:06:45:39 2022 B_XXYYY_CAM_DS02 SHELL/4/CMD:task:vt0 ip:33.220.121.23 user:nat command:quit
+%Feb 11 02:06:45:43 2022 B_XXYYY_CAM_DS02 SHELL/4/LOGOUT: nat logout from 33.220.121.23
+%Feb 11 02:06:45:54 2022 B_XXYYY_CAM_DS02 SSH/4/LOGOUT:STEL user nat (IP:33.220.121.23) logout because :SSH Client close the connection
+Current FSM is : SSH_Main_SSHProcess
+%Feb 11 02:09:01:283 2022 B_XXYYY_CAM_DS02 SSH/4/AUTHSUCC:SSH user nat (IP:33.220.99.80) success to process PASSWORD Authentication!
+%Feb 11 02:09:01:313 2022 B_XXYYY_CAM_DS02 SSH/4/LOGIN:STEL user nat (IP:33.220.99.80) login succeeded!
+%Feb 11 02:09:01:426 2022 B_XXYYY_CAM_DS02 SHELL/4/LOGIN: nat login from 33.220.99.80
+%Feb 11 02:09:02:587 2022 B_XXYYY_CAM_DS02 SHELL/4/CMD:task:vt0 ip:33.220.99.80 user:nat command:display ip routing-table
