@@ -72,3 +72,16 @@ def test_run_parse_with_default2(shared_datadir):
     cluster.parse()
     res = cluster.devices[0].cmds['dis version']._parse_result
     assert res[0]['vrp_version'] == '8.180'
+
+
+def test_run_analysis(shared_datadir):
+    """执行分析测试"""
+    net = NetInspect()
+    net.set_input_plugin('smartone')
+    cluster = net.run_input(shared_datadir /
+                            'log_files/HUAWEI_BAD_POWER_21.1.1.1.diag')
+
+    cluster.parse()
+    cluster.analysis()
+    result = cluster.devices[0].analysis_result
+    assert len(result) > 0  # 保证至少有一个结果

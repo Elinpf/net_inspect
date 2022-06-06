@@ -2,15 +2,13 @@ from __future__ import annotations
 
 import abc
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Tuple, Type, Optional, Iterator, TYPE_CHECKING
-from thefuzz import process, fuzz
+from typing import Dict, Iterator, List, Optional, Tuple, Type
+
+from thefuzz import fuzz, process
 
 from . import exception
-from .vendor import DefaultVendor
 from .logger import log
-
-if TYPE_CHECKING:
-    from .analysis_plugin import AlarmLevel
+from .vendor import DefaultVendor
 
 
 class Cluster:
@@ -143,6 +141,10 @@ class Device:
     def device_info(self, device_info: DeviceInfo):
         self._device_info = device_info
 
+    @property
+    def analysis_result(self) -> AnalysisResult:
+        return self._analysis_result
+
     def save_to_cmds(self, cmd_contents: Dict[str, str]):
         """将分割好的命令字典保存到设备的命令列表中"""
         for command, content in cmd_contents.items():
@@ -204,7 +206,7 @@ class Cmd:
         """ :params: cmd: 命令的完整名称"""
         self._command: str = ''
         self._content: str = ''
-        self._parse_result: List[Dict[str, str]] = {}
+        self._parse_result: List[Dict[str, str]] = []
 
         self.command = cmd
 
@@ -362,6 +364,40 @@ class PluginManagerAbc(abc.ABC):
         raise NotImplementedError
 
 
+class AlarmLevel:
+    """告警级别"""
+    NORMAL = 0
+    FOCUS = 1
+    WARNING = 2
+
+    def __init__(self, level: int, message: str = '', plugin_name: str = ''):
+        self._level = level
+        self.message = message
+        self.plugin_name = plugin_name
+
+    @property
+    def level(self):
+        return self._level
+
+    @level.setter
+    def level(self, level: int):
+        if level < AlarmLevel.NORMAL or level > AlarmLevel.WARNING:
+            raise exception.AnalysisLevelError
+        self._level = level
+
+    def is_warning(self) -> bool:
+        """是否为警告级别"""
+        return self._level == AlarmLevel.WARNING
+
+    def is_focus(self) -> bool:
+        """是否为关注级别"""
+        return self._level >= AlarmLevel.FOCUS
+
+    def is_normal(self) -> bool:
+        """是否为正常级别"""
+        return self._level == AlarmLevel.NORMAL
+
+
 class AnalysisResult:
     """分析结果"""
 
@@ -375,6 +411,25 @@ class AnalysisResult:
     def add(self, level: AlarmLevel):
         """添加分析结果"""
         self._result.append(level)
+
+    def add_normal(self, message: str = ''):
+        """添加正常结果"""
+        self.add(AlarmLevel(AlarmLevel.NORMAL, message))
+
+    def add_focus(self, message: str = ''):
+        """添加关注结果"""
+        self.add(AlarmLevel(AlarmLevel.FOCUS, message))
+
+    def add_warning(self, message: str = ''):
+        """添加警告结果"""
+        self.add(AlarmLevel(AlarmLevel.WARNING, message))
+
+    def get(self, plugin_name: str) -> AlarmLevel | None:
+        """获取指定插件的结果"""
+        for alarm in self._result:
+            if alarm.plugin_name == plugin_name:
+                return alarm
+        return None
 
     def __getitem__(self, index) -> AlarmLevel:
         return self._result[index]

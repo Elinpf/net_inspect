@@ -1,0 +1,316 @@
+dis clock
+2022-02-21 16:22:26+08:00
+Monday
+Time Zone(BJ) : UTC+08:00
+------------------------------------------------------------
+dis version
+Huawei Versatile Routing Platform Software
+VRP (R) software, Version 8.180 (NE20E V800R010C10SPC500)
+Copyright (C) 2012-2018 Huawei Technologies Co., Ltd.
+HUAWEI NE20E-S4 uptime is 169 days, 13 hours, 50 minutes 
+Patch Version: V800R010SPH120
+
+NE20E-S4 version information:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+BKP  version information:
+  PCB         Version : CX68BKP01B REV A
+  MPU  Slot  Quantity : 2
+  NSP  Slot  Quantity : 1
+  CARD Slot  Quantity : 4
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+MPU version information:
+
+MPU (Master) 6 : uptime is 169 days, 13 hours, 46 minutes
+  StartupTime 2021/09/05   02:39:58
+  SDRAM Memory Size   : 2048 M bytes
+  FLASH Memory Size   : 16 M bytes
+  NVRAM Memory Size   : 512 K bytes
+  CFCARD Memory Size  : 2048 M bytes
+  MPU CR2D00MPUE10 version information:
+  PCB         Version : CX68MPUK REV B
+  EPLD        Version : 107
+  FPGA        Version : 109
+  BootROM     Version : 03.47
+  BootLoad    Version : 03.47
+
+MPU (Slave) 7 : uptime is 169 days, 13 hours, 46 minutes
+  StartupTime 2021/09/05   02:39:57
+  SDRAM Memory Size   : 2048 M bytes
+  FLASH Memory Size   : 16 M bytes
+  NVRAM Memory Size   : 512 K bytes
+  CFCARD Memory Size  : 2048 M bytes
+  MPU CR2D00MPUE10 version information:
+  PCB         Version : CX68MPUK REV B
+  EPLD        Version : 107
+  FPGA        Version : 109
+  BootROM     Version : 03.47
+  BootLoad    Version : 03.47
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+NSP version information:
+
+NSP 5 : uptime is 169 days, 13 hours, 45 minutes
+  StartupTime 2021/09/05   02:41:06
+  Host processor :
+  SDRAM Memory Size   : 4096 M bytes
+  Flash Memory Size   : 64 M bytes
+  NSP CR2DNSPA0010 version information:
+  PCB Version         : CX68NPU240A REV A
+  EPLD Version        : 109
+  FPGA Version        : 011
+  NP Version          : 100
+  TM  Version         : TM REV NULL
+  BootROM Version     : 06.14
+  BootLoad Version    : 06.14
+  NSE Version         : NSE REV A
+  CMAC Version        : 110
+  PIC1: CR2D00E8GF11 version information 
+  StartupTime         : 2021/09/05    02:41:15 
+  PCB Version         : CX68E8GFC REV A
+  FPGA Version        : 002
+  PIC2: CR2D00E8GF11 version information 
+  StartupTime         : 2021/09/05    02:41:18 
+  PCB Version         : CX68E8GFC REV A
+  FPGA Version        : 002
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Power version information: 
+
+POWER 8's version information:
+  PCB     Version : PSU1600A REV A
+
+POWER 9's version information:
+  PCB     Version : PSU1600A REV A
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+FAN version information: 
+
+FAN 10's version information:
+  PCB     Version : CX67FCBA REV B
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+CLK version information:
+
+CLK 11 : uptime is 169 days, 13 hours, 45 minutes
+  StartupTime 2021/09/05   02:40:19
+  FPGA     Version : 009
+  DSP      Version : 10205005
+
+CLK 12 : uptime is 169 days, 13 hours, 45 minutes
+  StartupTime 2021/09/05   02:40:26
+  FPGA     Version : 009
+  DSP      Version : 10205005
+------------------------------------------------------------
+dis cpu-usage
+Cpu utilization statistics at 2022-02-21 16:22:32 268 ms
+System cpu use rate is : 20%
+Cpu utilization for five seconds: 19% ;  one minute: 14% ;  five minutes: 13%.
+Max CPU Usage : 99%
+Max CPU Usage Stat. Time : 2021-09-05 02:37:29 312 ms
+---------------------------
+ServiceName  UseRate   
+---------------------------
+SYSTEM           19%
+FEA               1%
+AAA               0%
+ARP               0%
+BGP               0%
+CMF               0%
+DEVICE            0%
+DHCP              0%
+ETRUNK            0%
+EUM               0%
+FEC               0%
+FIBRESM           0%
+IFM               0%
+IP STACK          0%
+LDT               0%
+LINK              0%
+LOCAL PKT         0%
+MFLP              0%
+MSTP              0%
+ND                0%
+NETSTREAM         0%
+OAM               0%
+OSPF              0%
+PKI               0%
+PNP               0%
+PTPA              0%
+RBS               0%
+RGM               0%
+RM                0%
+SLA               0%
+SMLK              0%
+SVRO              0%
+TNLM              0%
+TUNNEL            0%
+VLAN              0%
+---------------------------
+CPU Usage Details
+----------------------------------------------------------------
+CPU     Current  FiveSec   OneMin  FiveMin  Max MaxTime         
+----------------------------------------------------------------
+cpu0        20%      19%      14%      13%  99% 2021-09-05 02:37:37
+----------------------------------------------------------------
+------------------------------------------------------------
+dis memory-usage
+Memory utilization statistics at 2022-02-21 16:22:35 622 ms
+System Total Memory Is: 2025148 Kbytes
+Total Memory Used Is: 708676 Kbytes
+Memory Using Percentage Is: 34%
+----------------------------------------
+Process memory information in the slot:
+----------------------------------------
+ProcessId  ProcessName      Used(Kbytes)
+----------------------------------------
+7          SM                      94490
+1001       PROTO1                  52646
+6          CFG                    320392
+1000       FESMB                   47797
+9          LM                      28018
+0          system                 165333
+----------------------------------------
+------------------------------------------------------------
+dis device man
+                              ^
+Error: Wrong parameter found at '^' position.
+------------------------------------------------------------
+dis esn
+ ESN of master: 21023XXXXXXXXX000041
+ ESN of slave: 21023XXXXXXXXX000041
+ 
+------------------------------------------------------------
+dis elabel brief
+Elabel brief information:
+--------------------------------------------------------------------------------
+Slot #          BoardType                                BarCode                 Description                                                     
+--------------------------------------------------------------------------------
+MPU 6           CR23MPUK0                                030xxxxxxxxxx032        NE-MPUE                                                         
+MPU 7           CR23MPUK0                                030xxxxxxxxxx033        NE-MPUE                                                         
+NSP 5           CR23NSP1201                              031xxxxxxxxxx107        NSP-A                                                           
+  PIC 1         CR23E8GFC0                               030xxxxxxxxxx061        8xFE/GE-SFP                                                     
+  PIC 2         CR23E8GFC0                               030xxxxxxxxxx060        8xFE/GE-SFP                                                     
+PWR 8           CR51PSUAB0                               210xxxxxxxxxx6000063                                                                    
+PWR 9           CR51PSUAB0                               210xxxxxxxxxx6000027                                                                    
+FAN 10          CR2M004FBX10                             210xxxxxxxxxx7000033                                                                    
+--------------------------------------------------------------------------------
+------------------------------------------------------------
+dis fan
+Slotid    : 10
+Present   : YES
+Registered: YES
+Status    : AUTO
+FanSpeed  : [No.]Speed
+  [1] 30%  [2] 35%
+  [3] 35%  [4] 35%
+  [5] 35%  [6] 35%
+------------------------------------------------------------
+dis power
+No Present Mode State                                   Num                   
+-------------------------------------------------------------------------------
+8  NO     AC   Abnormal                                  Abnormal(0)/Normal(1)
+9  Yes     AC   Normal                                  Abnormal(0)/Normal(1)
+Power monitor cable state:
+   Plug
+
+------------------------------------------------------------
+dis alarm all
+Info: No alarm.
+------------------------------------------------------------
+dis ospf peer brief
+
+(M) Indicates MADJ neighbor
+
+
+          OSPF Process 1 with Router ID 11.22.68.253
+                   Peer Statistic Information
+Total number of peer(s): 7       
+ Peer(s) in full state: 5       
+-----------------------------------------------------------------------------
+ Area Id         Interface                  Neighbor id          State       
+ 0.0.0.0         GE0/1/1                    11.22.68.251        Full        
+ 0.0.0.0         GE0/1/1                    11.22.68.252        Full        
+ 0.0.0.0         GE0/1/1                    11.22.68.254        2-Way       
+ 0.0.0.0         GE0/2/0                    11.22.68.254        Full        
+ 0.0.0.0         GE0/2/1                    11.22.68.251        Full        
+ 0.0.0.0         GE0/2/1                    11.22.68.252        Full        
+ 0.0.0.0         GE0/2/1                    11.22.68.254        2-Way       
+-----------------------------------------------------------------------------
+------------------------------------------------------------
+dis vrrp brief
+Total:2     Master:1    Backup:1    Non-active:0    
+VRID State       Interface               Type    Virtual IP
+----------------------------------------------------------------
+50   Master      GE0/1/1                 Normal  11.22.95.1
+60   Backup      GE0/2/1                 Normal  11.22.95.1
+------------------------------------------------------------
+dis ip interface bri
+*down: administratively down
+!down: FIB overload down
+^down: standby
+(l): loopback
+(s): spoofing
+(d): Dampening Suppressed
+(E): E-Trunk down
+(td): transceiver unmatch down
+The number of interface that is UP in Physical is 7
+The number of interface that is DOWN in Physical is 13
+The number of interface that is UP in Protocol is 7
+The number of interface that is DOWN in Protocol is 13
+
+Interface                         IP Address/Mask      Physical   Protocol VPN 
+GigabitEthernet0/0/0              unassigned           *down      down     --  
+GigabitEthernet0/1/0              11.22.254.110/30    up         up       --  
+GigabitEthernet0/1/1              11.22.95.2/29       up         up       --  
+GigabitEthernet0/1/2              unassigned           *down      down     --  
+GigabitEthernet0/1/3              unassigned           *down      down     --  
+GigabitEthernet0/1/4              unassigned           *down      down     --  
+GigabitEthernet0/1/5              unassigned           *down      down     --  
+GigabitEthernet0/1/6              unassigned           *down      down     --  
+GigabitEthernet0/1/7              unassigned           *down      down     --  
+GigabitEthernet0/2/0              11.22.95.33/30      up         up       --  
+GigabitEthernet0/2/1              11.22.95.2/29       up         up       --  
+GigabitEthernet0/2/2              unassigned           *down      down     --  
+GigabitEthernet0/2/3              unassigned           *down      down     --  
+GigabitEthernet0/2/4              9.9.9.9/24           *down      down     --  
+GigabitEthernet0/2/5              unassigned           *down      down     --  
+GigabitEthernet0/2/6              unassigned           *down      down     --  
+GigabitEthernet0/2/7              unassigned           *down      down     --  
+LoopBack0                         11.22.68.253/32     up         up(s)    --  
+NULL0                             unassigned           up         up(s)    --  
+Virtual-Template0                 unassigned           up         up(s)    --  
+
+------------------------------------------------------------
+dis ip routing-table statistics
+Summary Prefixes : 2390
+Proto      total      active     added      deleted    freed
+           routes     routes     routes     routes     routes
+DIRECT     18         18         37         19         19         
+STATIC     3          3          5          2          2          
+RIP        0          0          0          0          0          
+OSPF       1325       1234       89379      88054      88054      
+IS-IS      0          0          0          0          0          
+BGP        2296       1769       58618      56322      56322      
+UNR        0          0          0          0          0          
+Total      3642       3024       148039     144397     144397     
+------------------------------------------------------------
+dis link-aggregation summary
+                       ^
+Error: Unrecognized command found at '^' position.
+------------------------------------------------------------
+dis log
+Logging buffer configuration and contents : enabled
+Allowed max buffer size : 10240
+Actual buffer size : 512
+Channel number : 4 , Channel name : logbuffer
+Dropped messages : 0
+Overwritten messages : 7801
+Current messages : 512
+
+Feb 21 2022 15:33:33+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/TEST_COMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 15:33:33+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/DISMANPING_TESTCOMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 14:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/TEST_COMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 14:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/DISMANPING_TESTCOMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 13:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/TEST_COMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 13:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/DISMANPING_TESTCOMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 12:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/TEST_COMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 12:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/DISMANPING_TESTCOMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 11:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/TEST_COMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 11:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/DISMANPING_TESTCOMPLETED is suppressed 250 in last 3600 seconds.
+Feb 21 2022 10:33:23+08:00 B_XXYYY_WBN_AR01 %%01INFO/4/SUPPRESS_LOGINFO(l):CID=0x80600412;Log NQA/TEST_COMPLETED is suppressed 250 in last 3600 seconds.

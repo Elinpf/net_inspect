@@ -126,8 +126,12 @@ class PluginRepository():
         :param name: 插件名称"""
         return self.get_plugin(Analysis, name)
 
+    def get_analysis_plugin_list(self) -> List[AnalysisPluginAbstract]:
+        """获取分析插件列表"""
+        return list(self.analysis_plugins.values())
+
     def plugin_list(self, type: str) -> List[str]:
-        """获取插件列表
+        """获取名称插件列表
         :param type: 插件类型"""
         if type == Input:
             return list(self.input_plugins.keys())
@@ -151,6 +155,10 @@ class PluginRepository():
     def parse_plugin_list(self) -> List[str]:
         """获取解析插件列表"""
         return self.plugin_list(Parse)
+
+    def analysis_plugin_list(self) -> List[str]:
+        """获取分析插件列表"""
+        return self.plugin_list(Analysis)
 
     def get_plugins(self, input_plugin_name: Optional[str] = None,
                     output_plugin_name: Optional[str] = None,

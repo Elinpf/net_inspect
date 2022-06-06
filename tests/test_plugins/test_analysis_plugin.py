@@ -7,8 +7,7 @@ from net_inspect.plugin_manager import PluginManager
 from net_inspect.analysis_plugin import (
     AnalysisPluginAbc,
     AnalysisResult,
-    AlarmLevel,
-    Level
+    AlarmLevel
 )
 
 
@@ -40,8 +39,8 @@ class TestAnalysisPlugin(AnalysisPluginAbc):
         with pytest.raises(KeyError):  # 测试报错
             template['display cpu']
 
-        result.add(AlarmLevel(Level.Focus, 'test_focus'))
-        result.add(AlarmLevel(Level.Warning, 'test_warning'))
+        result.add(AlarmLevel(AlarmLevel.FOCUS, 'test_focus'))
+        result.add(AlarmLevel(AlarmLevel.WARNING, 'test_warning'))
 
         return result
 
@@ -52,21 +51,22 @@ def test_analysis_plugin_abstract():
     assert analysis._ntc_templates.get(Huawei)
 
 
-def init_analysis_plugin(shared_datadir) -> Cluster:
+def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list = []) -> Cluster:
     """通用初始化Cluster函数"""
+    file = file or 'B_FOO_BAR_AR01_21.1.1.1.diag'
+
     input_plugin = InputPluginWithSmartOne
     parse_plugin = ParsePluginWithNtcTemplates
-    analysis_plugin = [TestAnalysisPlugin]
+    analysis_plugins = analysis_plugins or [TestAnalysisPlugin]
     plugin_manager = PluginManager(
         input_plugin=input_plugin,
         parse_plugin=parse_plugin,
-        analysis_plugin=analysis_plugin
+        analysis_plugin=analysis_plugins
     )
 
     cluster = Cluster()
     cluster.plugin_manager = plugin_manager
-    cluster.input(shared_datadir /
-                  'B_FOO_BAR_AR01_21.1.1.1.diag')
+    cluster.input(shared_datadir / file)
     cluster.parse()
     cluster.analysis()
     return cluster
@@ -86,6 +86,16 @@ def test_analysis_plugin_reslut(shared_datadir):
     """测试AnalysisResult类"""
     cluster = init_analysis_plugin(shared_datadir)
     result = cluster.devices[0]._analysis_result
-    assert result[0].level == Level.Focus
+    assert result[0].level == AlarmLevel.FOCUS
     assert result[0].message == 'test_focus'
     assert result[0].plugin_name == 'TestAnalysisPlugin'
+
+
+def test_analysis_plugin_with_power(shared_datadir):
+    """测试AnalysisPluginWithPower插件，能够正确识别Power异常信息"""
+    from net_inspect.plugins.analysis_plugin_with_power import AnalysisPluginWithPower
+    cluster = init_analysis_plugin(
+        shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPower])
+
+    device = cluster.devices[0]
+    assert len(device._analysis_result) > 0

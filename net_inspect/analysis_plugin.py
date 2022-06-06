@@ -3,7 +3,7 @@ import abc
 from typing import Dict, TYPE_CHECKING, List
 
 from . import exception
-from .domain import AnalysisPluginAbstract, AnalysisResult
+from .domain import AnalysisPluginAbstract, AnalysisResult, AlarmLevel
 from .logger import log
 
 if TYPE_CHECKING:
@@ -13,17 +13,7 @@ TEMPLATE = str
 VALUE = str
 
 
-class Level:
-    Normal = 0
-    Focus = 1
-    Warning = 2
-
-
-class AlarmLevel:
-    def __init__(self, level: int, message: str = '', plugin_name: str = ''):
-        self._level = level
-        self.message = message
-        self.plugin_name = plugin_name
+class AlarmLevel(AlarmLevel):
 
     @property
     def level(self):
@@ -31,7 +21,7 @@ class AlarmLevel:
 
     @level.setter
     def level(self, level: int):
-        if level < Level.Normal or level > Level.Warning:
+        if level < AlarmLevel.NORMAL or level > AlarmLevel.WARNING:
             raise exception.AnalysisLevelError
         self._level = level
 
@@ -90,6 +80,9 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
     @abc.abstractmethod
     def __init__(self, ntc_templates:
                  Dict[DefaultVendor, Dict[TEMPLATE, List[VALUE]]]):
+        """
+        :param ntc_templates: 模板字典 
+        """
         self._ntc_templates = ntc_templates
         self.template = TemplateValue()
 
@@ -121,7 +114,18 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
     def run(self, device: Device) -> AnalysisResult:
         self._init_templates_value(device)
         self.template._vendor_platform = device.vendor.PLATFORM
-        result = self.main(device.vendor, self.template, AnalysisResult())
+        result = AnalysisResult()
+        try:
+            result = self.main(device.vendor, self.template, result)
+
+            # 当没有分析结果的时候，说明没有问题，给出一个正常级别提示
+            if not result._result:
+                result.add_normal()
+
+        # 如果分析模板不支持厂商，则给出一个关注级别的提示
+        except exception.AnalysisVendorNotSupport:
+            result.add_focus('{} not support this vendor'.format(
+                self.__class__.__name__))
 
         for alarm in result:  # 设置告警所属插件名称
             if not alarm.plugin_name:

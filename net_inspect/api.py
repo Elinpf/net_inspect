@@ -22,6 +22,7 @@ class NetInspect:
 
         self._plugin_manager.parse_plugin = self._plugins.get_parse_plugin(
             pystr.default_parse_plugin)
+        self._plugin_manager.analysis_plugin = self._plugins.get_analysis_plugin_list()
         self.cluster._plugin_manager = self._plugin_manager
 
     def get_all_plugins(self) -> Dict[str, Dict[str, Type[PluginAbstract]]]:
@@ -91,6 +92,11 @@ class NetInspect:
         self.cluster.parse()
         return self.cluster
 
+    def run_analysis(self) -> Cluster:
+        """运行分析插件"""
+        self.cluster.analysis()
+        return self.cluster
+
     def run_output(self, file_path: str, params: Optional[Dict[str, str]] = None):
         """运行输出插件"""
         self.cluster.output(file_path, params)
@@ -102,6 +108,7 @@ class NetInspect:
         :param output_plugin_params: 输出插件参数"""
         self.run_input(path)
         self.run_parse()
+        self.run_analysis()
         self.run_output(output_file_path, output_plugin_params)
 
         return self.cluster

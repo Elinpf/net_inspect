@@ -28,3 +28,7 @@ class CommandNotFoundError(AnalysisPluginError):
 
 class AnalysisTemplateError(AnalysisPluginError):
     ...
+
+
+class AnalysisVendorNotSupport(AnalysisPluginError):
+    ...
