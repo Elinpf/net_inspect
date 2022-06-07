@@ -430,10 +430,10 @@ class AnalysisResult:
         :return: AlarmLevel
 
         ``plugin_name`` 可以写的形式：
-        - 完整插件名称 (e.g 'AnalysisPluginWithPower)
-        - 下划线 (e.g 'analysis_plugin_with_power')
-        - 全小写 (e.g 'analysispluginwithpower')
-        - 简写 (e.g 'power')
+        - 完整插件名称 (e.g 'AnalysisPluginWithPowerStatus)
+        - 下划线 (e.g 'analysis_plugin_with_power_status')
+        - 全小写 (e.g 'analysispluginwithpowerstatus')
+        - 简写 (e.g 'power status')
         """
         for alarm in self._result:
             if self._short(alarm.plugin_name) == self._short(plugin_name):
@@ -445,6 +445,7 @@ class AnalysisResult:
         e.g: AnalysisPluginWithPower -> power
         """
         name = plugin_name.lower()
+        name = name.replace(' ', '')
         name = name.replace('_', '')
         name = name.replace('analysispluginwith', '')
         return name
