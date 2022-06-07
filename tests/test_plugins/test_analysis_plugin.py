@@ -9,7 +9,7 @@ from net_inspect.analysis_plugin import (
     AnalysisResult,
     AlarmLevel
 )
-from net_inspect.plugins.analysis_plugin_with_power import AnalysisPluginWithPower
+from net_inspect.plugins.analysis_plugin_with_power_status import AnalysisPluginWithPowerStatus
 
 
 class AnalysisPluginWithTest(AnalysisPluginAbc):
@@ -95,7 +95,7 @@ def test_analysis_plugin_reslut(shared_datadir):
 def test_analysis_plugin_with_power(shared_datadir):
     """测试AnalysisPluginWithPower插件，能够正确识别Power异常信息"""
     cluster = init_analysis_plugin(
-        shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPower])
+        shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPowerStatus])
 
     device = cluster.devices[0]
     assert len(device._analysis_result) > 0
@@ -104,13 +104,14 @@ def test_analysis_plugin_with_power(shared_datadir):
 def test_analysis_result_get_function(shared_datadir):
     """测试AnalysisResult类的get()"""
     cluster = init_analysis_plugin(
-        shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPower])
+        shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPowerStatus])
     result = cluster.devices[0].analysis_result
     assert result.get(
-        'AnalysisPluginWithPower').plugin_name == 'AnalysisPluginWithPower'
+        'AnalysisPluginWithPowerStatus').plugin_name == 'AnalysisPluginWithPowerStatus'
 
     assert result.get(
-        'analysis_plugin_with_power').plugin_name == 'AnalysisPluginWithPower'
+        'analysis_plugin_with_power_status').plugin_name == 'AnalysisPluginWithPowerStatus'
     assert result.get(
-        'analysispluginwithpower').plugin_name == 'AnalysisPluginWithPower'
-    assert result.get('power').plugin_name == 'AnalysisPluginWithPower'
+        'analysispluginwithpowerstatus').plugin_name == 'AnalysisPluginWithPowerStatus'
+    assert result.get(
+        'power status').plugin_name == 'AnalysisPluginWithPowerStatus'

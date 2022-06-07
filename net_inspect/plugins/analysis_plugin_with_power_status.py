@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ..domain import AnalysisResult
 
 
-class AnalysisPluginWithPower(AnalysisPluginAbc):
+class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
     """检查电源状态是否正常"""
 
     def __init__(self):
