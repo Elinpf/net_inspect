@@ -9,9 +9,10 @@ from net_inspect.analysis_plugin import (
     AnalysisResult,
     AlarmLevel
 )
+from net_inspect.plugins.analysis_plugin_with_power import AnalysisPluginWithPower
 
 
-class TestAnalysisPlugin(AnalysisPluginAbc):
+class AnalysisPluginWithTest(AnalysisPluginAbc):
     def __init__(self):
         super().__init__(
             ntc_templates={
@@ -47,7 +48,7 @@ class TestAnalysisPlugin(AnalysisPluginAbc):
 
 def test_analysis_plugin_abstract():
     """测试抽象类"""
-    analysis = TestAnalysisPlugin()
+    analysis = AnalysisPluginWithTest()
     assert analysis._ntc_templates.get(Huawei)
 
 
@@ -57,7 +58,7 @@ def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list 
 
     input_plugin = InputPluginWithSmartOne
     parse_plugin = ParsePluginWithNtcTemplates
-    analysis_plugins = analysis_plugins or [TestAnalysisPlugin]
+    analysis_plugins = analysis_plugins or [AnalysisPluginWithTest]
     plugin_manager = PluginManager(
         input_plugin=input_plugin,
         parse_plugin=parse_plugin,
@@ -88,14 +89,28 @@ def test_analysis_plugin_reslut(shared_datadir):
     result = cluster.devices[0]._analysis_result
     assert result[0].level == AlarmLevel.FOCUS
     assert result[0].message == 'test_focus'
-    assert result[0].plugin_name == 'TestAnalysisPlugin'
+    assert result[0].plugin_name == 'AnalysisPluginWithTest'
 
 
 def test_analysis_plugin_with_power(shared_datadir):
     """测试AnalysisPluginWithPower插件，能够正确识别Power异常信息"""
-    from net_inspect.plugins.analysis_plugin_with_power import AnalysisPluginWithPower
     cluster = init_analysis_plugin(
         shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPower])
 
     device = cluster.devices[0]
     assert len(device._analysis_result) > 0
+
+
+def test_analysis_result_get_function(shared_datadir):
+    """测试AnalysisResult类的get()"""
+    cluster = init_analysis_plugin(
+        shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPower])
+    result = cluster.devices[0].analysis_result
+    assert result.get(
+        'AnalysisPluginWithPower').plugin_name == 'AnalysisPluginWithPower'
+
+    assert result.get(
+        'analysis_plugin_with_power').plugin_name == 'AnalysisPluginWithPower'
+    assert result.get(
+        'analysispluginwithpower').plugin_name == 'AnalysisPluginWithPower'
+    assert result.get('power').plugin_name == 'AnalysisPluginWithPower'

@@ -425,11 +425,29 @@ class AnalysisResult:
         self.add(AlarmLevel(AlarmLevel.WARNING, message))
 
     def get(self, plugin_name: str) -> AlarmLevel | None:
-        """获取指定插件的结果"""
+        """获取指定插件的结果
+        :param plugin_name: 插件名称
+        :return: AlarmLevel
+
+        ``plugin_name`` 可以写的形式：
+        - 完整插件名称 (e.g 'AnalysisPluginWithPower)
+        - 下划线 (e.g 'analysis_plugin_with_power')
+        - 全小写 (e.g 'analysispluginwithpower')
+        - 简写 (e.g 'power')
+        """
         for alarm in self._result:
-            if alarm.plugin_name == plugin_name:
+            if self._short(alarm.plugin_name) == self._short(plugin_name):
                 return alarm
         return None
+
+    def _short(self, plugin_name: str) -> str:
+        """获取指定插件的简写
+        e.g: AnalysisPluginWithPower -> power
+        """
+        name = plugin_name.lower()
+        name = name.replace('_', '')
+        name = name.replace('analysispluginwith', '')
+        return name
 
     def __getitem__(self, index) -> AlarmLevel:
         return self._result[index]
