@@ -68,7 +68,10 @@ class NetInspect:
                     input_plugin: Type[InputPluginAbstract] | str,
                     output_plugin: Type[OutputPluginAbstract] | str,
                     parse_plugin: Optional[Type[ParsePluginAbstract]] | str = None):
-        """设置插件"""
+        """设置插件
+        :param input_plugin: 输入插件
+        :param output_plugin: 输出插件
+        :param parse_plugin: 解析插件"""
         self.set_input_plugin(input_plugin)
         self.set_output_plugin(output_plugin)
         if parse_plugin:
@@ -105,7 +108,9 @@ class NetInspect:
         """运行输入解析输出插件
         :param path: 文件或者目录路径
         :param output_file_path: 输出文件路径
-        :param output_plugin_params: 输出插件参数"""
+        :param output_plugin_params: 输出插件参数
+
+        :return Cluster: 设备列表"""
         self.run_input(path)
         self.run_parse()
         self.run_analysis()
