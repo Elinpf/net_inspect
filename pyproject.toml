@@ -7,6 +7,7 @@ authors = ["Elin <365433079@qq.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 rich = "^12.4.1"
+ntc_templates_elinpf = "^3.1.0"
 textfsm = "^1.1.2"
 python-Levenshtein-wheels = "^0.13.2"
 thefuzz = "^0.19.0"
