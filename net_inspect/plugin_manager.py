@@ -1,14 +1,9 @@
 from __future__ import annotations
 import os
-from typing import TYPE_CHECKING, Dict, List, Tuple
-from textfsm import clitable
+from typing import Dict, List, Tuple
 
-from .domain import PluginManagerAbc, DeviceInfo, ParsePluginAbstract
-from .data import pypath, pyoption
-from .logger import log
-
-if TYPE_CHECKING:
-    from .domain import Cmd
+from .domain import PluginManagerAbc, DeviceInfo
+from .data import pyoption
 
 
 def _textfsm_reslut_to_dict(header: list, reslut: list) -> List[Dict[str, str]]:
@@ -18,18 +13,6 @@ def _textfsm_reslut_to_dict(header: list, reslut: list) -> List[Dict[str, str]]:
         temp_dict = {}
         for index, element in enumerate(row):
             temp_dict[header[index].lower()] = element
-        objs.append(temp_dict)
-
-    return objs
-
-
-def _clitable_to_dict(cli_table: clitable.CliTable) -> List[Dict[str, str]]:
-    """将 TextFSM cli_table 转化成 dict"""
-    objs = []
-    for row in cli_table:
-        temp_dict = {}
-        for index, element in enumerate(row):
-            temp_dict[cli_table.header[index].lower()] = element
         objs.append(temp_dict)
 
     return objs
@@ -53,20 +36,3 @@ class PluginManager(PluginManagerAbc):
                     devices.append(self.input(file_path))
 
         return devices
-
-
-class ParsePluginWithTextFSM(ParsePluginAbstract):
-    def _run(self, cmd: Cmd, platform: str) -> Dict[str, str]:
-        """对命令进行解析
-        :param cmd: 命令对象
-        :param platform: 命令所属平台, e.g. huawei_os"""
-        cli_table = clitable.CliTable('index', pypath.templates_dir_path)
-        attrs = {"Command": cmd.command, "Platform": platform}
-        try:
-            cli_table.ParseCmd(cmd.content, attrs)
-            stuctured_data = _clitable_to_dict(cli_table)
-        except:
-            log.error(f'无法解析在 {platform} 平台的 {cmd.command} 命令')
-            return {}
-
-        return stuctured_data
