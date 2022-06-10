@@ -66,3 +66,10 @@ class Cisco(DefaultVendor):
     PLATFORM = 'cisco_ios'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
     KEYWORD_REG = r'Cisco IOS Software'
+
+
+class Maipu(DefaultVendor):
+
+    PLATFORM = 'maipu_mypower'
+    VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
+    KEYWORD_REG = r'MyPower \(R\) Operating System Software'
