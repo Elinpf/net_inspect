@@ -9,6 +9,7 @@ from net_inspect.analysis_plugin import (
     AnalysisResult,
     AlarmLevel
 )
+import net_inspect.exception as exception
 from net_inspect.plugins.analysis_plugin_with_power_status import AnalysisPluginWithPowerStatus
 
 
@@ -31,13 +32,13 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
         assert template['huawei_vrp_display_version.textfsm'][0]['vrp_version'] == '8.180'
         assert template['display version'][0]['vrp_version'] == '8.180'
 
-        with pytest.raises(KeyError):  # 不支持简写
+        with pytest.raises(exception.NtcTemplateNotDefined):  # 不支持简写
             template['dis ver']
 
         assert template['display version'][0].get(
             'model') is None  # 不在需求范围内值会被排除
 
-        with pytest.raises(KeyError):  # 测试报错
+        with pytest.raises(exception.NtcTemplateNotDefined):  # 测试报错
             template['display cpu']
 
         result.add(AlarmLevel(AlarmLevel.FOCUS, 'test_focus'))

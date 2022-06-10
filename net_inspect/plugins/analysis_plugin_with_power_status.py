@@ -5,7 +5,6 @@ import re
 
 from ..analysis_plugin import AnalysisPluginAbc
 from ..vendor import Cisco, Huawei
-from ..exception import AnalysisVendorNotSupport
 
 if TYPE_CHECKING:
     from ..domain import AnalysisResult
@@ -17,12 +16,14 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
     def __init__(self):
         ntc_templates = {
             Huawei: {'huawei_vrp_display_power.textfsm': [
-                'MODE', 'ID', 'PRESENT', 'STATE']}
+                'MODE', 'ID', 'PRESENT', 'STATE']},
+            Cisco: {'cisco_ios_show_power_status.textfsm': [
+                'model', 'status', 'fan_sensor', 'input_status']}
         }
         super().__init__(ntc_templates)
 
     def main(self, vendor, template, result) -> AnalysisResult:
-        if vendor == Huawei:
+        if vendor is Huawei:
             power = template['display power']
             for row in power:
                 # 当没有电源插入的时候，不关注
@@ -32,7 +33,10 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
                     result.add_warning(
                         f'设备 {row["id"]} 电源状态异常')
 
-        else:
-            raise AnalysisVendorNotSupport(vendor)
+        if vendor is Cisco:
+            for row in template['show power status']:
+                if row['status'] != 'good' or row['input_status'] != 'good':
+                    result.add_warning(
+                        f'设备 {row["model"]} 电源状态异常')
 
         return result

@@ -7,6 +7,7 @@ from .bootstrap import bootstrap
 from .plugin_manager import PluginManager
 from .domain import Cluster
 from .data import pystr
+from .logger import log
 
 if TYPE_CHECKING:
     from .domain import (PluginAbstract, InputPluginAbstract,
@@ -24,6 +25,10 @@ class NetInspect:
             pystr.default_parse_plugin)
         self._plugin_manager.analysis_plugin = self._plugins.get_analysis_plugin_list()
         self.cluster._plugin_manager = self._plugin_manager
+
+    def set_log_level(self, level: int | str):
+        """设置日志等级"""
+        log.setLevel(level)
 
     def get_all_plugins(self) -> Dict[str, Dict[str, Type[PluginAbstract]]]:
         """获取所有插件"""

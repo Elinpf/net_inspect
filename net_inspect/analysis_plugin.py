@@ -34,6 +34,8 @@ class TemplateValue:
     def __getitem__(self, name: TEMPLATE) -> List[Dict[VALUE, str]]:
         """获取模板值"""
         name = self._from_command_to_template_file(name)
+        if not name in self._value_store:
+            raise exception.NtcTemplateNotDefined(name)
         return self._value_store[name]
 
     def update(self, template: TEMPLATE, value_list: List[Dict[VALUE, str]]):
@@ -89,18 +91,24 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
     def _init_templates_value(self, device: Device):
         """初始化模板值
         搜索Device中的cmd，将需要用到的模板和值取出来放到self.template中"""
+
+        # 首先判断分析模块是否支持该厂商
+        if device.vendor not in self._ntc_templates.keys():
+            raise exception.AnalysisVendorNotSupport
+
         for vendor, templates_dict in self._ntc_templates.items():
             if vendor.PLATFORM == device.vendor.PLATFORM:  # 判断是否为同一个平台
                 for template_file, values in templates_dict.items():
                     # 当结尾不是.textfsm时，报错
                     if not template_file.endswith('.textfsm'):
-                        raise exception.AnalysisTemplateError
+                        raise exception.AnalysisTemplateNameError
 
                     cmd = self.template.get_command(  # 通过模板文件名获得命令
                         vendor.PLATFORM, template_file)
                     cmd_find = device.search_cmd(cmd)  # 搜索命令
                     if cmd_find is None:
-                        log.debug(f'{device.device_info.name} 没有找到 {cmd} 命令')
+                        log.debug(
+                            str(f'{device.device_info.name} 没有找到 {cmd} 命令'))
                         continue
 
                     temp_list = []
@@ -112,10 +120,10 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                     self.template.update(template_file, temp_list)
 
     def run(self, device: Device) -> AnalysisResult:
-        self._init_templates_value(device)
-        self.template._vendor_platform = device.vendor.PLATFORM
-        result = AnalysisResult()
         try:
+            result = AnalysisResult()
+            self._init_templates_value(device)
+            self.template._vendor_platform = device.vendor.PLATFORM
             result = self.main(device.vendor, self.template, result)
 
             # 当没有分析结果的时候，说明没有问题，给出一个正常级别提示
@@ -126,6 +134,9 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
         except exception.AnalysisVendorNotSupport:
             result.add_focus('{} not support this vendor'.format(
                 self.__class__.__name__))
+        except exception.NtcTemplateNotDefined:
+            # log.debug(f'{device.device_info.name} 没有找到模板')
+            ...
 
         for alarm in result:  # 设置告警所属插件名称
             if not alarm.plugin_name:

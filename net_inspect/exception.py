@@ -26,9 +26,13 @@ class CommandNotFoundError(AnalysisPluginError):
     ...
 
 
-class AnalysisTemplateError(AnalysisPluginError):
+class AnalysisTemplateNameError(AnalysisPluginError):
     ...
 
 
 class AnalysisVendorNotSupport(AnalysisPluginError):
+    ...
+
+
+class NtcTemplateNotDefined(AnalysisPluginError):
     ...

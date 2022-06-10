@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import abc
+import re
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
-
-from thefuzz import fuzz, process
 
 from . import exception
 from .logger import log
@@ -178,24 +177,50 @@ class Device:
 
     def analysis(self):
         """对设备进行分析, 需要在parse之后"""
-        # TODO 解析完成后，对结果进行存储，AnalysisResult
         res = self._plugin_manager.analysis(self)
         self._analysis_result.append(res)
 
     def search_cmd(self, cmd_name: str) -> Cmd | None:
-        """使用模糊查询
+        """查找命令
 
-        :param cmd_name: 命令名称
+        :param cmd_name: 命令名
         :return: 命令"""
-        search_result = process.extract(cmd_name, self.cmds.keys(
-        ), scorer=fuzz.token_set_ratio)
-        cmd_len = len(cmd_name.strip().split(' '))
+        res = None  # type: Tuple[Cmd, int]
+        cmd_name_split = cmd_name.split()
+        cmd_name_len = len(cmd_name_split)
 
-        for cmd, score in search_result:  # 判断命令的长度是否符合
-            if score >= 60 and len(cmd.split(' ')) == cmd_len:
-                return self.cmds[cmd]
+        for command in self.cmds.keys():
 
-        return None
+            score = 0  # 匹配得分
+            is_match = True  # 是否匹配的标签
+
+            # 切分命令
+            command_split = command.split()
+            if not len(command_split) == cmd_name_len:  # 当命令长度不一致就跳过
+                continue
+
+            # 对每个单词进行匹配并打分
+            for i, each_command in enumerate(command_split):
+                if is_match == False:
+                    break
+                # 排序长命令与短的命令
+                if len(each_command) > len(cmd_name_split[i]):
+                    long_each_cmd, short_each_cmd = each_command, cmd_name_split[i]
+                else:
+                    long_each_cmd, short_each_cmd = cmd_name_split[i], each_command
+
+                # 匹配单词
+                if not re.match(short_each_cmd, long_each_cmd):
+                    is_match = False
+                    break
+                score += len(short_each_cmd)
+
+            if is_match:
+                # 比较得分, 取最高的
+                if (not res) or score > res[1]:
+                    res = (self.cmds[command], score)
+
+        return res[0] if res else None
 
 
 class Cmd:

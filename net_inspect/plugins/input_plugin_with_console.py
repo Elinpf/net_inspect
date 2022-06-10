@@ -30,7 +30,7 @@ class InputPluginWithConsole(InputPluginAbstract):
                 if content and command:  # 如果有内容，且有命令，则保存
                     cmd_dict[command] = '\n'.join(content)
 
-                command = match.group('cmd')
+                command = match.group('cmd').strip()
                 content.clear()
                 continue
 
