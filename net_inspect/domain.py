@@ -500,7 +500,7 @@ class InputPluginAbstract(PluginAbstract):
     def run(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
         """对单个文件进行设备输入"""
 
-        with open(file_path, 'r') as f:
+        with open(file_path, 'r', encoding='gb18030', errors='ignore') as f:
             stream = f.read()
         return self.main(file_path, stream)
 
