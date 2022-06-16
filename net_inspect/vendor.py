@@ -73,3 +73,10 @@ class Maipu(DefaultVendor):
     PLATFORM = 'maipu_mypower'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
     KEYWORD_REG = r'MyPower \(R\) Operating System Software'
+
+
+class Ruijie(DefaultVendor):
+
+    PLATFORM = 'ruijie_os'
+    VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
+    KEYWORD_REG = r'Ruijie Networks'
