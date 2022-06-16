@@ -97,7 +97,7 @@ class DeviceList(list):
 
     def parse(self):
         """递归对每个设备的命令进行解析"""
-        for device in self._devices:  # type: Device
+        for device in self._devices:
             device.parse()
 
     def analysis(self):
