@@ -4,6 +4,7 @@ from typing import Dict, TYPE_CHECKING, List
 
 from . import exception
 from .domain import AnalysisPluginAbstract, AnalysisResult, AlarmLevel
+from .func import get_command_from_textfsm
 from .logger import log
 
 if TYPE_CHECKING:
@@ -41,21 +42,6 @@ class TemplateValue:
     def update(self, template: TEMPLATE, value_list: List[Dict[VALUE, str]]):
         """存储模板和值"""
         self._value_store[template] = value_list
-
-    def get_command(self, vendor_platform: str, template: TEMPLATE) -> str:
-        """从模板文件名中获得命令
-        :param vendor_platform: 平台名称
-        :param template: 模板文件名
-
-        :return: 命令
-
-        >>> self.get_command('huawei_os', 'huawei_os_display_interface_status.textfsm')
-        'display interface status'
-        """
-
-        template = template.replace(vendor_platform + '_', '')
-        template = template.replace('.textfsm', '')
-        return template.replace('_', ' ')
 
     def _from_command_to_template_file(self, command: str) -> TEMPLATE:
         """将命令还原为模板文件名
@@ -103,7 +89,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                     if not template_file.endswith('.textfsm'):
                         raise exception.AnalysisTemplateNameError
 
-                    cmd = self.template.get_command(  # 通过模板文件名获得命令
+                    cmd = get_command_from_textfsm(  # 通过模板文件名获得命令
                         vendor.PLATFORM, template_file)
                     cmd_find = device.search_cmd(cmd)  # 搜索命令
                     if cmd_find is None:
