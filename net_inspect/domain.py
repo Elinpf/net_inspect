@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import abc
-import re
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
 
@@ -144,6 +143,17 @@ class Device:
     def analysis_result(self) -> AnalysisResult:
         return self._analysis_result
 
+    def parse_result(self, cmd: str) -> List[dict] | None:
+        """解析命令结果
+
+        :param cmd: 命令
+        :return: 命令结果"""
+        command = self.search_cmd(cmd)
+        if not command:
+            return None
+
+        return command._parse_result
+
     def save_to_cmds(self, cmd_contents: Dict[str, str]):
         """将分割好的命令字典保存到设备的命令列表中"""
         for command, content in cmd_contents.items():
@@ -210,7 +220,7 @@ class Device:
                     long_each_cmd, short_each_cmd = cmd_name_split[i], each_command
 
                 # 匹配单词
-                if not re.match(short_each_cmd, long_each_cmd):
+                if not long_each_cmd.startswith(short_each_cmd):
                     is_match = False
                     break
                 score += len(short_each_cmd)
