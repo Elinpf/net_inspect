@@ -18,7 +18,7 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
             Huawei: {'huawei_vrp_display_power.textfsm': [
                 'MODE', 'ID', 'PRESENT', 'STATE']},
             Cisco: {'cisco_ios_show_power_status.textfsm': [
-                'model', 'status', 'fan_sensor', 'input_status']}
+                'ps', 'model', 'status', 'fan_sensor']}
         }
         super().__init__(ntc_templates)
 
@@ -35,8 +35,8 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
 
         if vendor is Cisco:
             for row in template['show power status']:
-                if row['status'] != 'good' or row['input_status'] != 'good':
+                if row['status'] != 'good':
                     result.add_warning(
-                        f'设备 {row["model"]} 电源状态异常')
+                        f'{row["ps"]}: {row["model"]} 电源状态异常')
 
         return result

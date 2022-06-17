@@ -99,9 +99,13 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
 
                     temp_list = []
                     for row in cmd_find._parse_result:  # 将需要的键值取出来
-                        _ = {value.lower(): row[value.lower()]
-                             for value in values}
-                        temp_list.append(_)
+                        try:
+                            _ = {value.lower(): row[value.lower()]
+                                 for value in values}
+                            temp_list.append(_)
+                        except KeyError as e:
+                            raise KeyError(
+                                f'{self.__class__.__name__}模板中的键值{str(e)}不存在')
 
                     self.template.update(template_file, temp_list)
 

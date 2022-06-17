@@ -56,12 +56,18 @@ def test_raw_against_mock(load_analysis_test):
 
 
 def raw_analysis_test(raw_file: str) -> Tuple[Dict[str, str], Dict[str, str]]:
+    """创建设备，设置分析插件，运行分析，返回分析结果和参考结果"""
+    device = analysis_device_with_raw_file(raw_file)
+    analysis_result_load(device, raw_file)
+
+
+def analysis_device_with_raw_file(raw_file: str) -> Device:
     plugin_name = raw_file.split(os.path.sep)[2]
     device = set_device(raw_file)
     set_analysis_plugin(device, plugin_name)
     device.parse()
     device.analysis()
-    analysis_result_load(device, raw_file)
+    return device
 
 
 def set_device(raw_file: str) -> Device:
@@ -78,6 +84,7 @@ def set_device(raw_file: str) -> Device:
             'No vendor class found for raw file: {}'.format(raw_file))
 
     device = Device()
+    device._vendor = vendor_class
     device._plugin_manager = PluginManager(
         input_plugin=InputPluginWithTestRawFile, parse_plugin=ParsePluginWithNtcTemplates)
     cmd_contents_and_deviceinfo = device._plugin_manager.input(raw_file)
