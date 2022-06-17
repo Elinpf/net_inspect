@@ -1,0 +1,6 @@
+---
+analysis_sample:
+  - level: "2"
+    message: "PS2: PWR-C45-4200ACV 电源状态异常"
+  - level: "2"
+    message: "PS2-1: PWR-C45-4200ACV 电源状态异常"
