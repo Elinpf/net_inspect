@@ -1,8 +1,6 @@
-from ast import parse
 import glob
 import os
 import re
-from turtle import st
 from typing import List, Tuple, Dict
 import pytest
 import yaml
@@ -54,11 +52,15 @@ def test_raw_against_mock(load_analysis_test):
     """Test that the raw file is parsed correctly."""
     processed, reference = raw_analysis_test(load_analysis_test)
 
+    correct_number_of_entries_test(processed, reference)
+    all_entries_have_the_same_keys_test(processed, reference)
+    correct_data_in_entries_test(processed, reference)
+
 
 def raw_analysis_test(raw_file: str) -> Tuple[Dict[str, str], Dict[str, str]]:
     """创建设备，设置分析插件，运行分析，返回分析结果和参考结果"""
     device = analysis_device_with_raw_file(raw_file)
-    analysis_result_load(device, raw_file)
+    return analysis_result_load(device, raw_file)
 
 
 def analysis_device_with_raw_file(raw_file: str) -> Device:
@@ -104,7 +106,7 @@ def set_analysis_plugin(device: Device, plugin_name: str):
 def analysis_result_load(device: Device, raw_file: str) -> Tuple[dict, dict]:
     yml_file = raw_file.replace('.raw', '.yml')
     structured = transform_to_dict(device.analysis_result)
-    with open(yml_file, 'r') as data:
+    with open(yml_file, 'r', encoding='utf-8') as data:
         reference = yaml.safe_load(data.read())
     return structured, reference['analysis_sample']
 
@@ -115,3 +117,43 @@ def transform_to_dict(analysis_result: AnalysisResult) -> List[dict]:
     for result in analysis_result:
         result_dict.append({'level': result.level, 'message': result.message})
     return result_dict
+
+
+def correct_number_of_entries_test(processed, reference):
+    """Test that the number of entries returned are the same as the control.
+
+    This will create a test for each of the files in the test_collection
+    variable.
+    """
+    assert len(processed) == len(reference)
+
+
+def all_entries_have_the_same_keys_test(processed, reference):
+    """Test that the keys of the returned data are the same as the control.
+
+    This will create a test for each of the files in the test_collection
+    variable.
+    """
+    for i in range(len(processed)):
+        proc = set(processed[i].keys())
+        ref = set(reference[i].keys())
+        diff = proc.symmetric_difference(ref)
+        assert not diff, "Key diffs: " + ", ".join(diff)
+
+
+def correct_data_in_entries_test(processed, reference):
+    """Test that the actual data in each entry is the same as the control.
+
+    This will create a test for each of the files in the test_collection
+    variable.
+    """
+    # Can be uncommented if we don't care that the parsed data isn't
+    # in the same order as the raw data
+    # reference = sorted(reference)
+    # processed = sorted(processed)
+
+    for i in range(len(reference)):
+        for key in reference[i].keys():
+            assert str(processed[i][key]) == reference[i][key], "entry #{0}, key: {1}".format(
+                i, key
+            )

@@ -147,7 +147,8 @@ def main(plugin_name: str, vendor_platform: str = '', index: int = 0) -> List[Tu
 
 
 if __name__ == '__main__':
-    command = "-n 'power status' -y"
+    command = ''
+    # command = "-n 'power status' -y"
     args = parse_args(command)
     plugin_name = long_plugin_name(args.name)
 
