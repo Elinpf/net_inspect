@@ -420,14 +420,17 @@ class AlarmLevel:
             raise exception.AnalysisLevelError
         self._level = level
 
+    @property
     def is_warning(self) -> bool:
         """是否为警告级别"""
         return self._level == AlarmLevel.WARNING
 
+    @property
     def is_focus(self) -> bool:
         """是否为关注级别"""
         return self._level >= AlarmLevel.FOCUS
 
+    @property
     def is_normal(self) -> bool:
         """是否为正常级别"""
         return self._level == AlarmLevel.NORMAL
