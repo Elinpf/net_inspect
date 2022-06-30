@@ -27,7 +27,7 @@ class CommandNotFoundError(AnalysisPluginError):
 
 
 class AnalysisTemplateNameError(AnalysisPluginError):
-    ...
+    """模板的名称不存在"""
 
 
 class AnalysisVendorNotSupport(AnalysisPluginError):

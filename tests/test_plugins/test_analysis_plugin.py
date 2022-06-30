@@ -1,5 +1,5 @@
 import pytest
-from net_inspect.domain import Device, Cluster
+from net_inspect.domain import Cluster
 from net_inspect.vendor import Huawei
 from net_inspect.plugins.parse_plugin_with_ntc_templates import ParsePluginWithNtcTemplates
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
@@ -7,28 +7,19 @@ from net_inspect.plugin_manager import PluginManager
 from net_inspect.analysis_plugin import (
     AnalysisPluginAbc,
     AnalysisResult,
-    AlarmLevel
+    TemplateValue,
+    AlarmLevel,
+    analysis
 )
 import net_inspect.exception as exception
 from net_inspect.plugins.analysis_plugin_with_power_status import AnalysisPluginWithPowerStatus
 
 
 class AnalysisPluginWithTest(AnalysisPluginAbc):
-    def __init__(self):
-        super().__init__(
-            ntc_templates={
-                Huawei: {
-                    'huawei_vrp_display_version.textfsm':
-                        [
-                            'VRP_VERSION',
-                            'PRODUCT_VERSION'
-                        ]
-                }
-            }
-        )
 
-    def main(self, vendor, template, result) -> AnalysisResult:
-        assert vendor == Huawei
+    @analysis.vendor(Huawei)
+    @analysis.template_value('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
+    def huawei(self, template: TemplateValue, result: AnalysisResult):
         assert template['huawei_vrp_display_version.textfsm'][0]['vrp_version'] == '8.180'
         assert template['display version'][0]['vrp_version'] == '8.180'
 
@@ -43,14 +34,6 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
 
         result.add(AlarmLevel(AlarmLevel.FOCUS, 'test_focus'))
         result.add(AlarmLevel(AlarmLevel.WARNING, 'test_warning'))
-
-        return result
-
-
-def test_analysis_plugin_abstract():
-    """测试抽象类"""
-    analysis = AnalysisPluginWithTest()
-    assert analysis._ntc_templates.get(Huawei)
 
 
 def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list = []) -> Cluster:

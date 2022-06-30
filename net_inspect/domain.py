@@ -501,11 +501,8 @@ class AnalysisResult:
 class PluginAbstract(abc.ABC):
     """插件的抽象"""
 
-    def run(self):
-        return self.main()
-
     @abc.abstractmethod
-    def main(self):
+    def run(self):
         raise NotImplementedError
 
 
@@ -552,8 +549,4 @@ class AnalysisPluginAbstract(PluginAbstract):
 
     @abc.abstractmethod
     def run(self, device: Device) -> AnalysisResult:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def main(self):
         raise NotImplementedError
