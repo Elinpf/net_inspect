@@ -19,7 +19,7 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
 
     @analysis.vendor(Huawei)
     @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
-    def huawei(self, template: TemplateInfo, result: AnalysisResult):
+    def huawei(template: TemplateInfo, result: AnalysisResult):
         """
         Test for huawei version status
         """

@@ -16,7 +16,7 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
 
     @analysis.vendor(Huawei)
     @analysis.template_key('huawei_vrp_display_power.textfsm', ['MODE', 'ID', 'PRESENT', 'STATE'])
-    def huawei(self, template: TemplateInfo, result: AnalysisResult):
+    def huawei(template: TemplateInfo, result: AnalysisResult):
         power = template['display power']
         for row in power:
             # 当没有电源插入的时候，不关注
@@ -28,7 +28,7 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
 
     @analysis.vendor(Cisco)
     @analysis.template_key('cisco_ios_show_power_status.textfsm', ['ps', 'model', 'status', 'fan_sensor'])
-    def cisco(self, template: TemplateInfo, result: AnalysisResult):
+    def cisco(template: TemplateInfo, result: AnalysisResult):
         for row in template['show power status']:
             if row['status'] != 'good':
                 result.add_warning(

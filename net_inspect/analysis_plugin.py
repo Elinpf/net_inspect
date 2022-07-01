@@ -232,7 +232,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
 
                 each_result = AnalysisResult()
 
-                func(self, template_info, each_result)
+                func(template_info, each_result)
 
                 # 当没有分析结果的时候，说明没有问题，给出一个正常级别提示
                 if not each_result._result:
