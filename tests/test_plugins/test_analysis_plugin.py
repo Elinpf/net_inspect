@@ -7,7 +7,7 @@ from net_inspect.plugin_manager import PluginManager
 from net_inspect.analysis_plugin import (
     AnalysisPluginAbc,
     AnalysisResult,
-    TemplateValue,
+    TemplateInfo,
     AlarmLevel,
     analysis
 )
@@ -18,8 +18,11 @@ from net_inspect.plugins.analysis_plugin_with_power_status import AnalysisPlugin
 class AnalysisPluginWithTest(AnalysisPluginAbc):
 
     @analysis.vendor(Huawei)
-    @analysis.template_value('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
-    def huawei(self, template: TemplateValue, result: AnalysisResult):
+    @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
+    def huawei(self, template: TemplateInfo, result: AnalysisResult):
+        """
+        Test for huawei version status
+        """
         assert template['huawei_vrp_display_version.textfsm'][0]['vrp_version'] == '8.180'
         assert template['display version'][0]['vrp_version'] == '8.180'
 

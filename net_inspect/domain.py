@@ -188,7 +188,7 @@ class Device:
     def analysis(self):
         """对设备进行分析, 需要在parse之后"""
         res = self._plugin_manager.analysis(self)
-        self._analysis_result.append(res)
+        self._analysis_result.merge(res)
 
     def search_cmd(self, cmd_name: str) -> Cmd | None:
         """查找命令
@@ -377,7 +377,7 @@ class PluginManagerAbc(abc.ABC):
         if not self._analysis_plugin:
             raise exception.NotPluginError('analysis plugin list is empty')
         for plugin in self._analysis_plugin:
-            res.append(plugin.run(device))
+            res.merge(plugin.run(device))
 
         return res
 
@@ -442,7 +442,7 @@ class AnalysisResult:
     def __init__(self):
         self._result: List[AlarmLevel] = []
 
-    def append(self, result: AnalysisResult):
+    def merge(self, result: AnalysisResult):
         """合并分析结果"""
         self._result.extend(result._result)
 

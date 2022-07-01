@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING, Callable, Dict, List, Tuple
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Callable, Dict, List
 
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
@@ -12,31 +13,32 @@ if TYPE_CHECKING:
     from .domain import DefaultVendor, Device
 
 TEMPLATE = str  # ntc-templates 模板文件名称
-VALUE = str  # ntc-templates 模板文件中的变量名称
+KEY = str  # ntc-templates 模板文件中的变量名称
 PLUGIN_NAME = str  # 分析模块的类名称
 
 
-class StoreTemplateValue:
+class StoreTemplateKey:
     """
     用于存放分析插件的支持厂商和需要模板的值
+    这个实例时独立于分析插件的实例，分析插件的run方法会调用这个实例对应Plugin和Vendor的分析函数
     """
 
     def __init__(self):
         self.store: Dict[PLUGIN_NAME,
                          Dict[DefaultVendor,
-                              Dict[Callable[[Dict[TEMPLATE, List[VALUE]], AnalysisResult]],
-                                   Dict[TEMPLATE, List[VALUE]]]]] = {}
-        self._temp_store: List[Tuple[TEMPLATE, List[VALUE]]] = []
+                              Dict[Callable[[Dict[TEMPLATE, List[KEY]], AnalysisResult]],
+                                   TemplateKey]]] = {}
+        self._temp_store = []
 
-    def temp_store(self, template_name: TEMPLATE, values: List[VALUE]):
+    def temp_store(self, template_name: TEMPLATE, keys: List[KEY]):
         """
         将模板名称和变量名称存入临时存储器中
 
         Args:
             - template_name: 模板名称
-            - value: 变量名称列表
+            - keys: 变量名称列表
         """
-        self._temp_store.append((template_name, values))
+        self._temp_store.append((template_name, keys))
 
     def store_vendor(self, klass: PLUGIN_NAME,  vendor: DefaultVendor, func: Callable):
         """
@@ -53,10 +55,10 @@ class StoreTemplateValue:
             self.store[klass][vendor] = {}
 
         if not self.store[klass][vendor].get(func):
-            self.store[klass][vendor][func] = {}
+            self.store[klass][vendor][func] = TemplateKey(vendor.PLATFORM)
 
-        for template_name, values in self._temp_store:
-            self.store[klass][vendor][func][template_name] = values
+        for template_name, keys in self._temp_store:
+            self.store[klass][vendor][func].append(template_name, keys)
 
         self._temp_store = []
 
@@ -74,21 +76,21 @@ class StoreTemplateValue:
 
         return func_init
 
-    def template_value(self, template: TEMPLATE, value: List[VALUE]):
+    def template_key(self, template: TEMPLATE, keys: List[KEY]):
         """
         方法的装饰器，用来确定装饰的方法需要使用哪些模板和内容
 
         Args:
             - template: 模板文件名
-            - value: 变量名称列表
+            - keys: 变量名称列表
         """
         def func_init(func):
-            self.temp_store(template, value)
+            self.temp_store(template, keys)
             return func
         return func_init
 
 
-analysis = StoreTemplateValue()
+analysis = StoreTemplateKey()
 
 
 class AlarmLevel(AlarmLevel):
@@ -104,7 +106,7 @@ class AlarmLevel(AlarmLevel):
         self._level = level
 
 
-class TemplateValue:
+class TemplateKey:
     def __init__(self, vendor_platform: str):
         """
         用于存放ntc-templates模板名称和里面的变量以及变量对应的值
@@ -112,19 +114,33 @@ class TemplateValue:
         Args:
             - vendor_platform: 厂商平台的字符串
         """
-        self._value_store = {}  # type: Dict[TEMPLATE, List[Dict[VALUE, str]]]
-        self._vendor_platform = vendor_platform  # 平台字符串
+        self._vendor_platform = vendor_platform  # 平台名称字符串
+        self._key_store: Dict[TEMPLATE,
+                              Dict[KEY, List[str]]] = {}  # 存储模板的名称和变量对应关系
 
-    def __getitem__(self, name: TEMPLATE) -> List[Dict[VALUE, str]]:
+    def append(self, template: TEMPLATE, keys: List[KEY]):
+        """
+        增加ntc-template模板名称和对应的变量列表
+        """
+        self._key_store[template] = keys
+
+
+@dataclass
+class TemplateInfo:
+    """
+    用于存放将要给到各个分析方法的数据
+    """
+
+    template_key_value: Dict[TEMPLATE, List[Dict[KEY, str]]]  # 模板变量和值的字典
+    vendor_platform: str  # 厂商平台的字符串
+
+    def __getitem__(self, name: TEMPLATE) -> List[Dict[KEY, str]]:
         """获取模板值"""
+        # TODO 修改这里的逻辑
         name = self._from_command_to_template_file(name)
-        if not name in self._value_store:
+        if not name in self.template_key_value:
             raise exception.NtcTemplateNotDefined(name)
-        return self._value_store[name]
-
-    def update(self, template: TEMPLATE, value_list: List[Dict[VALUE, str]]):
-        """存储模板和值"""
-        self._value_store[template] = value_list
+        return self.template_key_value[name]
 
     def _from_command_to_template_file(self, command: str) -> TEMPLATE:
         """
@@ -140,8 +156,8 @@ class TemplateValue:
         """
         command = command.lower()
         command = command.replace(' ', '_')
-        if not command.startswith(self._vendor_platform):
-            command = self._vendor_platform + '_' + command
+        if not command.startswith(self.vendor_platform):
+            command = self.vendor_platform + '_' + command
 
         if not command.endswith('.textfsm'):
             command += '.textfsm'
@@ -151,30 +167,30 @@ class TemplateValue:
 
 class AnalysisPluginAbc(AnalysisPluginAbstract):
 
-    def _init_templates_value(
+    def _get_template_key_value(
         self,
+        template_keys: TemplateKey,
         device: Device,
-        template_values: Dict[TEMPLATE, List[VALUE]]
-    ) -> TemplateValue:
+    ) -> Dict[TEMPLATE, List[Dict[KEY, str]]]:
         """
-        初始化模板和值
+        更新对应模板中的对应变量的值
         搜索Device中的cmd，将需要用到的模板和值取出来放到返回值中
 
         Args:
             - device: 设备对象
-            - template_values: 模板和值字典
+            - template_keys: 模板和值字典
 
         Return:
-            - TemplateValue: 模板和值对象
+            - TemplateKey: 模板和值对象
 
         Exception:
             - exception.AnalysisTemplateNameError  名称后缀不是.textfsm
             - KeyError
 
         """
+        ret = {}
 
-        template = TemplateValue(device.vendor.PLATFORM)
-        for template_file, values in template_values.items():
+        for template_file, keys in template_keys._key_store.items():
             # 当结尾不是.textfsm时，报错
             if not template_file.endswith('.textfsm'):
                 raise exception.AnalysisTemplateNameError
@@ -190,32 +206,40 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             temp_list = []
             for row in cmd_find._parse_result:  # 将需要的键值取出来
                 try:
-                    _ = {value.lower(): row[value.lower()]
-                         for value in values}
+                    _ = {key.lower(): row[key.lower()]
+                         for key in keys}
                     temp_list.append(_)
                 except KeyError as e:
                     raise KeyError(
                         f'{self.__class__.__name__}模板中的键值{str(e)}不存在')
 
-            template.update(template_file, temp_list)
-        return template
+            ret[template_file] = temp_list
+        return ret
 
     def run(self, device: Device) -> AnalysisResult:
         try:
             result = AnalysisResult()
-            # self._init_templates_value(device)
-            # self.template._vendor_platform = device.vendor.PLATFORM
-            # result = self.main(device.vendor, self.template, result)
 
             klass_name = self.__class__.__name__
-            for func, template_values in analysis.store[klass_name][device.vendor].items():
+            for func, template_keys in analysis.store[klass_name][device.vendor].items():
                 # 执行对应厂商的分析方法
-                template = self._init_templates_value(device, template_values)
-                func(self, template, result)
+                template_key_value = self._get_template_key_value(
+                    template_keys, device)
 
-            # 当没有分析结果的时候，说明没有问题，给出一个正常级别提示
-            if not result._result:
-                result.add_normal()
+                # 放到数据类中
+                template_info = TemplateInfo(template_key_value=template_key_value,
+                                             vendor_platform=device.vendor.PLATFORM)
+
+                each_result = AnalysisResult()
+
+                func(self, template_info, each_result)
+
+                # 当没有分析结果的时候，说明没有问题，给出一个正常级别提示
+                if not each_result._result:
+                    result.add_normal()
+
+                # 将分析结果放到总结果中
+                result.merge(each_result)
 
         # 如果分析模板不支持厂商，则给出一个关注级别的提示
         except exception.AnalysisVendorNotSupport:
@@ -242,6 +266,6 @@ def get_func_class_name(func: Callable) -> str:
         AnalysisPluginAbc 子类的字符串
     """
     res = inspect.getmembers(func)
-    for name, value in res:
+    for name, key in res:
         if name == '__qualname__':
-            return value.split('.')[0]
+            return key.split('.')[0]
