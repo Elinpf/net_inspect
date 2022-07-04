@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Dict, List
+from typing import TYPE_CHECKING, Callable, Dict, List, Iterator, Type
 
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
@@ -29,6 +29,16 @@ class StoreTemplateKey:
                               Dict[Callable[[Dict[TEMPLATE, List[KEY]], AnalysisResult]],
                                    TemplateKey]]] = {}
         self._temp_store = []
+        self._only_run_plugins: List[str] = []  # 只运行指定的插件
+
+    def set_only_run_plugins(self, plugins: List[Type[AnalysisPluginAbstract]]):
+        """
+        设置只运行指定的插件
+
+        Args:
+            - plugins: 指定的插件列表
+        """
+        self._only_run_plugins = [plugin.__name__ for plugin in plugins]
 
     def temp_store(self, template_name: TEMPLATE, keys: List[KEY]):
         """
@@ -39,6 +49,38 @@ class StoreTemplateKey:
             - keys: 变量名称列表
         """
         self._temp_store.append((template_name, keys))
+
+    def prune_plugins(self, plugins: List[AnalysisPluginAbstract]):
+        """
+        只保留指定的插件
+
+        Args:
+            - plugins: 指定的插件列表
+        """
+        plugin_list = [plugin.__name__ for plugin in plugins]  # 将插件名称存入列表
+        store_plugin_list = list(self.store.keys())  # 取出所有的插件名称
+        for self_plugin in store_plugin_list:
+            if self_plugin not in plugin_list:
+                del self.store[self_plugin]
+
+    def get_funcs(self, plugin_cls: PLUGIN_NAME, vendor: DefaultVendor
+                  ) -> Iterator[Callable, TemplateKey]:
+        """
+        获取指定厂商的分析函数, 并且返回模板名称和变量名称的迭代器
+
+        如果设置了only_run_plugins，则只运行指定的插件
+
+        Args:
+            - plugin_cls: 分析插件类名称
+            - vendor: 厂商
+
+        Return:
+            - 分析函数和TemplateKey的迭代器
+        """
+        for func, template_key in self.store[plugin_cls][vendor].items():
+            if self._only_run_plugins and plugin_cls not in self._only_run_plugins:
+                continue
+            yield func, template_key
 
     def store_vendor(self, klass: PLUGIN_NAME,  vendor: DefaultVendor, func: Callable):
         """
@@ -221,7 +263,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             result = AnalysisResult()
 
             klass_name = self.__class__.__name__
-            for func, template_keys in analysis.store[klass_name][device.vendor].items():
+            for func, template_keys in analysis.get_funcs(klass_name, device.vendor):
                 # 执行对应厂商的分析方法
                 template_key_value = self._get_template_key_value(
                     template_keys, device)

@@ -56,6 +56,7 @@ def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list 
     cluster.plugin_manager = plugin_manager
     cluster.input(shared_datadir / file)
     cluster.parse()
+    analysis.set_only_run_plugins(analysis_plugins)
     cluster.analysis()
     return cluster
 
