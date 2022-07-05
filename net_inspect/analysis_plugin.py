@@ -178,7 +178,6 @@ class TemplateInfo:
 
     def __getitem__(self, name: TEMPLATE) -> List[Dict[KEY, str]]:
         """获取模板值"""
-        # TODO 修改这里的逻辑
         name = self._from_command_to_template_file(name)
         if not name in self.template_key_value:
             raise exception.NtcTemplateNotDefined(name)
@@ -219,11 +218,11 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
         搜索Device中的cmd，将需要用到的模板和值取出来放到返回值中
 
         Args:
-            - device: 设备对象
             - template_keys: 模板和值字典
+            - device: 设备对象
 
         Return:
-            - TemplateKey: 模板和值对象
+            - 模板和值的字典
 
         Exception:
             - exception.AnalysisTemplateNameError  名称后缀不是.textfsm
@@ -291,9 +290,9 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             # log.debug(f'{device.device_info.name} 没有找到模板')
             ...
 
-        for alarm in result:  # 设置告警所属插件名称
-            if not alarm.plugin_name:
-                alarm.plugin_name = self.__class__.__name__
+        for alarm in iter(result):  # 设置告警所属插件类
+            if not alarm.plugin_cls:
+                alarm.plugin_cls = self.__class__
 
         return result
 

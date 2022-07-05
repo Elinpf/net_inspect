@@ -405,10 +405,10 @@ class AlarmLevel:
     FOCUS = 1
     WARNING = 2
 
-    def __init__(self, level: int, message: str = '', plugin_name: str = ''):
+    def __init__(self, level: int, message: str = '', plugin_cls: Type[AnalysisPluginAbstract] = None):
         self._level = level
         self.message = message
-        self.plugin_name = plugin_name
+        self.plugin_cls = plugin_cls
 
     @property
     def level(self):
@@ -419,6 +419,12 @@ class AlarmLevel:
         if level < AlarmLevel.NORMAL or level > AlarmLevel.WARNING:
             raise exception.AnalysisLevelError
         self._level = level
+
+    @property
+    def plugin_name(self) -> str:
+        if self.plugin_cls is None:
+            return ''
+        return self.plugin_cls.__name__
 
     @property
     def is_warning(self) -> bool:
@@ -434,6 +440,11 @@ class AlarmLevel:
     def is_normal(self) -> bool:
         """是否为正常级别"""
         return self._level == AlarmLevel.NORMAL
+
+    @property
+    def doc(self) -> str:
+        """返回分析模块的文档"""
+        return self.plugin_cls.__doc__.strip() if self.plugin_cls else ''
 
 
 class AnalysisResult:
@@ -462,21 +473,27 @@ class AnalysisResult:
         """添加警告结果"""
         self.add(AlarmLevel(AlarmLevel.WARNING, message))
 
-    def get(self, plugin_name: str) -> AlarmLevel | None:
-        """获取指定插件的结果
-        :param plugin_name: 插件名称
-        :return: AlarmLevel
+    def get(self, plugin_name: str) -> AnalysisResult:
+        """
+        获取指定插件的结果
 
         ``plugin_name`` 可以写的形式：
         - 完整插件名称 (e.g 'AnalysisPluginWithPowerStatus)
         - 下划线 (e.g 'analysis_plugin_with_power_status')
         - 全小写 (e.g 'analysispluginwithpowerstatus')
         - 简写 (e.g 'power status')
+
+        Args:
+            - plugin_name: 插件名称
+
+        Return:
+            - AlarmLevel: AlarmLevel对象
         """
+        ret = AnalysisResult()
         for alarm in self._result:
             if self._short(alarm.plugin_name) == self._short(plugin_name):
-                return alarm
-        return None
+                ret.add(alarm)
+        return ret
 
     def _short(self, plugin_name: str) -> str:
         """获取指定插件的简写

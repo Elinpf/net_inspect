@@ -16,6 +16,9 @@ from net_inspect.plugins.analysis_plugin_with_power_status import AnalysisPlugin
 
 
 class AnalysisPluginWithTest(AnalysisPluginAbc):
+    """
+    Test for AnalysisPlugin Doc.
+    """
 
     @analysis.vendor(Huawei)
     @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
@@ -95,11 +98,27 @@ def test_analysis_result_get_function(shared_datadir):
         shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPowerStatus])
     result = cluster.devices[0].analysis_result
     assert result.get(
-        'AnalysisPluginWithPowerStatus').plugin_name == 'AnalysisPluginWithPowerStatus'
+        'AnalysisPluginWithPowerStatus')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
 
     assert result.get(
-        'analysis_plugin_with_power_status').plugin_name == 'AnalysisPluginWithPowerStatus'
+        'analysis_plugin_with_power_status')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
     assert result.get(
-        'analysispluginwithpowerstatus').plugin_name == 'AnalysisPluginWithPowerStatus'
+        'analysispluginwithpowerstatus')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
     assert result.get(
-        'power status').plugin_name == 'AnalysisPluginWithPowerStatus'
+        'power status')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
+
+
+def test_analysi_result_get_function_have_multiple_alarm_level(shared_datadir):
+    """测试AnalysisResult.get()方法返回为AnalysisResult类"""
+    cluster = init_analysis_plugin(shared_datadir)
+    result = cluster.devices[0].analysis_result
+    test_result = result.get('AnalysisPluginWithTest')
+    assert type(test_result) == AnalysisResult
+
+
+def test_analysis_plugin_function_doc(shared_datadir):
+    """测试AnalysisPlugin类的注释信息"""
+    cluster = init_analysis_plugin(shared_datadir)
+    result = cluster.devices[0].analysis_result
+    doc = result.get('AnalysisPluginWithTest')[0].doc
+    assert doc == 'Test for AnalysisPlugin Doc.'
