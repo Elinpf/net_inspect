@@ -5,16 +5,18 @@ from typing import TYPE_CHECKING
 
 from ..analysis_plugin import (AnalysisPluginAbc, AnalysisResult,
                                TemplateInfo, analysis)
-from ..vendor import Cisco, Huawei
+from .. import vendor
 
 if TYPE_CHECKING:
     from ..domain import AnalysisResult
 
 
 class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
-    """检查电源状态是否正常"""
+    """
+    要求设备所有在位电源模块运行在正常状态。
+    """
 
-    @analysis.vendor(Huawei)
+    @analysis.vendor(vendor.Huawei)
     @analysis.template_key('huawei_vrp_display_power.textfsm', ['MODE', 'ID', 'PRESENT', 'STATE'])
     def huawei(template: TemplateInfo, result: AnalysisResult):
         power = template['display power']
@@ -26,7 +28,7 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
                 result.add_warning(
                     f'设备 {row["id"]} 电源状态异常')
 
-    @analysis.vendor(Cisco)
+    @analysis.vendor(vendor.Cisco)
     @analysis.template_key('cisco_ios_show_power_status.textfsm', ['ps', 'model', 'status', 'fan_sensor'])
     def cisco(template: TemplateInfo, result: AnalysisResult):
         for row in template['show power status']:

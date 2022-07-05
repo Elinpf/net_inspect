@@ -64,7 +64,7 @@ class Cluster:
         device_cls = Device()
         device_cls._plugin_manager = self.plugin_manager
         device_cls.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-        device_cls.device_info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
+        device_cls.info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
         self.devices.append(device_cls)
 
     def output(self, file_path: str, params: Optional[Dict[str, str]] = None):
@@ -110,7 +110,7 @@ class DeviceList(list):
 
         :param device_name: 设备信息
         :return: 设备列表"""
-        return [device for device in self._devices if device_name in device.device_info.name]
+        return [device for device in self._devices if device_name in device.info.name]
 
 
 @dataclass
@@ -132,11 +132,12 @@ class Device:
         self._analysis_result = AnalysisResult()
 
     @property
-    def device_info(self) -> DeviceInfo:
+    def info(self) -> DeviceInfo:
+        """设备信息"""
         return self._device_info
 
-    @device_info.setter
-    def device_info(self, device_info: DeviceInfo):
+    @info.setter
+    def info(self, device_info: DeviceInfo):
         self._device_info = device_info
 
     @property
@@ -541,15 +542,25 @@ class InputPluginAbstract(PluginAbstract):
 
 
 class OutputPluginAbstract(PluginAbstract):
-    def run(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
+
+    @dataclass
+    class OutputParams:
+        devices: DeviceList  # 设备列表
+        path: str  # 输出文件的路径
+        output_params: Optional[Dict[str, str]] = None  # 输出文件的参数
+
+    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]] = None):
         """对设备列表进行输出
         :params: devices: 设备列表
         :params: path: 输出文件的路径
         :params: params: 输出文件的参数"""
-        return self.main(devices, path, params)
+
+        self.params = self.OutputParams(
+            devices=devices, path=path, output_params=output_params)
+        return self.main()
 
     @abc.abstractmethod
-    def main(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
+    def main(self):
         raise NotImplementedError
 
 

@@ -76,11 +76,18 @@ class StoreTemplateKey:
 
         Return:
             - 分析函数和TemplateKey的迭代器
+
+        Exception:
+            - KeyError: 忽略不在支持的分析插件中的厂商
         """
-        for func, template_key in self.store[plugin_cls][vendor].items():
-            if self._only_run_plugins and plugin_cls not in self._only_run_plugins:
-                continue
-            yield func, template_key
+
+        try:
+            for func, template_key in self.store[plugin_cls][vendor].items():
+                if self._only_run_plugins and plugin_cls not in self._only_run_plugins:
+                    continue
+                yield func, template_key
+        except KeyError:  # 忽略不在支持的分析插件中的厂商
+            return
 
     def store_vendor(self, klass: PLUGIN_NAME,  vendor: DefaultVendor, func: Callable):
         """
@@ -241,7 +248,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             cmd_find = device.search_cmd(cmd)  # 搜索命令
             if cmd_find is None:
                 log.debug(
-                    str(f'{device.device_info.name} 没有找到 {cmd} 命令'))
+                    str(f'{device.info.name} 没有找到 {cmd} 命令'))
                 continue
 
             temp_list = []
@@ -287,7 +294,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             result.add_focus('{} not support this vendor'.format(
                 self.__class__.__name__))
         except exception.NtcTemplateNotDefined:
-            # log.debug(f'{device.device_info.name} 没有找到模板')
+            # log.debug(f'{device.info.name} 没有找到模板')
             ...
 
         for alarm in iter(result):  # 设置告警所属插件类

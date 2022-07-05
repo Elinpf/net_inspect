@@ -80,7 +80,7 @@ class Output(OutputPluginAbstract):
 
         for device in devices:
             if device.vendor.PLATFORM == 'huawei_vrp':
-                data = [device.device_info.name, device.device_info.ip]
+                data = [device.info.name, device.info.ip]
                 ps = device.parse_result('display version') # 获取解析的内容
                 data.append(ps[0].get('model'))
                 data.append(ps[0].get('vrp_version'))
