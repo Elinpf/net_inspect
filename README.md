@@ -58,36 +58,39 @@ Analysis插件的功能是将解析的信息进行分析，对分析的内容进
 示例:
 
 ```python
-from net_inspect import NetInspect, OutputPluginAbstract, PluginError, DeviceList
-from typing import Dict
+from net_inspect import NetInspect, OutputPluginAbstract, PluginError
 from rich.table import Table
 from rich.console import Console
 
 
 class Output(OutputPluginAbstract):
-    def main(self, devices: DeviceList, path, params: Dict[str, str]):
-        if not params.get('company'):
+    def main(self):
+        if not self.params.output_params.get('company'):
             raise PluginError('name or age is missing')
 
         console = Console()
 
-        table = Table(title=params.get('company'), show_lines=False)
+        table = Table(title=self.params.output_params.get(
+            'company'), show_lines=False)
         table.add_column('name', justify='center')
         table.add_column('ip', justify='center')
         table.add_column('model', justify='center')
         table.add_column('version', justify='center')
         table.add_column('power', justify='center')
 
-        for device in devices:
+        for device in self.params.devices:
             if device.vendor.PLATFORM == 'huawei_vrp':
                 data = [device.info.name, device.info.ip]
-                ps = device.parse_result('display version') # 获取解析的内容
+                ps = device.parse_result('display version')
                 data.append(ps[0].get('model'))
                 data.append(ps[0].get('vrp_version'))
-                power_analysis = device.analysis_result.get('Power Status') # 获取分析的内容
-                if power_analysis:
-                    data.append(
-                        power_analysis.message if power_analysis.is_focus else 'Normal')
+                power_analysis = device.analysis_result.get('Power Status')
+                power_desc = []
+                for alarm in power_analysis:
+                    if alarm.is_focus:
+                        power_desc.append(alarm.message)
+                data.append('\n'.join(power_desc) if power_desc else 'Normal')
+
                 table.add_row(*data)
                 table.row_styles = ['green']
 
