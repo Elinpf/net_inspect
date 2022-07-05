@@ -92,7 +92,7 @@ def set_device(raw_file: str) -> Device:
     cmd_contents_and_deviceinfo = device._plugin_manager.input(raw_file)
 
     device.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-    device.device_info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
+    device.info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
     return device
 
 

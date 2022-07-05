@@ -56,7 +56,7 @@ class Huawei(DefaultVendor):
 
 class H3C(DefaultVendor):
 
-    PLATFORM = 'h3c_comware'
+    PLATFORM = 'hp_comware'  # 新华三在海外用的是 HP Comware
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'H3C Comware Platform Software'
 

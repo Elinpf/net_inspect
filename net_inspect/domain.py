@@ -64,7 +64,7 @@ class Cluster:
         device_cls = Device()
         device_cls._plugin_manager = self.plugin_manager
         device_cls.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-        device_cls.device_info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
+        device_cls.info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
         self.devices.append(device_cls)
 
     def output(self, file_path: str, params: Optional[Dict[str, str]] = None):
@@ -110,7 +110,7 @@ class DeviceList(list):
 
         :param device_name: 设备信息
         :return: 设备列表"""
-        return [device for device in self._devices if device_name in device.device_info.name]
+        return [device for device in self._devices if device_name in device.info.name]
 
 
 @dataclass
@@ -132,11 +132,12 @@ class Device:
         self._analysis_result = AnalysisResult()
 
     @property
-    def device_info(self) -> DeviceInfo:
+    def info(self) -> DeviceInfo:
+        """设备信息"""
         return self._device_info
 
-    @device_info.setter
-    def device_info(self, device_info: DeviceInfo):
+    @info.setter
+    def info(self, device_info: DeviceInfo):
         self._device_info = device_info
 
     @property
@@ -182,13 +183,13 @@ class Device:
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                log.debug(str(e))
+                log.debug(f"ParseWarning -- {str(e)}")
                 continue
 
     def analysis(self):
         """对设备进行分析, 需要在parse之后"""
         res = self._plugin_manager.analysis(self)
-        self._analysis_result.append(res)
+        self._analysis_result.merge(res)
 
     def search_cmd(self, cmd_name: str) -> Cmd | None:
         """查找命令
@@ -377,7 +378,7 @@ class PluginManagerAbc(abc.ABC):
         if not self._analysis_plugin:
             raise exception.NotPluginError('analysis plugin list is empty')
         for plugin in self._analysis_plugin:
-            res.append(plugin.run(device))
+            res.merge(plugin.run(device))
 
         return res
 
@@ -405,10 +406,10 @@ class AlarmLevel:
     FOCUS = 1
     WARNING = 2
 
-    def __init__(self, level: int, message: str = '', plugin_name: str = ''):
+    def __init__(self, level: int, message: str = '', plugin_cls: Type[AnalysisPluginAbstract] = None):
         self._level = level
         self.message = message
-        self.plugin_name = plugin_name
+        self.plugin_cls = plugin_cls
 
     @property
     def level(self):
@@ -419,6 +420,12 @@ class AlarmLevel:
         if level < AlarmLevel.NORMAL or level > AlarmLevel.WARNING:
             raise exception.AnalysisLevelError
         self._level = level
+
+    @property
+    def plugin_name(self) -> str:
+        if self.plugin_cls is None:
+            return ''
+        return self.plugin_cls.__name__
 
     @property
     def is_warning(self) -> bool:
@@ -435,6 +442,11 @@ class AlarmLevel:
         """是否为正常级别"""
         return self._level == AlarmLevel.NORMAL
 
+    @property
+    def doc(self) -> str:
+        """返回分析模块的文档"""
+        return self.plugin_cls.__doc__.strip() if self.plugin_cls else ''
+
 
 class AnalysisResult:
     """分析结果"""
@@ -442,7 +454,7 @@ class AnalysisResult:
     def __init__(self):
         self._result: List[AlarmLevel] = []
 
-    def append(self, result: AnalysisResult):
+    def merge(self, result: AnalysisResult):
         """合并分析结果"""
         self._result.extend(result._result)
 
@@ -462,21 +474,27 @@ class AnalysisResult:
         """添加警告结果"""
         self.add(AlarmLevel(AlarmLevel.WARNING, message))
 
-    def get(self, plugin_name: str) -> AlarmLevel | None:
-        """获取指定插件的结果
-        :param plugin_name: 插件名称
-        :return: AlarmLevel
+    def get(self, plugin_name: str) -> AnalysisResult:
+        """
+        获取指定插件的结果
 
         ``plugin_name`` 可以写的形式：
         - 完整插件名称 (e.g 'AnalysisPluginWithPowerStatus)
         - 下划线 (e.g 'analysis_plugin_with_power_status')
         - 全小写 (e.g 'analysispluginwithpowerstatus')
         - 简写 (e.g 'power status')
+
+        Args:
+            - plugin_name: 插件名称
+
+        Return:
+            - AlarmLevel: AlarmLevel对象
         """
+        ret = AnalysisResult()
         for alarm in self._result:
             if self._short(alarm.plugin_name) == self._short(plugin_name):
-                return alarm
-        return None
+                ret.add(alarm)
+        return ret
 
     def _short(self, plugin_name: str) -> str:
         """获取指定插件的简写
@@ -501,11 +519,8 @@ class AnalysisResult:
 class PluginAbstract(abc.ABC):
     """插件的抽象"""
 
-    def run(self):
-        return self.main()
-
     @abc.abstractmethod
-    def main(self):
+    def run(self):
         raise NotImplementedError
 
 
@@ -527,15 +542,25 @@ class InputPluginAbstract(PluginAbstract):
 
 
 class OutputPluginAbstract(PluginAbstract):
-    def run(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
+
+    @dataclass
+    class OutputParams:
+        devices: DeviceList  # 设备列表
+        path: str  # 输出文件的路径
+        output_params: Optional[Dict[str, str]] = None  # 输出文件的参数
+
+    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]] = None):
         """对设备列表进行输出
         :params: devices: 设备列表
         :params: path: 输出文件的路径
         :params: params: 输出文件的参数"""
-        return self.main(devices, path, params)
+
+        self.params = self.OutputParams(
+            devices=devices, path=path, output_params=output_params)
+        return self.main()
 
     @abc.abstractmethod
-    def main(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
+    def main(self):
         raise NotImplementedError
 
 
@@ -552,8 +577,4 @@ class AnalysisPluginAbstract(PluginAbstract):
 
     @abc.abstractmethod
     def run(self, device: Device) -> AnalysisResult:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def main(self):
         raise NotImplementedError

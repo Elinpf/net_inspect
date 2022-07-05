@@ -1,5 +1,5 @@
 import pytest
-from net_inspect.domain import Device, Cluster
+from net_inspect.domain import Cluster
 from net_inspect.vendor import Huawei
 from net_inspect.plugins.parse_plugin_with_ntc_templates import ParsePluginWithNtcTemplates
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
@@ -7,28 +7,25 @@ from net_inspect.plugin_manager import PluginManager
 from net_inspect.analysis_plugin import (
     AnalysisPluginAbc,
     AnalysisResult,
-    AlarmLevel
+    TemplateInfo,
+    AlarmLevel,
+    analysis
 )
 import net_inspect.exception as exception
 from net_inspect.plugins.analysis_plugin_with_power_status import AnalysisPluginWithPowerStatus
 
 
 class AnalysisPluginWithTest(AnalysisPluginAbc):
-    def __init__(self):
-        super().__init__(
-            ntc_templates={
-                Huawei: {
-                    'huawei_vrp_display_version.textfsm':
-                        [
-                            'VRP_VERSION',
-                            'PRODUCT_VERSION'
-                        ]
-                }
-            }
-        )
+    """
+    Test for AnalysisPlugin Doc.
+    """
 
-    def main(self, vendor, template, result) -> AnalysisResult:
-        assert vendor == Huawei
+    @analysis.vendor(Huawei)
+    @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
+    def huawei(template: TemplateInfo, result: AnalysisResult):
+        """
+        Test for huawei version status
+        """
         assert template['huawei_vrp_display_version.textfsm'][0]['vrp_version'] == '8.180'
         assert template['display version'][0]['vrp_version'] == '8.180'
 
@@ -43,14 +40,6 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
 
         result.add(AlarmLevel(AlarmLevel.FOCUS, 'test_focus'))
         result.add(AlarmLevel(AlarmLevel.WARNING, 'test_warning'))
-
-        return result
-
-
-def test_analysis_plugin_abstract():
-    """测试抽象类"""
-    analysis = AnalysisPluginWithTest()
-    assert analysis._ntc_templates.get(Huawei)
 
 
 def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list = []) -> Cluster:
@@ -70,6 +59,7 @@ def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list 
     cluster.plugin_manager = plugin_manager
     cluster.input(shared_datadir / file)
     cluster.parse()
+    analysis.set_only_run_plugins(analysis_plugins)
     cluster.analysis()
     return cluster
 
@@ -108,11 +98,27 @@ def test_analysis_result_get_function(shared_datadir):
         shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPowerStatus])
     result = cluster.devices[0].analysis_result
     assert result.get(
-        'AnalysisPluginWithPowerStatus').plugin_name == 'AnalysisPluginWithPowerStatus'
+        'AnalysisPluginWithPowerStatus')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
 
     assert result.get(
-        'analysis_plugin_with_power_status').plugin_name == 'AnalysisPluginWithPowerStatus'
+        'analysis_plugin_with_power_status')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
     assert result.get(
-        'analysispluginwithpowerstatus').plugin_name == 'AnalysisPluginWithPowerStatus'
+        'analysispluginwithpowerstatus')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
     assert result.get(
-        'power status').plugin_name == 'AnalysisPluginWithPowerStatus'
+        'power status')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
+
+
+def test_analysi_result_get_function_have_multiple_alarm_level(shared_datadir):
+    """测试AnalysisResult.get()方法返回为AnalysisResult类"""
+    cluster = init_analysis_plugin(shared_datadir)
+    result = cluster.devices[0].analysis_result
+    test_result = result.get('AnalysisPluginWithTest')
+    assert type(test_result) == AnalysisResult
+
+
+def test_analysis_plugin_function_doc(shared_datadir):
+    """测试AnalysisPlugin类的注释信息"""
+    cluster = init_analysis_plugin(shared_datadir)
+    result = cluster.devices[0].analysis_result
+    doc = result.get('AnalysisPluginWithTest')[0].doc
+    assert doc == 'Test for AnalysisPlugin Doc.'

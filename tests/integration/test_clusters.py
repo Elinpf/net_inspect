@@ -24,8 +24,8 @@ def test_cluster_for_input_file(shared_datadir):
     cluster.input(shared_datadir /
                   'log_files/B_FOO_BAR_DS02_21.2.3.4_20220221170516.diag')
     assert len(cluster.devices) == 1
-    assert cluster.devices[0].device_info.name == 'B_FOO_BAR_DS02'
-    assert cluster.devices[0].device_info.ip == '21.2.3.4'
+    assert cluster.devices[0].info.name == 'B_FOO_BAR_DS02'
+    assert cluster.devices[0].info.ip == '21.2.3.4'
 
 
 def test_cluster_for_inputdir(shared_datadir):
@@ -50,7 +50,7 @@ def test_cluster_search_device(shared_datadir):
     cluster.input_dir(shared_datadir / 'log_files')
     assert len(cluster.devices) >= 2  # 获得多个设备
     device_list = cluster.search('B_FOO_BAR_DS02')
-    assert device_list[0].device_info.name == 'B_FOO_BAR_DS02'
+    assert device_list[0].info.name == 'B_FOO_BAR_DS02'
 
 
 def test_cluster_for_parse_file(shared_datadir):
