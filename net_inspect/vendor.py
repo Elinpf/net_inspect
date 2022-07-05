@@ -56,7 +56,7 @@ class Huawei(DefaultVendor):
 
 class H3C(DefaultVendor):
 
-    PLATFORM = 'h3c_comware'
+    PLATFORM = 'hp_comware'  # 新华三在海外用的是 HP Comware
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'H3C Comware Platform Software'
 
@@ -66,3 +66,17 @@ class Cisco(DefaultVendor):
     PLATFORM = 'cisco_ios'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
     KEYWORD_REG = r'Cisco IOS Software'
+
+
+class Maipu(DefaultVendor):
+
+    PLATFORM = 'maipu_mypower'
+    VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
+    KEYWORD_REG = r'MyPower \(R\) Operating System Software'
+
+
+class Ruijie(DefaultVendor):
+
+    PLATFORM = 'ruijie_os'
+    VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
+    KEYWORD_REG = r'Ruijie Networks'

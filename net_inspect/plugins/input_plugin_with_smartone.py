@@ -58,7 +58,7 @@ class InputPluginWithSmartOne(InputPluginAbstract):
         else:
             state = 2  # 否则是情况二
 
-        if state is 1:
+        if state == 1:
             for line in lines:
                 if re.match(command_line_reg, line):  # 当遇到的是第一种情况
                     if command:  # 当有命令的时候，说明是上一个命令的结尾，要保存
@@ -68,7 +68,7 @@ class InputPluginWithSmartOne(InputPluginAbstract):
                     continue
                 content.append(line)
 
-        if state is 2:
+        if state == 2:
             for line in lines:
                 if not command:
                     command = line.strip()  # 第一行为命令

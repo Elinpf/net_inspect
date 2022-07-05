@@ -60,7 +60,7 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
                 break
 
         if match_command == '':
-            raise TemplateError(f'"{command}" command not support')
+            raise TemplateError(f'`{command}` command not support')
 
         try:
             return parse_output(platform=platform, command=match_command, data=cmd.content)

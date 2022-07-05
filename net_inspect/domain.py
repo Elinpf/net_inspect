@@ -4,8 +4,6 @@ import abc
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
 
-from thefuzz import fuzz, process
-
 from . import exception
 from .logger import log
 from .vendor import DefaultVendor
@@ -66,7 +64,7 @@ class Cluster:
         device_cls = Device()
         device_cls._plugin_manager = self.plugin_manager
         device_cls.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-        device_cls.device_info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
+        device_cls.info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
         self.devices.append(device_cls)
 
     def output(self, file_path: str, params: Optional[Dict[str, str]] = None):
@@ -99,7 +97,7 @@ class DeviceList(list):
 
     def parse(self):
         """递归对每个设备的命令进行解析"""
-        for device in self._devices:  # type: Device
+        for device in self._devices:
             device.parse()
 
     def analysis(self):
@@ -112,7 +110,7 @@ class DeviceList(list):
 
         :param device_name: 设备信息
         :return: 设备列表"""
-        return [device for device in self._devices if device_name in device.device_info.name]
+        return [device for device in self._devices if device_name in device.info.name]
 
 
 @dataclass
@@ -134,16 +132,28 @@ class Device:
         self._analysis_result = AnalysisResult()
 
     @property
-    def device_info(self) -> DeviceInfo:
+    def info(self) -> DeviceInfo:
+        """设备信息"""
         return self._device_info
 
-    @device_info.setter
-    def device_info(self, device_info: DeviceInfo):
+    @info.setter
+    def info(self, device_info: DeviceInfo):
         self._device_info = device_info
 
     @property
     def analysis_result(self) -> AnalysisResult:
         return self._analysis_result
+
+    def parse_result(self, cmd: str) -> List[dict] | None:
+        """解析命令结果
+
+        :param cmd: 命令
+        :return: 命令结果"""
+        command = self.search_cmd(cmd)
+        if not command:
+            return None
+
+        return command._parse_result
 
     def save_to_cmds(self, cmd_contents: Dict[str, str]):
         """将分割好的命令字典保存到设备的命令列表中"""
@@ -173,29 +183,55 @@ class Device:
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                log.debug(str(e))
+                log.debug(f"ParseWarning -- {str(e)}")
                 continue
 
     def analysis(self):
         """对设备进行分析, 需要在parse之后"""
-        # TODO 解析完成后，对结果进行存储，AnalysisResult
         res = self._plugin_manager.analysis(self)
-        self._analysis_result.append(res)
+        self._analysis_result.merge(res)
 
     def search_cmd(self, cmd_name: str) -> Cmd | None:
-        """使用模糊查询
+        """查找命令
 
-        :param cmd_name: 命令名称
+        :param cmd_name: 命令名
         :return: 命令"""
-        search_result = process.extract(cmd_name, self.cmds.keys(
-        ), scorer=fuzz.token_set_ratio)
-        cmd_len = len(cmd_name.strip().split(' '))
+        res = None  # type: Tuple[Cmd, int]
+        cmd_name_split = cmd_name.split()
+        cmd_name_len = len(cmd_name_split)
 
-        for cmd, score in search_result:  # 判断命令的长度是否符合
-            if score >= 60 and len(cmd.split(' ')) == cmd_len:
-                return self.cmds[cmd]
+        for command in self.cmds.keys():
 
-        return None
+            score = 0  # 匹配得分
+            is_match = True  # 是否匹配的标签
+
+            # 切分命令
+            command_split = command.split()
+            if not len(command_split) == cmd_name_len:  # 当命令长度不一致就跳过
+                continue
+
+            # 对每个单词进行匹配并打分
+            for i, each_command in enumerate(command_split):
+                if is_match == False:
+                    break
+                # 排序长命令与短的命令
+                if len(each_command) > len(cmd_name_split[i]):
+                    long_each_cmd, short_each_cmd = each_command, cmd_name_split[i]
+                else:
+                    long_each_cmd, short_each_cmd = cmd_name_split[i], each_command
+
+                # 匹配单词
+                if not long_each_cmd.startswith(short_each_cmd):
+                    is_match = False
+                    break
+                score += len(short_each_cmd)
+
+            if is_match:
+                # 比较得分, 取最高的
+                if (not res) or score > res[1]:
+                    res = (self.cmds[command], score)
+
+        return res[0] if res else None
 
 
 class Cmd:
@@ -342,7 +378,7 @@ class PluginManagerAbc(abc.ABC):
         if not self._analysis_plugin:
             raise exception.NotPluginError('analysis plugin list is empty')
         for plugin in self._analysis_plugin:
-            res.append(plugin.run(device))
+            res.merge(plugin.run(device))
 
         return res
 
@@ -370,10 +406,10 @@ class AlarmLevel:
     FOCUS = 1
     WARNING = 2
 
-    def __init__(self, level: int, message: str = '', plugin_name: str = ''):
+    def __init__(self, level: int, message: str = '', plugin_cls: Type[AnalysisPluginAbstract] = None):
         self._level = level
         self.message = message
-        self.plugin_name = plugin_name
+        self.plugin_cls = plugin_cls
 
     @property
     def level(self):
@@ -385,17 +421,31 @@ class AlarmLevel:
             raise exception.AnalysisLevelError
         self._level = level
 
+    @property
+    def plugin_name(self) -> str:
+        if self.plugin_cls is None:
+            return ''
+        return self.plugin_cls.__name__
+
+    @property
     def is_warning(self) -> bool:
         """是否为警告级别"""
         return self._level == AlarmLevel.WARNING
 
+    @property
     def is_focus(self) -> bool:
         """是否为关注级别"""
         return self._level >= AlarmLevel.FOCUS
 
+    @property
     def is_normal(self) -> bool:
         """是否为正常级别"""
         return self._level == AlarmLevel.NORMAL
+
+    @property
+    def doc(self) -> str:
+        """返回分析模块的文档"""
+        return self.plugin_cls.__doc__.strip() if self.plugin_cls else ''
 
 
 class AnalysisResult:
@@ -404,7 +454,7 @@ class AnalysisResult:
     def __init__(self):
         self._result: List[AlarmLevel] = []
 
-    def append(self, result: AnalysisResult):
+    def merge(self, result: AnalysisResult):
         """合并分析结果"""
         self._result.extend(result._result)
 
@@ -424,21 +474,27 @@ class AnalysisResult:
         """添加警告结果"""
         self.add(AlarmLevel(AlarmLevel.WARNING, message))
 
-    def get(self, plugin_name: str) -> AlarmLevel | None:
-        """获取指定插件的结果
-        :param plugin_name: 插件名称
-        :return: AlarmLevel
+    def get(self, plugin_name: str) -> AnalysisResult:
+        """
+        获取指定插件的结果
 
         ``plugin_name`` 可以写的形式：
         - 完整插件名称 (e.g 'AnalysisPluginWithPowerStatus)
         - 下划线 (e.g 'analysis_plugin_with_power_status')
         - 全小写 (e.g 'analysispluginwithpowerstatus')
         - 简写 (e.g 'power status')
+
+        Args:
+            - plugin_name: 插件名称
+
+        Return:
+            - AlarmLevel: AlarmLevel对象
         """
+        ret = AnalysisResult()
         for alarm in self._result:
             if self._short(alarm.plugin_name) == self._short(plugin_name):
-                return alarm
-        return None
+                ret.add(alarm)
+        return ret
 
     def _short(self, plugin_name: str) -> str:
         """获取指定插件的简写
@@ -463,11 +519,8 @@ class AnalysisResult:
 class PluginAbstract(abc.ABC):
     """插件的抽象"""
 
-    def run(self):
-        return self.main()
-
     @abc.abstractmethod
-    def main(self):
+    def run(self):
         raise NotImplementedError
 
 
@@ -475,7 +528,7 @@ class InputPluginAbstract(PluginAbstract):
     def run(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
         """对单个文件进行设备输入"""
 
-        with open(file_path, 'r') as f:
+        with open(file_path, 'r', encoding='gb18030', errors='ignore') as f:
             stream = f.read()
         return self.main(file_path, stream)
 
@@ -489,15 +542,25 @@ class InputPluginAbstract(PluginAbstract):
 
 
 class OutputPluginAbstract(PluginAbstract):
-    def run(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
+
+    @dataclass
+    class OutputParams:
+        devices: DeviceList  # 设备列表
+        path: str  # 输出文件的路径
+        output_params: Optional[Dict[str, str]] = None  # 输出文件的参数
+
+    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]] = None):
         """对设备列表进行输出
         :params: devices: 设备列表
         :params: path: 输出文件的路径
         :params: params: 输出文件的参数"""
-        return self.main(devices, path, params)
+
+        self.params = self.OutputParams(
+            devices=devices, path=path, output_params=output_params)
+        return self.main()
 
     @abc.abstractmethod
-    def main(self, devices: DeviceList[Device], path: str, params: Optional[Dict[str, str]] = None):
+    def main(self):
         raise NotImplementedError
 
 
@@ -514,8 +577,4 @@ class AnalysisPluginAbstract(PluginAbstract):
 
     @abc.abstractmethod
     def run(self, device: Device) -> AnalysisResult:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def main(self):
         raise NotImplementedError
