@@ -183,7 +183,7 @@ class Device:
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                log.debug(str(e))
+                log.debug(f"ParseWarning -- {str(e)}")
                 continue
 
     def analysis(self):

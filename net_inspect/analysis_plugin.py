@@ -63,7 +63,7 @@ class StoreTemplateKey:
             if self_plugin not in plugin_list:
                 del self.store[self_plugin]
 
-    def get_funcs(self, plugin_cls: PLUGIN_NAME, vendor: DefaultVendor
+    def get_funcs(self, plugin_cls: PLUGIN_NAME, vendor: Type[DefaultVendor]
                   ) -> Iterator[Callable, TemplateKey]:
         """
         获取指定厂商的分析函数, 并且返回模板名称和变量名称的迭代器
@@ -86,7 +86,9 @@ class StoreTemplateKey:
                 if self._only_run_plugins and plugin_cls not in self._only_run_plugins:
                     continue
                 yield func, template_key
-        except KeyError:  # 忽略不在支持的分析插件中的厂商
+        except KeyError as e:  # 忽略不在支持的分析插件中的厂商
+            log.debug(
+                f"AnalysisWarning -- {plugin_cls} not support {vendor.__name__}")
             return
 
     def store_vendor(self, klass: PLUGIN_NAME,  vendor: DefaultVendor, func: Callable):
