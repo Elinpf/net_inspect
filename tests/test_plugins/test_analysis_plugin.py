@@ -1,6 +1,7 @@
 import pytest
+import logging
 from net_inspect.domain import Cluster
-from net_inspect.vendor import Huawei
+from net_inspect import vendor
 from net_inspect.plugins.parse_plugin_with_ntc_templates import ParsePluginWithNtcTemplates
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
 from net_inspect.plugin_manager import PluginManager
@@ -20,7 +21,7 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
     Test for AnalysisPlugin Doc.
     """
 
-    @analysis.vendor(Huawei)
+    @analysis.vendor(vendor.Huawei)
     @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
     def huawei(template: TemplateInfo, result: AnalysisResult):
         """
@@ -122,3 +123,17 @@ def test_analysis_plugin_function_doc(shared_datadir):
     result = cluster.devices[0].analysis_result
     doc = result.get('AnalysisPluginWithTest')[0].doc
     assert doc == 'Test for AnalysisPlugin Doc.'
+
+
+def test_analysis_plugin_get_func_with_error_plugin_or_vendor(caplog):
+    """测试StoreTemplateKey.get_func()输入不存在的插件或者vendor"""
+    caplog.set_level(logging.DEBUG)
+
+    for func, template in analysis.get_funcs('AnalysisPluginWithNotExist', vendor.Huawei):
+        ...  # pragma: no cover
+    assert caplog.messages[0] == 'AnalysisWarning -- not found AnalysisPluginWithNotExist in store'
+    caplog.clear()
+
+    for func, template in analysis.get_funcs('AnalysisPluginWithTest', vendor.Ruijie):
+        ...  # pragma: no cover
+    assert caplog.messages[0] == 'AnalysisWarning -- AnalysisPluginWithTest not support vendor Ruijie'

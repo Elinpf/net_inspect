@@ -50,19 +50,6 @@ class StoreTemplateKey:
         """
         self._temp_store.append((template_name, keys))
 
-    def prune_plugins(self, plugins: List[AnalysisPluginAbstract]):
-        """
-        只保留指定的插件
-
-        Args:
-            - plugins: 指定的插件列表
-        """
-        plugin_list = [plugin.__name__ for plugin in plugins]  # 将插件名称存入列表
-        store_plugin_list = list(self.store.keys())  # 取出所有的插件名称
-        for self_plugin in store_plugin_list:
-            if self_plugin not in plugin_list:
-                del self.store[self_plugin]
-
     def get_funcs(self, plugin_cls: PLUGIN_NAME, vendor: Type[DefaultVendor]
                   ) -> Iterator[Callable, TemplateKey]:
         """
@@ -76,20 +63,25 @@ class StoreTemplateKey:
 
         Return:
             - 分析函数和TemplateKey的迭代器
-
-        Exception:
-            - KeyError: 忽略不在支持的分析插件中的厂商
         """
+        prefix = 'AnalysisWarning -- '
 
-        try:
-            for func, template_key in self.store[plugin_cls][vendor].items():
-                if self._only_run_plugins and plugin_cls not in self._only_run_plugins:
-                    continue
-                yield func, template_key
-        except KeyError as e:  # 忽略不在支持的分析插件中的厂商
-            log.debug(
-                f"AnalysisWarning -- {plugin_cls} not support {vendor.__name__}")
+        # 如果plugin_cls不在store中，则退出
+        if not self.store.get(plugin_cls):
+            log.debug(prefix + f"not found {plugin_cls} in store")
             return
+
+        # 如果vendor不在store中，则退出
+        if not self.store[plugin_cls].get(vendor):
+            log.debug(
+                prefix + f"{plugin_cls} not support vendor {vendor.__name__}")
+            return
+
+        for func, template_key in self.store[plugin_cls][vendor].items():
+            # 如果设置了only_run_plugins，则只运行指定的插件
+            if self._only_run_plugins and plugin_cls not in self._only_run_plugins:
+                continue
+            yield func, template_key
 
     def store_vendor(self, klass: PLUGIN_NAME,  vendor: DefaultVendor, func: Callable):
         """
@@ -186,7 +178,22 @@ class TemplateInfo:
     vendor_platform: str  # 厂商平台的字符串
 
     def __getitem__(self, name: TEMPLATE) -> List[Dict[KEY, str]]:
-        """获取模板值"""
+        """
+        通过模板名称获取模板变量和值的字典列表
+        模板名称可以使用的形式：
+        e.g:
+        - 完整形式: huawei_vrp_display_version.textfsm
+        - 完整命令: display version
+
+        Args:
+            - name: 模板名称
+
+        Return:
+            - 模板变量和值的字典列表
+
+        Exception:
+            - exception.NtcTemplateNotDefined: 使用缩写或者不存在的模板名称时抛出异常
+        """
         name = self._from_command_to_template_file(name)
         if not name in self.template_key_value:
             raise exception.NtcTemplateNotDefined(name)
@@ -243,15 +250,15 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
         for template_file, keys in template_keys._key_store.items():
             # 当结尾不是.textfsm时，报错
             if not template_file.endswith('.textfsm'):
-                raise exception.AnalysisTemplateNameError
+                raise exception.AnalysisTemplateNameError  # pragma: no cover
 
             cmd = get_command_from_textfsm(  # 通过模板文件名获得命令
                 device.vendor.PLATFORM, template_file)
             cmd_find = device.search_cmd(cmd)  # 搜索命令
             if cmd_find is None:
                 log.debug(
-                    str(f'{device.info.name} 没有找到 {cmd} 命令'))
-                continue
+                    f'AnalysisWarning -- 没有找到 {cmd} 命令')  # pragma: no cover
+                continue  # pragma: no cover
 
             temp_list = []
             for row in cmd_find._parse_result:  # 将需要的键值取出来
@@ -259,7 +266,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                     _ = {key.lower(): row[key.lower()]
                          for key in keys}
                     temp_list.append(_)
-                except KeyError as e:
+                except KeyError as e:  # pragma: no cover
                     raise KeyError(
                         f'{self.__class__.__name__}模板中的键值{str(e)}不存在')
 
@@ -291,13 +298,9 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 # 将分析结果放到总结果中
                 result.merge(each_result)
 
-        # 如果分析模板不支持厂商，则给出一个关注级别的提示
-        except exception.AnalysisVendorNotSupport:
-            result.add_focus('{} not support this vendor'.format(
-                self.__class__.__name__))
-        except exception.NtcTemplateNotDefined:
-            # log.debug(f'{device.info.name} 没有找到模板')
-            ...
+        except exception.NtcTemplateNotDefined as e:
+            raise exception.NtcTemplateNotDefined(
+                f"{self.__class__.__name__} 中无法识别对应模板 {e}")
 
         for alarm in iter(result):  # 设置告警所属插件类
             if not alarm.plugin_cls:

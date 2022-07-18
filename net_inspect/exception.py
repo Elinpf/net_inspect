@@ -31,8 +31,8 @@ class AnalysisTemplateNameError(AnalysisPluginError):
 
 
 class AnalysisVendorNotSupport(AnalysisPluginError):
-    ...
+    """分析模块暂不支持该厂商"""
 
 
 class NtcTemplateNotDefined(AnalysisPluginError):
-    ...
+    """模板名称不存在"""
