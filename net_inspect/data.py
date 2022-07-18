@@ -19,6 +19,7 @@ class PyOption:
 class PyPath:
     def __init__(self):
         self.root_path = os.path.dirname(module_file)
+        self.project_path = os.path.dirname(self.root_path)
 
 
 pystr = PyStr()

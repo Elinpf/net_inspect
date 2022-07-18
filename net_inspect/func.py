@@ -29,3 +29,23 @@ def get_command_from_textfsm(vendor_platform: str, template: str) -> str:
     template = template.replace(vendor_platform + '_', '')
     template = template.replace('.textfsm', '')
     return template.replace('_', ' ')
+
+
+def pascal_case_to_snake_case(camel_case: str):
+    """大驼峰（帕斯卡）转蛇形
+
+    >>> pascal_case_to_snake_case('HuaweiVrpDisplayVersion')
+    'huawei_vrp_display_version'
+    """
+    snake_case = re.sub(r"(?P<key>[A-Z])", r"_\g<key>", camel_case)
+    return snake_case.lower().strip('_')
+
+
+def snake_case_to_pascal_case(snake_case: str):
+    """蛇形转大驼峰（帕斯卡）
+
+    >>> snake_case_to_pascal_case('huawei_vrp_display_version')
+    'HuaweiVrpDisplayVersion'
+    """
+    words = snake_case.split('_')
+    return ''.join(word.title() for word in words)
