@@ -39,16 +39,16 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
                     f'{row["ps"]}: {row["model"]} 电源状态异常')
 
     @analysis.vendor(vendor.Maipu)
-    @analysis.template_key('maipu_mypower_show_system_power.textfsm', ['power_id', 'status', 'work_status'])
+    @analysis.template_key('maipu_mypower_show_system_power.textfsm', ['power_id', 'status', 'work_status', 'power_in'])
     def maipu_mypower(template: TemplateInfo, result: AnalysisResult):
         """
         迈普的show system power 分为两种:
-        一种为长的信息，``status``的信息为online， ``work_status``为模块是否正常，
+        一种为长的信息，``status``的信息为online， ``work_status`` 和 ``power_in`` 均为Normal为正常，
         另外一种是短信息，只有 ``status``, 判断模块是否正常
         """
         for row in template['show system power']:
             if row['status'] == 'Online':
-                if row['work_status'] != 'Normal':
+                if row['work_status'] != 'Normal' or row['power_in'] != 'Normal':
                     result.add_warning(
                         f'电源 {row["power_id"]}状态异常')
             else:
