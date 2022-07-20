@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Dict, List, Iterator, Type
+from typing import TYPE_CHECKING, Callable, Dict, List, Iterator, Type, Tuple
 
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
@@ -17,6 +17,19 @@ KEY = str  # ntc-templates 模板文件中的变量名称
 PLUGIN_NAME = str  # 分析模块的类名称
 
 
+@dataclass(unsafe_hash=True)
+class AnalysisFunctionInfo:
+    plugin_name: str  # 分析插件的名称
+    vendor_name: str  # 分析模块的类名称
+    vendor: Type[DefaultVendor]  # 厂商的类
+    function_name: str  # 分析函数名称
+    function: Callable[[Dict[TEMPLATE, List[KEY]],
+                        AnalysisResult]]    # 存放执行的分析函数
+    template_keys_list: List[Tuple[TEMPLATE, List[KEY]]]  # 模板文件中的变量名称列表
+    template_keys_value: TemplateKeyValue  # 存放模板文件中的变量名称和变量值
+    doc: str  # 分析函数的注释文档
+
+
 class StoreTemplateKey:
     """
     用于存放分析插件的支持厂商和需要模板的值
@@ -24,10 +37,7 @@ class StoreTemplateKey:
     """
 
     def __init__(self):
-        self.store: Dict[PLUGIN_NAME,
-                         Dict[DefaultVendor,
-                              Dict[Callable[[Dict[TEMPLATE, List[KEY]], AnalysisResult]],
-                                   TemplateKey]]] = {}
+        self.store: List[AnalysisFunctionInfo] = []
         self._temp_store = []
         self._only_run_plugins: List[str] = []  # 只运行指定的插件
 
@@ -50,40 +60,62 @@ class StoreTemplateKey:
         """
         self._temp_store.append((template_name, keys))
 
-    def get_funcs(self, plugin_cls: PLUGIN_NAME, vendor: Type[DefaultVendor]
-                  ) -> Iterator[Callable, TemplateKey]:
+    def get_funcs(self, plugin_name: PLUGIN_NAME, vendor: Type[DefaultVendor]
+                  ) -> Iterator[Callable, TemplateKeyValue]:
         """
         获取指定厂商的分析函数, 并且返回模板名称和变量名称的迭代器
 
         如果设置了only_run_plugins，则只运行指定的插件
 
         Args:
-            - plugin_cls: 分析插件类名称
+            - plugin_name: 分析插件类名称
             - vendor: 厂商
 
         Return:
             - 分析函数和TemplateKey的迭代器
         """
-        prefix = 'AnalysisWarning -- '
+        vendor_name = vendor.PLATFORM
+        func_list = []
 
-        # 如果plugin_cls不在store中，则退出
-        if not self.store.get(plugin_cls):
-            log.debug(prefix + f"not found {plugin_cls} in store")
-            return
-
-        # 如果vendor不在store中，则退出
-        if not self.store[plugin_cls].get(vendor):
-            log.debug(
-                prefix + f"{plugin_cls} not support vendor {vendor.__name__}")
-            return
-
-        for func, template_key in self.store[plugin_cls][vendor].items():
-            # 如果设置了only_run_plugins，则只运行指定的插件
-            if self._only_run_plugins and plugin_cls not in self._only_run_plugins:
+        for info in self.filter(plugin_name=plugin_name, vendor_name=vendor_name):
+            if self._only_run_plugins and plugin_name not in self._only_run_plugins:  # 如果设置了only_run_plugins，则只运行指定的插件
                 continue
-            yield func, template_key
+            func_list.append((info.function, info.template_keys_value))
 
-    def store_vendor(self, klass: PLUGIN_NAME,  vendor: DefaultVendor, func: Callable):
+        for func, temp_keys in func_list:
+            yield func, temp_keys
+
+    def filter(
+        self,
+        plugin_name: PLUGIN_NAME = None,
+        template_name: str = None,
+        vendor_name: str = None,
+        function_name: str = None
+    ) -> Iterator[AnalysisFunctionInfo]:
+        """
+        返回指定的分析函数
+
+        Args:
+            - plugin_name: 分析插件类名称
+            - template_name: 模板名称
+            - function_name: 分析函数名称
+
+        Return:
+            - 分析函数的迭代器
+        """
+        for info in self.store:
+
+            if plugin_name and info.plugin_name != plugin_name:
+                continue
+            if template_name and info.template_name_list != template_name:
+                continue
+            if vendor_name and info.vendor_name != vendor_name:
+                continue
+            if function_name and info.function_name != function_name:
+                continue
+            yield info
+
+    def store_vendor(self, vendor: Type[DefaultVendor], func: Callable):
         """
         将存储的模板名称和变量名称放入对应的厂商存储器中
 
@@ -91,18 +123,23 @@ class StoreTemplateKey:
             - vendor: 厂商类
             - func: 厂商的分析函数
         """
-        if not self.store.get(klass):
-            self.store[klass] = {}
-
-        if not self.store[klass].get(vendor):
-            self.store[klass][vendor] = {}
-
-        if not self.store[klass][vendor].get(func):
-            self.store[klass][vendor][func] = TemplateKey(vendor.PLATFORM)
-
+        plugin_name, function_name = func.__qualname__.split('.', maxsplit=2)
+        template_keys_value = TemplateKeyValue(vendor.PLATFORM)
         for template_name, keys in self._temp_store:
-            self.store[klass][vendor][func].append(template_name, keys)
+            template_keys_value.append(template_name, keys)
 
+        af = AnalysisFunctionInfo(
+            plugin_name=plugin_name,
+            vendor_name=vendor.PLATFORM,
+            vendor=vendor,
+            function_name=function_name,
+            function=func,
+            template_keys_list=list(self._temp_store),
+            template_keys_value=template_keys_value,
+            doc=func.__doc__
+        )
+
+        self.store.append(af)
         self._temp_store = []
 
     def vendor(self, vendor: DefaultVendor):
@@ -113,8 +150,7 @@ class StoreTemplateKey:
             - vendor: 厂商
         """
         def func_init(func):
-            klass = get_func_class_name(func)
-            self.store_vendor(klass, vendor, func)
+            self.store_vendor(vendor, func)
             return func
 
         return func_init
@@ -149,7 +185,7 @@ class AlarmLevel(AlarmLevel):
         self._level = level
 
 
-class TemplateKey:
+class TemplateKeyValue:
     def __init__(self, vendor_platform: str):
         """
         用于存放ntc-templates模板名称和里面的变量以及变量对应的值
@@ -171,7 +207,7 @@ class TemplateKey:
 @dataclass
 class TemplateInfo:
     """
-    用于存放将要给到各个分析方法的数据
+    用于存放只给到各个分析函数的数据
     """
 
     template_key_value: Dict[TEMPLATE, List[Dict[KEY, str]]]  # 模板变量和值的字典
@@ -226,7 +262,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
 
     def _get_template_key_value(
         self,
-        template_keys: TemplateKey,
+        template_keys: TemplateKeyValue,
         device: Device,
     ) -> Dict[TEMPLATE, List[Dict[KEY, str]]]:
         """
@@ -282,6 +318,10 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 # 执行对应厂商的分析方法
                 template_key_value = self._get_template_key_value(
                     template_keys, device)
+
+                # 没有数据时，说明不存在可以分析的命令，跳过
+                if not template_key_value:
+                    continue
 
                 # 放到数据类中
                 template_info = TemplateInfo(template_key_value=template_key_value,

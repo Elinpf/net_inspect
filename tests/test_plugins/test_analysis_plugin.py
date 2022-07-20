@@ -123,17 +123,3 @@ def test_analysis_plugin_function_doc(shared_datadir):
     result = cluster.devices[0].analysis_result
     doc = result.get('AnalysisPluginWithTest')[0].doc
     assert doc == 'Test for AnalysisPlugin Doc.'
-
-
-def test_analysis_plugin_get_func_with_error_plugin_or_vendor(caplog):
-    """测试StoreTemplateKey.get_func()输入不存在的插件或者vendor"""
-    caplog.set_level(logging.DEBUG)
-
-    for func, template in analysis.get_funcs('AnalysisPluginWithNotExist', vendor.Huawei):
-        ...  # pragma: no cover
-    assert caplog.messages[0] == 'AnalysisWarning -- not found AnalysisPluginWithNotExist in store'
-    caplog.clear()
-
-    for func, template in analysis.get_funcs('AnalysisPluginWithTest', vendor.Ruijie):
-        ...  # pragma: no cover
-    assert caplog.messages[0] == 'AnalysisWarning -- AnalysisPluginWithTest not support vendor Ruijie'
