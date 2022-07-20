@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Iterator, Type, Tuple
 
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
-from .func import get_command_from_textfsm
+from .func import get_command_from_textfsm, snake_case_to_pascal_case
 from .logger import log
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ PLUGIN_NAME = str  # 分析模块的类名称
 @dataclass(unsafe_hash=True)
 class AnalysisFunctionInfo:
     plugin_name: str  # 分析插件的名称
-    vendor_name: str  # 分析模块的类名称
+    vendor_platform: str  # 分析模块的类名称
     vendor: Type[DefaultVendor]  # 厂商的类
     function_name: str  # 分析函数名称
     function: Callable[[Dict[TEMPLATE, List[KEY]],
@@ -77,7 +77,7 @@ class StoreTemplateKey:
         vendor_name = vendor.PLATFORM
         func_list = []
 
-        for info in self.filter(plugin_name=plugin_name, vendor_name=vendor_name):
+        for info in self.filter(plugin_name=plugin_name, vendor_platform=vendor_name):
             if self._only_run_plugins and plugin_name not in self._only_run_plugins:  # 如果设置了only_run_plugins，则只运行指定的插件
                 continue
             func_list.append((info.function, info.template_keys_value))
@@ -88,32 +88,35 @@ class StoreTemplateKey:
     def filter(
         self,
         plugin_name: PLUGIN_NAME = None,
-        template_name: str = None,
-        vendor_name: str = None,
+        vendor_platform: str = None,
         function_name: str = None
-    ) -> Iterator[AnalysisFunctionInfo]:
+    ) -> List[AnalysisFunctionInfo]:
         """
-        返回指定的分析函数
+        返回指定的分析函数列表
 
         Args:
             - plugin_name: 分析插件类名称
-            - template_name: 模板名称
+            - vendor_platform: 厂商平台名称
             - function_name: 分析函数名称
 
         Return:
-            - 分析函数的迭代器
+            - 分析函数的列表
         """
+        res = []
         for info in self.store:
+
+            # 如果名称是以蛇形命名，则转换为驼峰命名
+            if '_' in plugin_name:
+                plugin_name = snake_case_to_pascal_case(plugin_name)
 
             if plugin_name and info.plugin_name != plugin_name:
                 continue
-            if template_name and info.template_name_list != template_name:
-                continue
-            if vendor_name and info.vendor_name != vendor_name:
+            if vendor_platform and info.vendor_platform != vendor_platform:
                 continue
             if function_name and info.function_name != function_name:
                 continue
-            yield info
+            res.append(info)
+        return res
 
     def store_vendor(self, vendor: Type[DefaultVendor], func: Callable):
         """
@@ -130,13 +133,13 @@ class StoreTemplateKey:
 
         af = AnalysisFunctionInfo(
             plugin_name=plugin_name,
-            vendor_name=vendor.PLATFORM,
+            vendor_platform=vendor.PLATFORM,
             vendor=vendor,
             function_name=function_name,
             function=func,
             template_keys_list=list(self._temp_store),
             template_keys_value=template_keys_value,
-            doc=func.__doc__
+            doc=func.__doc__.strip()
         )
 
         self.store.append(af)
