@@ -10,7 +10,7 @@ from rich import print
 
 from net_inspect.analysis_plugin import analysis
 from net_inspect.bootstrap import bootstrap
-from net_inspect.func import get_command_from_textfsm
+from net_inspect.func import get_command_from_textfsm, snake_case_to_pascal_case
 from tests.test_structured_data_againest_analysis_reference_files import (
     analysis_device_with_raw_file, transform_to_dict)
 
@@ -54,12 +54,33 @@ def long_plugin_name(name: str) -> str:
     return name
 
 
+def plugin_file_content(plugin_name: str) -> str:
+    content = f'''from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from .. import vendor
+from ..analysis_plugin import AnalysisPluginAbc, analysis
+
+if TYPE_CHECKING:
+    from ..analysis_plugin import TemplateInfo
+    from ..domain import AnalysisResult
+
+
+class {snake_case_to_pascal_case(plugin_name)}(AnalysisPluginAbc):
+    """
+    在这里填写插件检查信息
+    """'''
+    return content
+
+
 def generate_file(plugin_name: str, give_function: str | None, index: int):
     """当没有插件文件的时候，创建插件文件，
     当有插件文件的时候，读取插件文件的插件，并且创建对应的测试文件"""
     file_name = plugin_name + '.py'
     if not os.path.exists(os.path.join(PLUGIN_DIR, file_name)):  # 如果没有插件文件，则创建插件文件
-        open(os.path.join(PLUGIN_DIR, file_name), 'w').write('')
+        open(os.path.join(PLUGIN_DIR, file_name), 'w').write(
+            plugin_file_content(plugin_name))
         return
 
     # 如果有插件文件，则读取插件文件的插件，并且创建对应的测试文件

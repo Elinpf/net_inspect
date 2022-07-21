@@ -3,11 +3,11 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-from ..analysis_plugin import (AnalysisPluginAbc, AnalysisResult,
-                               TemplateInfo, analysis)
 from .. import vendor
+from ..analysis_plugin import AnalysisPluginAbc, analysis
 
 if TYPE_CHECKING:
+    from ..analysis_plugin import TemplateInfo
     from ..domain import AnalysisResult
 
 
@@ -59,7 +59,7 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
     @analysis.vendor(vendor.H3C)
     @analysis.template_key('hp_comware_display_power.textfsm', ['slot', 'id', 'status'])
     def hp_comware(template: TemplateInfo, result: AnalysisResult):
-        """当状态不为Normal的时候告警"""
+        """模块状态不为Normal的时候告警"""
         for row in template['display power']:
             if row['status'].lower() != 'normal':
                 result.add_warning(
