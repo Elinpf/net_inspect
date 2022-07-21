@@ -103,3 +103,65 @@ net.set_plugins('smartone', Output)
 cluster = net.run('log_files', 'output',
                   output_plugin_params={'company': 'Company Name'})
 ```
+
+## 关于贡献
+
+分析插件还在持续开发中，`develop_script.py`脚本就是为高效开发提供的一个工具。
+
+开发一个分析插件的流程
+
+1. 创建一个新的插件文件, 对应的文件初始状态会一并准备好
+
+```bash
+python ./develop_script.py -p fan_status -g
+```
+
+2. 在对应的文件中实现插件对每个厂商分析的函数
+
+```py
+class AnalysisPluginWithFanStatus(AnalysisPluginAbc):
+    """
+    要求设备所有在位风扇模块运行在正常状态。
+    """
+    @analysis.vendor(vendor.H3C)
+    @analysis.template_key('hp_comware_display_fan.textfsm', ['slot', 'id', 'status'])
+    def hp_comware(template: TemplateInfo, result: AnalysisResult):
+        """模块状态不为Normal的时候告警"""
+        for row in template['display fan']:
+            if row['status'].lower() != 'normal':
+                result.add_warning(
+                    f'Slot {row["slot"]} Fan {row["id"]} 状态异常' if row['slot'] else f'Fan {row["id"]} 状态异常')
+```
+
+其中`@analysis`是用来记录插件的分析类型的，`vendor`记录插件的厂商类型，`template_key`记录分析模块所需要的`textfsm`文件以及里面的哪些值。
+这些值会在参数`template: TemplateInfo`中给出。
+
+`result: AnalysisResult`用来记录分析结果。可以添加告警信息。
+
+分析方法为类方法，不需要`self`,不需要给出返回值。
+
+插件中的类注释和方法注释都会被记录下来，方便后续调用。
+
+3. 创建对应的测试文件
+
+当编写了对应的分析方法后，再次执行创建命令，工具会自动根据分析方法中需要的命令，生成对应的测试文件。
+
+测试文件路径为`tests/check_analysis_plugins/<plugin_name>/<funcation_name>.raw`
+
+```bash
+python ./development_script.py -p fan_status -f hp_comware -g
+```
+
+4. 在测试文件中添加测试用例
+5. 执行测试
+
+```bash
+python ./development_script.py -p fan_status -f hp_comware -t
+```
+
+6. 完成测试，确认测试结果为正常后，生成yml文件作为参考文件。
+
+```bash
+python ./development_script.py -p fan_status -f hp_comware -y
+```
+

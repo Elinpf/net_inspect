@@ -167,20 +167,16 @@ def correct_data_in_entries_test(processed, reference):
 def test_all_functions_has_a_test():
     """所有AnalysisPlugin中的测试函数至少需要一个raw测试"""
     bootstrap()
-    for template, func_dict in analysis.store.items():
-        if 'test' in template.lower():  # 跳过做测试的插件
+    for func_info in analysis.store:
+        if 'test' in func_info.plugin_name.lower():  # 跳过做测试的插件
             continue
 
-        for _, callable_dict in func_dict.items():
-            for each_func in list(callable_dict.keys()):
+        plugin_name, func_name = func_info.plugin_name, func_info.function_name
 
-                template_name, func_name = each_func.__qualname__.split(
-                    '.', 2)  # like: AnalysisPluginWithPowerStatus.huawei
+        # 如果是分析函数，则检查是否有测试文件
+        template_name_snake_case = pascal_case_to_snake_case(
+            plugin_name)
+        test_raw_file_path = os.path.join(pypath.project_path,
+                                          'tests', 'check_analysis_plugins', template_name_snake_case, func_name + '.raw')
 
-                # 如果是分析函数，则检查是否有测试文件
-                template_name_snake_case = pascal_case_to_snake_case(
-                    template_name)
-                test_raw_file_path = os.path.join(pypath.project_path,
-                                                  'tests', 'check_analysis_plugins', template_name_snake_case, func_name + '.raw')
-
-                assert os.path.exists(test_raw_file_path)
+        assert os.path.exists(test_raw_file_path)

@@ -1,0 +1,4 @@
+---
+analysis_sample:
+  - level: "2"
+    message: "PWR2 状态异常"
