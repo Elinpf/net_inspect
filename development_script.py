@@ -132,6 +132,10 @@ def generate_yml_file(plugin_name: str):
         ret = transform_to_dict(device.analysis_result)
         with open(yml_file, 'w') as f:
             ensure_yaml_standards({'analysis_sample': ret}, yml_file)
+        # 打印写入的内容
+        print(yml_file)
+        print(ret)
+        print()
 
 
 def main(plugin_name: str, function_name: str = '', index: int = 0) -> List[Tuple[str, Device]]:

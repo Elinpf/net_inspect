@@ -1,0 +1,6 @@
+---
+analysis_sample:
+  - level: "2"
+    message: "Slot 1 有432条严重告警"
+  - level: "2"
+    message: "Slot 1 有2条告警"

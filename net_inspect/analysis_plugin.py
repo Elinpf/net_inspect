@@ -344,7 +344,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
 
         except exception.NtcTemplateNotDefined as e:
             raise exception.NtcTemplateNotDefined(
-                f"{self.__class__.__name__} 中无法识别对应模板 {e}")
+                f"{self.__class__.__name__} 中无法识别对应模板 {e}, 请检查分析方法中调用的模板名是否正确。")
 
         for alarm in iter(result):  # 设置告警所属插件类
             if not alarm.plugin_cls:
