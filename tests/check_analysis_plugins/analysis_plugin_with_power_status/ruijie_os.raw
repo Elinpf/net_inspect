@@ -1,0 +1,52 @@
+-------------------------show power-------------------------
+Chassis-type: RG-S8607E
+
+Power-redun: no
+
+Energy-saving: off
+
+
+
+power-id  power-type    supply(W)  status      vol-in/out(V)  cur-out(mA)  supply-out(W)
+
+--------  ------------  ---------  ----------  -------------  -----------  -------------
+
+1         RG-PA1600I    1600       ok          235   /11.978   8125         97
+
+2         N/A           N/A        N/A         N/A   /N/A      N/A          N/A
+
+3         N/A           N/A        N/A         N/A   /N/A      N/A          N/A
+
+4         RG-PA1600I    1600       fail          236   /11.978   2562         31
+
+POE1      N/A           N/A        N/A         N/A   /N/A      N/A          N/A
+
+POE2      N/A           N/A        N/A         N/A   /N/A      N/A          N/A
+
+
+
+slot    card_type                        status      require(W)  allocate(W)
+
+------- -------------------------------- ----------  ----------  -----------
+
+1       M8600E-48XS-DC                   power-on    212         212
+
+2       N/A                              N/A         N/A         N/A
+
+3       N/A                              N/A         N/A         N/A
+
+4       N/A                              N/A         N/A         N/A
+
+5       N/A                              N/A         N/A         N/A
+
+M1      M8600E-CM                        power-on    40          40
+
+M2      M8600E-CM                        power-on    40          40
+
+
+
+total-power(W) redundancy(W) available(W) card-used(W) fan-used(W) free-power(W)
+
+-------------- ------------- ------------ ------------ ----------- --------------
+
+3200           0             3200         292          432         2476

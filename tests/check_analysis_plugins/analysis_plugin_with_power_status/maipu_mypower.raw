@@ -6,8 +6,8 @@ System Power Information (Power 0 - ONLINE)
                         Status: Online   
                    Description: <NULL>
                      Serial No: 5865154671002771
-                   Work Status: Normal 
-                      Power in: Normal 
+                   Work Status: Fault
+                      Power in: Fault
 ----------------------------------------------------------------
 STATISTICS: 1 IN,  0 IERR,  0 OUT,  0 OERR  
 

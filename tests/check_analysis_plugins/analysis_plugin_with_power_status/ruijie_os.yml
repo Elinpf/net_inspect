@@ -1,0 +1,4 @@
+---
+analysis_sample:
+  - level: "2"
+    message: "Power 4 电源状态异常"

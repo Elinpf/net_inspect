@@ -27,7 +27,7 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
                 continue
             if not re.match(r'Normal|Supply', row['state']):
                 result.add_warning(
-                    f'设备 {row["id"]} 电源状态异常')
+                    f'Power {row["id"]} 电源状态异常')
 
     @analysis.vendor(vendor.Cisco)
     @analysis.template_key('cisco_ios_show_power_status.textfsm', ['ps', 'model', 'status', 'fan_sensor'])
@@ -37,6 +37,17 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
             if row['status'] != 'good':
                 result.add_warning(
                     f'{row["ps"]}: {row["model"]} 电源状态异常')
+
+    @analysis.vendor(vendor.Ruijie)
+    @analysis.template_key('ruijie_os_show_power.textfsm', ['power_id', 'power_type', 'status'])
+    def ruijie_os(template: TemplateInfo, result: AnalysisResult):
+        """模块状态不为ok时，报警"""
+        for row in template['show power']:
+            if row['power_type'] == 'N/A':
+                continue
+            if row['status'] != 'ok':
+                result.add_warning(
+                    f'Power {row["power_id"]} 电源状态异常')
 
     @analysis.vendor(vendor.Maipu)
     @analysis.template_key('maipu_mypower_show_system_power.textfsm', ['power_id', 'status', 'work_status', 'power_in'])
@@ -50,11 +61,11 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
             if row['status'] == 'Online':
                 if row['work_status'] != 'Normal' or row['power_in'] != 'Normal':
                     result.add_warning(
-                        f'电源 {row["power_id"]}状态异常')
+                        f'Power {row["power_id"]} 状态异常')
             else:
                 if row['status'] != 'Normal':
                     result.add_warning(
-                        f'电源{row["power_id"]}状态异常')
+                        f'Power {row["power_id"]} 状态异常')
 
     @analysis.vendor(vendor.H3C)
     @analysis.template_key('hp_comware_display_power.textfsm', ['slot', 'id', 'status'])

@@ -1,4 +1,4 @@
 ---
 analysis_sample:
-  - level: "0"
-    message: ""
+  - level: "2"
+    message: "Power 0 状态异常"
