@@ -1,0 +1,21 @@
+-------------------------show memory-------------------------
+
+SUMMARY
+-------
+        Type    Used bytes                      Free bytes                      Total bytes                     Used percent
+        ----    --------------------            --------------------            ---------------------           ------------
+        heap    188874752 (  180.1MB)           830107648 (  791.6MB)           1018982400(  971.7MB)           18.54%
+        CODE    50722944  (   48.3MB)           /                               50722944  (   48.3MB)           /
+        slab    72627828  (   69.2MB)           29939924  (   28.5MB)           102567752 (   97.8MB)           70.81%
+        fpss    1502048   (    1.4MB)           7169184   (    6.8MB)           8671232   (    8.2MB)           17.32%
+        mbuf    278764    (    0.2MB)           184931092 (  176.3MB)           185209856 (  176.6MB)           0.15%
+
+Note:
+        The space of all such memory types exclude code is part of the heap's 
+        used memory,for example:mbuf,slab,and fpss if exists.
+
+STATISTICS
+----------
+                Used bytes                      Free bytes                      Total bytes                     Used percent
+                --------------------            --------------------            ---------------------           ------------
+                202488588 (  193.1MB)           867216756 (  827.0MB)           1069705344( 1020.1MB)           88.93%

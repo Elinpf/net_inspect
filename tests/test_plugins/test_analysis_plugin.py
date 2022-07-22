@@ -22,13 +22,19 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
     """
 
     @analysis.vendor(vendor.Huawei)
-    @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
+    @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'product_version'])
     def huawei(template: TemplateInfo, result: AnalysisResult):
         """
         Test for huawei version status
         """
-        assert template['huawei_vrp_display_version.textfsm'][0]['vrp_version'] == '8.180'
-        assert template['display version'][0]['vrp_version'] == '8.180'
+        assert template['huawei_vrp_display_version.textfsm'][0]['VRP_VERSION'] == '8.180'
+        assert template['display version'][0]['VRP_VERSION'] == '8.180'  # 简写支持
+
+        with pytest.raises(KeyError):
+            template['display version'][0]['vrp_version']  # 与给出的大小写应该对应
+
+        with pytest.raises(KeyError):
+            template['display version'][0]['PRODUCT_VERSION']  # 与给出的大小写应该对应
 
         with pytest.raises(exception.NtcTemplateNotDefined):  # 不支持简写
             template['dis ver']

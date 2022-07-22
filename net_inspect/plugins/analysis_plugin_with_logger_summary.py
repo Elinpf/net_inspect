@@ -17,7 +17,7 @@ class AnalysisPluginWithLoggerSummary(AnalysisPluginAbc):
 
     @analysis.vendor(vendor.H3C)
     @analysis.template_key('hp_comware_display_logbuffer_summary.textfsm',
-                           ['SLOT', 'EMERG', 'ALERT', 'CRIT', 'ERROR', 'WARN'])
+                           ['slot', 'emerg', 'alert', 'crit', 'error', 'warn'])
     def hp_comware(template: TemplateInfo, result: AnalysisResult):
         """日志摘要中大于WARN级别的告警信息进行提示"""
         for row in template['display logbuffer summary']:

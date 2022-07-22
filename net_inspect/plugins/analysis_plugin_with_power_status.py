@@ -17,7 +17,7 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
     """
 
     @analysis.vendor(vendor.Huawei)
-    @analysis.template_key('huawei_vrp_display_power.textfsm', ['MODE', 'ID', 'PRESENT', 'STATE'])
+    @analysis.template_key('huawei_vrp_display_power.textfsm', ['mode', 'id', 'present', 'state'])
     def huawei_vrp(template: TemplateInfo, result: AnalysisResult):
         """模块状态在线，并且状态不为Normal或者Supply时告警"""
         power = template['display power']
