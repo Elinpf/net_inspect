@@ -1,0 +1,42 @@
+-------------------------display cpu-usage-------------------------
+CPU Usage Stat. Cycle: 60 (Second)
+CPU Usage            : 82% Max: 84%
+CPU Usage Stat. Time : 2022-03-14  09:44:04 
+CPU utilization for five seconds: 94%: one minute: 84%: five minutes: 82%
+Max CPU Usage Stat. Time : 2019-11-21 11:34:30.
+
+TaskName        CPU  Runtime(CPU Tick High/Tick Low)  Task Explanation
+VIDL                 94%        13/b28d8dff       DOPRA IDLE                    
+OS                    5%         1/ c388d00       Operation System              
+TICK                  1%         0/3be71540                                     
+AAA                   0%         0/       0       AAA  Authen Account Authorize 
+ADPT                  0%         0/       0       ADPT                          
+AGENT_CAPWAP          0%         0/       0       AGENT_CAPWAP                  
+AGENT_WLAN            0%         0/       0       AGENT_WLAN                    
+AGNT                  0%         0/       0       AGNTSNMP agent task           
+AGT6                  0%         0/       0       AGT6SNMP AGT6 task            
+ALM                   0%         0/       0       ALM  Alarm Management         
+AM                    0%         0/       0       AM   Address Management       
+APP                   0%         0/       0       APP                           
+APS                   0%         0/ 1c9c380       APS Automatic Protection
+                                                  Switch                       
+ARP                   0%         0/       0       ARP                           
+ARPA                  0%         0/       0       ARPA ARP Adapter              
+ASFM                  0%         0/       0       ASFM                          
+ASMN                  0%         0/       0       ASMNG Access Switch
+                                                  Management                   
+BEAT                  0%         0/ 1c9c380       BEAT Beat Management          
+BFD                   0%         0/ 3938700       BFD Bidirection Forwarding
+                                                  Detect                       
+BFDA                  0%         0/       0       BFDA BFD Adapter              
+BOX_Out               0%         0/ 3938700                                     
+BTRC                  0%         0/       0       BTRC                          
+CAPM                  0%         0/       0       CAPM Capture Packet           
+CCTL                  0%         0/       0       CCTLBulk stat connect control 
+CFM                   0%         0/       0       CFM Configuration file
+                                                  management                   
+CHAL                  0%         0/       0       CHAL Core Hardware Layer      
+CKDV                  0%         0/       0       CKDV                          
+CLKI                  0%         0/       0       CLKI                          
+CMDA                  0%         0/       0       CMDA                          
+COMT                  0%         0/       0       COMT                          
