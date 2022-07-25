@@ -65,12 +65,12 @@ from rich.console import Console
 
 class Output(OutputPluginAbstract):
     def main(self):
-        if not self.params.output_params.get('company'):
+        if not self.args.output_params.get('company'):
             raise PluginError('name or age is missing')
 
         console = Console()
 
-        table = Table(title=self.params.output_params.get(
+        table = Table(title=self.args.output_params.get(
             'company'), show_lines=False)
         table.add_column('name', justify='center')
         table.add_column('ip', justify='center')
@@ -78,7 +78,7 @@ class Output(OutputPluginAbstract):
         table.add_column('version', justify='center')
         table.add_column('power', justify='center')
 
-        for device in self.params.devices:
+        for device in self.args.devices:
             if device.vendor.PLATFORM == 'huawei_vrp':
                 data = [device.info.name, device.info.ip]
                 ps = device.parse_result('display version')
@@ -87,7 +87,7 @@ class Output(OutputPluginAbstract):
                 power_analysis = device.analysis_result.get('Power Status')
                 power_desc = []
                 for alarm in power_analysis:
-                    if alarm.is_focus:
+                    if alarm.include_focus:
                         power_desc.append(alarm.message)
                 data.append('\n'.join(power_desc) if power_desc else 'Normal')
 
@@ -100,8 +100,7 @@ class Output(OutputPluginAbstract):
 net = NetInspect()
 # net.set_log_level('DEBUG')
 net.set_plugins('smartone', Output)
-cluster = net.run('log_files', 'output',
-                  output_plugin_params={'company': 'Company Name'})
+cluster = net.run('log_files', output_plugin_params={'company': 'Company Name'})
 ```
 
 ## 关于贡献

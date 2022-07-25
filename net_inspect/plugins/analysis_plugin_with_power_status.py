@@ -58,12 +58,12 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
         另外一种是短信息，只有 ``status``, 判断模块是否正常
         """
         for row in template['show system power']:
-            if row['status'] == 'Online':
-                if row['work_status'] != 'Normal' or row['power_in'] != 'Normal':
+            if row['status'].lower() == 'online':
+                if row['work_status'].lower() != 'normal' or row['power_in'].lower() != 'normal':
                     result.add_warning(
                         f'Power {row["power_id"]} 状态异常')
             else:
-                if row['status'] != 'Normal':
+                if row['status'].lower() != 'normal':
                     result.add_warning(
                         f'Power {row["power_id"]} 状态异常')
 

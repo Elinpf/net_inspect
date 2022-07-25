@@ -8,6 +8,8 @@ class PyStr:
         self.logger_format = "%(message)s"
         # self.logger_format = "%(asctime)-15s - %(levelname)s - %(message)s"
         self.default_parse_plugin = 'ntc_templates'
+        self.analysis_warning_prefix = 'AnalysisWarning --'
+        self.parse_waning_prefix = 'ParseWarning --'
 
 
 class PyOption:

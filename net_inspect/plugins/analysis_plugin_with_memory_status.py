@@ -53,6 +53,15 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
         for row in template_info['show memory']:
             check_memory_usage(float(row['used_percent']), result)
 
+    @analysis.vendor(vendor.H3C)
+    @analysis.template_key('hp_comware_display_memory.textfsm', ['used_rate'])
+    def hp_comware(template_info: TemplateInfo, result: AnalysisResult):
+        """
+        内存利用率高于80%，则告警。
+        """
+        for row in template_info['display memory']:
+            check_memory_usage(float(row['used_rate']), result)
+
 
 def check_memory_usage(memory_usage: float, result: AnalysisResult):
     if memory_usage > 80:

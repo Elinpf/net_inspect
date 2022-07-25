@@ -50,7 +50,7 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
         :param platform: 命令所属平台, e.g. huawei_os"""
         command = cmd.command
         if platform not in self.index_commands:
-            raise TemplateError(f'{platform} platform not support')
+            raise TemplateError(f'platform:{platform!r} not support')
 
         platform_commands_reg = self.index_commands[platform]
         match_command = ''
@@ -60,9 +60,11 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
                 break
 
         if match_command == '':
-            raise TemplateError(f'`{command}` command not support')
+            raise TemplateError(
+                f'platform:{platform!r} cmd:{command!r} command not support')
 
         try:
             return parse_output(platform=platform, command=match_command, data=cmd.content)
         except Exception as e:
-            raise TemplateError(str(e))
+            raise TemplateError(
+                f'platform: {platform!r} cmd: {command!r} {str(e)}')

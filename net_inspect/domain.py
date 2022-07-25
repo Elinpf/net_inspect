@@ -7,6 +7,7 @@ from typing import Dict, Iterator, List, Optional, Tuple, Type
 from . import exception
 from .logger import log
 from .vendor import DefaultVendor
+from .data import pystr
 
 
 class Cluster:
@@ -67,7 +68,7 @@ class Cluster:
         device_cls.info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
         self.devices.append(device_cls)
 
-    def output(self, file_path: str, params: Optional[Dict[str, str]] = None):
+    def output(self, file_path: str = '', params: Dict[str, str] = {}):
         """输出到文件
 
         :param file_path: 文件路径"""
@@ -183,7 +184,7 @@ class Device:
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                log.debug(f"ParseWarning -- {str(e)}")
+                log.debug(f"{pystr.parse_waning_prefix} {str(e)}")
                 continue
 
     def analysis(self):
@@ -265,9 +266,8 @@ class Cmd:
         self._content = stream
 
     def update_parse_reslut(self, result: List[Dict[str, str]]):
-        """在取到解析结果后，更新解析结果，并且删除命令的内容释放空间"""
+        """在取到解析结果后，更新解析结果"""
         self._parse_result = result
-        self._content = ''
 
 
 class PluginManagerAbc(abc.ABC):
@@ -435,12 +435,28 @@ class AlarmLevel:
     @property
     def is_focus(self) -> bool:
         """是否为关注级别"""
-        return self._level >= AlarmLevel.FOCUS
+        return self._level == AlarmLevel.FOCUS
 
     @property
     def is_normal(self) -> bool:
         """是否为正常级别"""
         return self._level == AlarmLevel.NORMAL
+
+    @property
+    def include_focus(self) -> bool:
+        """是否包含关注级别, 即至少包含关注级别"""
+        return self._level >= AlarmLevel.FOCUS
+
+    # 级别描述
+    @property
+    def level_str(self) -> str:
+        """级别描述"""
+        if self._level == AlarmLevel.NORMAL:
+            return 'NORMAL'
+        elif self._level == AlarmLevel.FOCUS:
+            return 'FOCUS'
+        elif self._level == AlarmLevel.WARNING:
+            return 'WARNING'
 
     @property
     def doc(self) -> str:
@@ -544,18 +560,19 @@ class InputPluginAbstract(PluginAbstract):
 class OutputPluginAbstract(PluginAbstract):
 
     @dataclass
-    class OutputParams:
+    class OutputArgs:
+
         devices: DeviceList  # 设备列表
         path: str  # 输出文件的路径
-        output_params: Optional[Dict[str, str]] = None  # 输出文件的参数
+        output_params: Dict[str, str]  # 输出文件的参数
 
-    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]] = None):
+    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]]):
         """对设备列表进行输出
         :params: devices: 设备列表
         :params: path: 输出文件的路径
-        :params: params: 输出文件的参数"""
+        :params: output_params: 传递输出文件的参数"""
 
-        self.params = self.OutputParams(
+        self.args = self.OutputArgs(
             devices=devices, path=path, output_params=output_params)
         return self.main()
 

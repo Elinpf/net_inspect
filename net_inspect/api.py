@@ -109,7 +109,7 @@ class NetInspect:
         """运行输出插件"""
         self.cluster.output(file_path, params)
 
-    def run(self, path: str, output_file_path: str, output_plugin_params: Optional[Dict[str, str]] = None) -> Cluster:
+    def run(self, path: str, output_file_path: str = '', output_plugin_params: Dict[str, str] = {}) -> Cluster:
         """运行输入解析输出插件
         :param path: 文件或者目录路径
         :param output_file_path: 输出文件路径

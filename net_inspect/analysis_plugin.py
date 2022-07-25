@@ -8,6 +8,7 @@ from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
 from .func import get_command_from_textfsm, snake_case_to_pascal_case
 from .logger import log
+from .data import pystr
 
 if TYPE_CHECKING:
     from .domain import DefaultVendor, Device
@@ -297,8 +298,12 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             cmd_find = device.search_cmd(cmd)  # 搜索命令
             if cmd_find is None:
                 log.debug(
-                    f'AnalysisWarning -- 没有找到 {cmd} 命令')  # pragma: no cover
+                    f'{pystr.analysis_warning_prefix} device:{device.info.name!r} cmd:{cmd!r} no found this command')  # pragma: no cover
                 continue  # pragma: no cover
+
+            if not cmd_find._parse_result:  # 当没有解析结果时，给出提示
+                log.debug(
+                    f'{pystr.parse_waning_prefix} device:{device.info.name!r} platform:{device.vendor.PLATFORM!r} cmd:{cmd!r} no parse result')  # pragma: no cover
 
             temp_list = []
             for row in cmd_find._parse_result:  # 将需要的键值取出来
