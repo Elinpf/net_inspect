@@ -16,6 +16,7 @@ class PyOption:
     def __init__(self):
         self.log_file_expend = ['.txt', '.log', '.diag']
         self.log_level = 'INFO'
+        self.verbose_level = 0
 
 
 class PyPath:

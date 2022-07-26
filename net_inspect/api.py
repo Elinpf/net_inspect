@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from typing import Dict, TYPE_CHECKING, Type, List, Optional
 import os
+from typing import TYPE_CHECKING, Dict, List, Optional, Type
 
 from .bootstrap import bootstrap
-from .plugin_manager import PluginManager
+from .data import pyoption, pystr
 from .domain import Cluster
-from .data import pystr
+from .func import clamp_number
 from .logger import log
+from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
-    from .domain import (PluginAbstract, InputPluginAbstract,
-                         OutputPluginAbstract, ParsePluginAbstract, Device)
+    from .domain import (Device, InputPluginAbstract, OutputPluginAbstract,
+                         ParsePluginAbstract, PluginAbstract)
 
 
 class NetInspect:
@@ -128,3 +129,16 @@ class NetInspect:
         :param device_name: 设备名称
         :return: 设备列表"""
         return self.cluster.search(device_name)
+
+    def verbose(self, verbose: int):
+        """设置输出等级
+
+        Args:
+            verbose: 输出等级 0~3
+        """
+        verbose = clamp_number(verbose, 0, 3)
+        if verbose >= 1:
+            self.set_log_level('DEBUG')
+        else:
+            self.set_log_level('INFO')
+        pyoption.verbose_level = verbose

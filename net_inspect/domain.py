@@ -184,7 +184,10 @@ class Device:
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                log.debug(f"{pystr.parse_waning_prefix} {str(e)}")
+                log.debug(
+                    f"{pystr.parse_waning_prefix} device:{self._device_info.name!r} {str(e)}")
+                continue
+            except exception.Continue:
                 continue
 
     def analysis(self):

@@ -2,8 +2,12 @@ class Error(Exception):
     ...
 
 
+class Continue(Exception):
+    """用于控制循环"""
+
+
 class TemplateError(Error):
-    ...
+    """ntc-template 错误"""
 
 
 class PluginError(Error):

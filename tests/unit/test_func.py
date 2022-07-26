@@ -24,3 +24,21 @@ def test_snake_case_to_pascal_case():
     """测试蛇形转大驼峰（帕斯卡）"""
     res = func.snake_case_to_pascal_case('huawei_vrp_display_version')
     assert res == 'HuaweiVrpDisplayVersion'
+
+
+def test_clamp_num_min():
+    """测试小于最小值"""
+    res = func.clamp_number(1, 3, 6)
+    assert res == 3
+
+
+def test_clamp_num_max():
+    """测试大于最大值"""
+    res = func.clamp_number(7, 3, 6)
+    assert res == 6
+
+
+def test_clamp_num_normal():
+    """测试正常值"""
+    res = func.clamp_number(5, 3, 6)
+    assert res == 5

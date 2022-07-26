@@ -5,8 +5,9 @@ from typing import TYPE_CHECKING, Dict, List
 from ntc_templates.parse import parse_output, __file__ as model_file
 
 from ..domain import ParsePluginAbstract
-from ..exception import TemplateError
+from .. import exception
 from ..func import reg_extend
+from ..data import pyoption
 
 if TYPE_CHECKING:
     from ..domain import Cmd
@@ -50,7 +51,10 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
         :param platform: 命令所属平台, e.g. huawei_os"""
         command = cmd.command
         if platform not in self.index_commands:
-            raise TemplateError(f'platform:{platform!r} not support')
+            if pyoption.verbose_level >= 3:
+                raise exception.TemplateError(
+                    f'platform:{platform!r} not support')
+            raise exception.Continue
 
         platform_commands_reg = self.index_commands[platform]
         match_command = ''
@@ -60,11 +64,13 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
                 break
 
         if match_command == '':
-            raise TemplateError(
-                f'platform:{platform!r} cmd:{command!r} command not support')
+            if pyoption.verbose_level >= 3:
+                raise exception.TemplateError(
+                    f'platform:{platform!r} cmd:{command!r} command not support')
+            raise exception.Continue
 
         try:
             return parse_output(platform=platform, command=match_command, data=cmd.content)
         except Exception as e:
-            raise TemplateError(
+            raise exception.TemplateError(
                 f'platform: {platform!r} cmd: {command!r} {str(e)}')

@@ -31,7 +31,7 @@ def get_command_from_textfsm(vendor_platform: str, template: str) -> str:
     return template.replace('_', ' ')
 
 
-def pascal_case_to_snake_case(camel_case: str):
+def pascal_case_to_snake_case(camel_case: str) -> str:
     """大驼峰（帕斯卡）转蛇形
 
     >>> pascal_case_to_snake_case('HuaweiVrpDisplayVersion')
@@ -41,7 +41,7 @@ def pascal_case_to_snake_case(camel_case: str):
     return snake_case.lower().strip('_')
 
 
-def snake_case_to_pascal_case(snake_case: str):
+def snake_case_to_pascal_case(snake_case: str) -> str:
     """蛇形转大驼峰（帕斯卡）
 
     >>> snake_case_to_pascal_case('huawei_vrp_display_version')
@@ -49,3 +49,18 @@ def snake_case_to_pascal_case(snake_case: str):
     """
     words = snake_case.split('_')
     return ''.join(word.title() for word in words)
+
+
+def clamp_number(num: int, min_num: int, max_num: int) -> int:
+    """
+    将数字限制在指定范围内
+
+    Args:
+        num: 数字
+        min_num: 最小值
+        max_num: 最大值 
+
+    Returns:
+        int: 限制后的数字
+    """
+    return max(min(num, max_num), min_num)
