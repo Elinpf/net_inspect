@@ -55,7 +55,7 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
         platform_commands_reg = self.index_commands[platform]
         match_command = ''
         for cmd_reg in platform_commands_reg:
-            if re.match(reg_extend(cmd_reg), command):
+            if re.match(f'^{reg_extend(cmd_reg)}$', command):
                 match_command = re.sub(r'[\[|\]]', '', cmd_reg)
                 break
 
