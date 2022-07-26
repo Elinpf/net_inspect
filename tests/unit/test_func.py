@@ -42,3 +42,15 @@ def test_clamp_num_normal():
     """测试正常值"""
     res = func.clamp_number(5, 3, 6)
     assert res == 5
+
+
+def test_mach():
+    string = 'Normal'
+    assert True == func.match(string, 'Normal')
+    assert False == func.match(string, 'normal')
+
+
+def test_match_lower():
+    string = 'Normal'
+    assert False == func.match_lower(string, 'Normal')
+    assert True == func.match_lower(string, 'normal')

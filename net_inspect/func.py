@@ -64,3 +64,13 @@ def clamp_number(num: int, min_num: int, max_num: int) -> int:
         int: 限制后的数字
     """
     return max(min(num, max_num), min_num)
+
+
+def match(string: str, pattern: str) -> bool:
+    """匹配字符串，区分大小写"""
+    return bool(re.match(pattern, string))
+
+
+def match_lower(string: str, pattern: str) -> bool:
+    """匹配字符串，不区分大小写"""
+    return bool(re.match(pattern, string.lower()))
