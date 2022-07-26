@@ -1,5 +1,8 @@
 import re
 
+from .logger import log
+from .data import pyoption
+
 
 def reg_extend(reg: str) -> str:
     """扩展正则表达式写法，支持简单的逐字匹配
@@ -74,3 +77,16 @@ def match(string: str, pattern: str) -> bool:
 def match_lower(string: str, pattern: str) -> bool:
     """匹配字符串，不区分大小写"""
     return bool(re.match(pattern, string.lower()))
+
+
+def print_log(string: str, verbose: int = 0) -> None:
+    """
+    根据级别打印日志
+
+    Args:
+        string: 日志内容
+        level: 日志级别
+    """
+    verbose = clamp_number(verbose, 1, 3)
+    if pyoption.verbose_level >= verbose:
+        log.debug(string)

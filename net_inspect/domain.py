@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
-from .logger import log
-from .vendor import DefaultVendor
 from .data import pystr
+from .func import print_log
+from .vendor import DefaultVendor
 
 
 class Cluster:
@@ -184,8 +184,9 @@ class Device:
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                log.debug(
-                    f"{pystr.parse_waning_prefix} device:{self._device_info.name!r} {str(e)}")
+                print_log(
+                    f"{pystr.parse_waning_prefix} device:{self._device_info.name!r} {str(e)}",
+                    verbose=1)
                 continue
             except exception.Continue:
                 continue

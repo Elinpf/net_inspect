@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Iterator, Type, Tuple
 
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
-from .func import get_command_from_textfsm, snake_case_to_pascal_case
-from .logger import log
+from .func import get_command_from_textfsm, snake_case_to_pascal_case, print_log
 from .data import pystr
 
 if TYPE_CHECKING:
@@ -296,14 +295,16 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             cmd = get_command_from_textfsm(  # 通过模板文件名获得命令
                 device.vendor.PLATFORM, template_file)
             cmd_find = device.search_cmd(cmd)  # 搜索命令
-            if cmd_find is None:
-                log.debug(
-                    f'{pystr.analysis_warning_prefix} device:{device.info.name!r} cmd:{cmd!r} no found this command')  # pragma: no cover
-                continue  # pragma: no cover
+            if cmd_find is None:  # 当插件中需要，但是设备命令中不存在时, 给出提示
+                print_log(
+                    f'{pystr.analysis_warning_prefix} device:{device.info.name!r} cmd:{cmd!r} no found this command',
+                    verbose=2)
+                continue
 
             if not cmd_find._parse_result:  # 当没有解析结果时，给出提示
-                log.debug(
-                    f'{pystr.parse_waning_prefix} device:{device.info.name!r} platform:{device.vendor.PLATFORM!r} cmd:{cmd!r} no parse result')  # pragma: no cover
+                print_log(
+                    f'{pystr.parse_waning_prefix} device:{device.info.name!r} platform:{device.vendor.PLATFORM!r} cmd:{cmd!r} no parse result',
+                    verbose=1)
 
             temp_list = []
             for row in cmd_find._parse_result:  # 将需要的键值取出来
