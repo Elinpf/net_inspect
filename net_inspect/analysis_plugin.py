@@ -301,11 +301,6 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                     verbose=2)
                 continue
 
-            if not cmd_find._parse_result:  # 当没有解析结果时，给出提示
-                print_log(
-                    f'{pystr.parse_waning_prefix} device:{device.info.name!r} platform:{device.vendor.PLATFORM!r} cmd:{cmd!r} no parse result',
-                    verbose=1)
-
             temp_list = []
             for row in cmd_find._parse_result:  # 将需要的键值取出来
                 try:

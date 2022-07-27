@@ -70,7 +70,12 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
             raise exception.Continue
 
         try:
-            return parse_output(platform=platform, command=match_command, data=cmd.content)
+            res = parse_output(platform=platform,
+                               command=match_command, data=cmd.content)
+            if not res:  # 如果没有解析到结果，则抛出异常提示
+                raise exception.TemplateError(
+                    f'platform:{platform!r} cmd:{command!r} no parse result')
+            return res
         except Exception as e:
             raise exception.TemplateError(
                 f'platform: {platform!r} cmd: {command!r} {str(e)}')
