@@ -61,6 +61,7 @@ from typing import TYPE_CHECKING
 
 from .. import vendor
 from ..analysis_plugin import AnalysisPluginAbc, analysis
+from ..func import match_lower
 
 if TYPE_CHECKING:
     from ..analysis_plugin import TemplateInfo

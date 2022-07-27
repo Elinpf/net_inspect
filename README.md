@@ -103,6 +103,31 @@ net.set_plugins('smartone', Output)
 cluster = net.run('log_files', output_plugin_params={'company': 'Company Name'})
 ```
 
+## API 解释
+
+### 初始化
+
+```python
+from net_inspect import NetInspect
+
+net = NetInspect()
+```
+
+### 设置日志级别
+
+```python
+net.verbose(1)
+```
+
+开启`verbose`表示为打开了`DEBUG`级别的日志, 默认为`INFO`。
+`verbose`级别可以通过`verbose()`方法设置，总共0~3
+- 0: 日志关闭
+- 1: 提供Output模块的日志和Parse模块的日志
+- 2: 追加提供Analysis模块的日志
+- 3: 追加提供Parse模块不支持命令的信息日志
+
+
+
 ## 关于贡献
 
 分析插件还在持续开发中，`develop_script.py`脚本就是为高效开发提供的一个工具。
