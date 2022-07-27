@@ -14,6 +14,7 @@ class DefaultVendor:
     PLATFORM = 'default'
     VERSION_COMMAND = None
     KEYWORD_REG = None
+    INVALID_STR = None
 
     @classmethod
     def check_vendor(cls, cmds: Dict[str, Cmd]) -> Type[DefaultVendor]:
@@ -52,6 +53,7 @@ class Huawei(DefaultVendor):
     PLATFORM = 'huawei_vrp'
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'Huawei Versatile Routing Platform'
+    INVALID_STR = r'Error: Wrong parameter found at'
 
 
 class H3C(DefaultVendor):
@@ -59,6 +61,7 @@ class H3C(DefaultVendor):
     PLATFORM = 'hp_comware'  # 新华三在海外用的是 HP Comware
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'H3C Comware Platform Software'
+    INVALID_STR = r'Ambiguous command found at'
 
 
 class Cisco(DefaultVendor):
@@ -66,6 +69,7 @@ class Cisco(DefaultVendor):
     PLATFORM = 'cisco_ios'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
     KEYWORD_REG = r'Cisco IOS Software'
+    INVALID_STR = r'Invalid input detected'
 
 
 class Maipu(DefaultVendor):
@@ -73,6 +77,7 @@ class Maipu(DefaultVendor):
     PLATFORM = 'maipu_mypower'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
     KEYWORD_REG = r'MyPower \(R\) Operating System Software'
+    INVALID_STR = r'Invalid input detected at'
 
 
 class Ruijie(DefaultVendor):
@@ -80,3 +85,4 @@ class Ruijie(DefaultVendor):
     PLATFORM = 'ruijie_os'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
     KEYWORD_REG = r'Ruijie Networks'
+    INVALID_STR = r'Invalid input detected at'

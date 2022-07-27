@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import abc
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
@@ -180,6 +181,9 @@ class Device:
         """对每条cmd进行解析"""
         for _, cmd in self.cmds.items():
             try:
+                # 首先判断是否为无效命令
+                if not cmd.is_vaild(self._vendor.INVALID_STR):
+                    continue
                 parse_result = self._plugin_manager.parse(
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
@@ -272,6 +276,20 @@ class Cmd:
     def update_parse_reslut(self, result: List[Dict[str, str]]):
         """在取到解析结果后，更新解析结果"""
         self._parse_result = result
+
+    def is_vaild(self, invalid_str: Optional[str] = None) -> bool:
+        """判断命令的内容是否为有效内容
+        Args:
+            invalid_str: 如果命令的内容包含这个字符串，则认为命令无效
+
+        Returns:
+            bool: 命令是否有效
+        """
+        if bool(self.content.strip()) == False:  # 如果为空则认为无效
+            return False
+        elif invalid_str and re.search(invalid_str, self.content):  # 如果包含无效字符串则认为无效
+            return False
+        return True
 
 
 class PluginManagerAbc(abc.ABC):
