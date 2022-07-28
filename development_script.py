@@ -145,11 +145,15 @@ def main(plugin_name: str, function_name: str = '', index: int = 0) -> List[Tupl
     for raw_file in glob.iglob(os.path.join(raw_dir, f'*.raw')):
         # 当给出了明确需要测试的分析函数名称， 按照index来测试
         if function_name:
-            if index > 1:
-                if raw_file.endswith(f'{function_name}{index}.raw'):
-                    need_raw_list.append(raw_file)
-            else:
+            if function_name not in raw_file:
+                continue
+            if index == 0:  # 如果index为0，则表示所有raw文件
+                need_raw_list.append(raw_file)
+            if index == 1:
                 if raw_file.endswith(f'{function_name}.raw'):
+                    need_raw_list.append(raw_file)
+            elif index > 1:
+                if raw_file.endswith(f'{function_name}{index}.raw'):
                     need_raw_list.append(raw_file)
         else:
             need_raw_list.append(raw_file)
@@ -175,8 +179,9 @@ if __name__ == '__main__':
         exit()
 
     if args.test:
+        index = args.index or 0
         raw_file_and_devices = main(
-            plugin_name, args.function, args.index)
+            plugin_name, args.function, index)
         for raw_file, device in raw_file_and_devices:
             analysis_result = device.analysis_result
             print(raw_file)
