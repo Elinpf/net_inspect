@@ -12,9 +12,9 @@ class DefaultVendor:
     """默认厂商"""
 
     PLATFORM = 'default'
-    VERSION_COMMAND = None
-    KEYWORD_REG = None
-    INVALID_STR = None
+    VERSION_COMMAND = None  # 确定厂商信息的命令
+    KEYWORD_REG = None  # 用于匹配厂商的关键字正则表达式
+    INVALID_STR = None  # 如果命令返回的结果中包含该字符串, 则认为命令无效
 
     @classmethod
     def check_vendor(cls, cmds: Dict[str, Cmd]) -> Type[DefaultVendor]:
@@ -53,14 +53,14 @@ class Huawei(DefaultVendor):
     PLATFORM = 'huawei_vrp'
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'Huawei Versatile Routing Platform'
-    INVALID_STR = r'Error: Wrong parameter found at'
+    INVALID_STR = r'Error:.*found at'
 
 
 class H3C(DefaultVendor):
 
     PLATFORM = 'hp_comware'  # 新华三在海外用的是 HP Comware
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
-    KEYWORD_REG = r'H3C Comware Platform Software'
+    KEYWORD_REG = r'H3C Comware Platform Software|H3C Comware Software'
     INVALID_STR = r'Ambiguous command found at'
 
 

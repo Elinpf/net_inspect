@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
-from .data import pystr
+from .data import pystr, pyoption
 from .func import print_log
 from .vendor import DefaultVendor
 
@@ -183,6 +183,9 @@ class Device:
             try:
                 # 首先判断是否为无效命令
                 if not cmd.is_vaild(self._vendor.INVALID_STR):
+                    if pyoption.verbose_level > 3:
+                        raise exception.TemplateError(
+                            f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank')
                     continue
                 parse_result = self._plugin_manager.parse(
                     cmd, self.vendor.PLATFORM)
