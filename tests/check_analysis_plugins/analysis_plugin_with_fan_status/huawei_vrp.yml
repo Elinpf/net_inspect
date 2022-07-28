@@ -1,4 +1,4 @@
 ---
 analysis_sample:
-  - level: "2"
+  - level: "1"
     message: "Slot 10 风扇不在位"

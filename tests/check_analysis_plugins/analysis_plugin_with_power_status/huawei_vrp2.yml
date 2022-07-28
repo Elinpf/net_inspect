@@ -1,0 +1,4 @@
+---
+analysis_sample:
+  - level: "1"
+    message: "Power PWR2 电源不在位"

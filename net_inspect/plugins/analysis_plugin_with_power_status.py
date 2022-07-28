@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from .. import vendor
 from ..analysis_plugin import AnalysisPluginAbc, analysis
+from ..func import match_lower
 
 if TYPE_CHECKING:
     from ..analysis_plugin import TemplateInfo
@@ -23,9 +24,9 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
         power = template['display power']
         for row in power:
             # 当没有电源插入的时候，不关注
-            if not re.match(r'Yes|Present', row['present']):
-                continue
-            if not re.match(r'Normal|Supply', row['state']):
+            if not match_lower(row['present'], r'yes|present'):
+                result.add_focus(f"Power {row['id']} 电源不在位")
+            elif not match_lower(row['state'], r'normal|supply'):
                 result.add_warning(
                     f'Power {row["id"]} 电源状态异常')
 

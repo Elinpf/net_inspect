@@ -21,14 +21,18 @@ class AnalysisPluginWithFanStatus(AnalysisPluginAbc):
     def huawei_vrp(template: TemplateInfo, result: AnalysisResult):
         """检查设备所有在位风扇模块运行在正常状态"""
         for row in template['display fan']:
-            if not match_lower(row['present'], 'yes'):
-                result.add_warning(f"Slot {row['slot_id']} 风扇不在位")
+            if row['present']:  # NE serial and S5700 serial
+                if not match_lower(row['present'], r'yes|present'):
+                    result.add_focus(f"Slot {row['slot_id']} 风扇不在位")
 
-            elif not match_lower(row['registered'], 'yes'):
-                result.add_warning(f"Slot {row['slot_id']} 风扇未注册")
+                elif row['registered'] and not match_lower(row['registered'], 'yes'):
+                    result.add_focus(f"Slot {row['slot_id']} 风扇未注册")
 
-            elif not match_lower(row['status'], r'auto|namual'):
-                result.add_warning(f"Slot {row['slot_id']} 风扇状态不正常")
+                elif not match_lower(row['status'], r'auto|namual|normal'):
+                    result.add_warning(f"Slot {row['slot_id']} 风扇状态不正常")
+            else:  # 其他系列进行简单的判断
+                if not match_lower(row['status'], 'normal'):
+                    result.add_warning(f"Slot {row['slot_id']} 风扇状态不正常")
 
     @analysis.vendor(vendor.H3C)
     @analysis.template_key('hp_comware_display_fan.textfsm', ['slot', 'id', 'status'])
