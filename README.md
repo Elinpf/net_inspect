@@ -49,7 +49,7 @@ Analysis插件的功能是将解析的信息进行分析，对分析的内容进
 `net_inspect`有三种使用方式
 
 1. 作为三方库提供API
-2. CLI命令行操作 (TODO)
+2. CLI命令行操作
 3. 本地Web界面操作 (TODO)
 
 
@@ -125,6 +125,37 @@ net.verbose(1)
 - 1: 提供Output模块的日志和Parse模块的日志
 - 2: 追加提供Analysis模块的日志
 - 3: 追加提供Parse模块不支持命令的信息日志和命令为无效的信息
+
+### 设置插件
+
+一般来说，只需要设置`input_plugin`和`output_plugin`即可。
+
+```python
+net.set_plugins(input_plugin='smartone', output_plugin='device_warning_logging')
+```
+可以使用字符串的简写，也可以自己继承插件类后重写`main()`方法，然后将类传递进来。
+
+### 执行
+
+提供输入的文件路径即可, 可以是文件或者目录。
+
+```python
+net.run('log_files')
+```
+
+如果output中需要提供参数，可以使用`output_plugin_params`参数，例如：
+
+```python
+net.run('log_files', output_plugin_params={'company': 'Company Name'})
+```
+
+## CLI 命令行操作
+
+![](resource/cli_1.png)
+
+```bash
+net_inspect -i log_files
+```
 
 
 

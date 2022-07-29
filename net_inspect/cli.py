@@ -80,7 +80,7 @@ def main(
     output_path: str = typer.Option(
         '', '--output', '-o', help='输出的文件路径'),
     verbose: int = typer.Option(
-        0, '--verbose', '-v', help='设置输出等级(-v, -vv, -vvv)', count=True, show_default=False),
+        0, '--verbose', '-v', help='设置DEBUG等级(-v, -vv, -vvv)', count=True, show_default=False),
     plugin_list: bool = typer.Option(
         False, '--plugin-list', '-l', help='显示插件列表'),
     analysis_list: bool = typer.Option(
