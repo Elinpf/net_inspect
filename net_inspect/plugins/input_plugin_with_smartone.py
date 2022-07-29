@@ -41,6 +41,7 @@ command_line_reg2 = r'^---------------------------------------------------------
 
 
 class InputPluginWithSmartOne(InputPluginAbstract):
+    """通过iSmartOne平台获取的输出"""
 
     def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
         match = re.match(device_info_reg, os.path.basename(file_path))

@@ -7,7 +7,7 @@ from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
 from .data import pystr, pyoption
-from .func import print_log
+from .func import print_log, pascal_case_to_snake_case
 from .vendor import DefaultVendor
 
 
@@ -563,6 +563,16 @@ class PluginAbstract(abc.ABC):
     @abc.abstractmethod
     def run(self):
         raise NotImplementedError
+
+    @property
+    def doc(self) -> str:
+        """返回分析模块的文档"""
+        return self.__doc__.strip() if self.__doc__ else ''
+
+    @property
+    def short_name(self) -> str:
+        """返回模块的简写"""
+        return pascal_case_to_snake_case(self.__class__.__name__.split('With', 1)[-1])
 
 
 class InputPluginAbstract(PluginAbstract):

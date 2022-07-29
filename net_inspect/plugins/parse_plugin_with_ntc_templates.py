@@ -14,6 +14,12 @@ if TYPE_CHECKING:
 
 
 class ParsePluginWithNtcTemplates(ParsePluginAbstract):
+    """
+    使用ntc-templates解析命令
+    仓库地址：
+        https://github.com/Elinpf/ntc-templates
+    """
+
     def __init__(self):
         self.index_commands: Dict[str, List[str]] = self._get_index_commands()
 

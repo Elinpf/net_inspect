@@ -35,7 +35,8 @@ class NetInspect:
         """获取所有插件"""
         return {'input_plugins': self.get_input_plugins(),
                 'output_plugins': self.get_output_plugins(),
-                'parse_plugins': self.get_parse_plugins()}
+                'parse_plugins': self.get_parse_plugins(),
+                'analysis_plugins': self.get_analysis_plugins()}
 
     def get_input_plugins(self) -> Dict[str, Type[PluginAbstract]]:
         """取得所有的输入插件"""
@@ -48,6 +49,10 @@ class NetInspect:
     def get_parse_plugins(self) -> Dict[str, Type[PluginAbstract]]:
         """取得所有的解析插件"""
         return self._plugins.parse_plugins
+
+    def get_analysis_plugins(self) -> Dict[str, Type[PluginAbstract]]:
+        """取得所有的分析插件"""
+        return self._plugins.analysis_plugins
 
     def set_input_plugin(self, plugin_cls: Type[InputPluginAbstract] | str):
         """设置输入插件
