@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from typing import Dict, TYPE_CHECKING, Type, List, Optional
 import os
+from typing import TYPE_CHECKING, Dict, List, Optional, Type
 
 from .bootstrap import bootstrap
-from .plugin_manager import PluginManager
+from .data import pyoption, pystr
 from .domain import Cluster
-from .data import pystr
+from .func import clamp_number
 from .logger import log
+from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
-    from .domain import (PluginAbstract, InputPluginAbstract,
-                         OutputPluginAbstract, ParsePluginAbstract, Device)
+    from .domain import (Device, InputPluginAbstract, OutputPluginAbstract,
+                         ParsePluginAbstract, PluginAbstract)
 
 
 class NetInspect:
@@ -34,7 +35,8 @@ class NetInspect:
         """获取所有插件"""
         return {'input_plugins': self.get_input_plugins(),
                 'output_plugins': self.get_output_plugins(),
-                'parse_plugins': self.get_parse_plugins()}
+                'parse_plugins': self.get_parse_plugins(),
+                'analysis_plugins': self.get_analysis_plugins()}
 
     def get_input_plugins(self) -> Dict[str, Type[PluginAbstract]]:
         """取得所有的输入插件"""
@@ -47,6 +49,10 @@ class NetInspect:
     def get_parse_plugins(self) -> Dict[str, Type[PluginAbstract]]:
         """取得所有的解析插件"""
         return self._plugins.parse_plugins
+
+    def get_analysis_plugins(self) -> Dict[str, Type[PluginAbstract]]:
+        """取得所有的分析插件"""
+        return self._plugins.analysis_plugins
 
     def set_input_plugin(self, plugin_cls: Type[InputPluginAbstract] | str):
         """设置输入插件
@@ -109,7 +115,7 @@ class NetInspect:
         """运行输出插件"""
         self.cluster.output(file_path, params)
 
-    def run(self, path: str, output_file_path: str, output_plugin_params: Optional[Dict[str, str]] = None) -> Cluster:
+    def run(self, path: str, output_file_path: str = '', output_plugin_params: Dict[str, str] = {}) -> Cluster:
         """运行输入解析输出插件
         :param path: 文件或者目录路径
         :param output_file_path: 输出文件路径
@@ -128,3 +134,16 @@ class NetInspect:
         :param device_name: 设备名称
         :return: 设备列表"""
         return self.cluster.search(device_name)
+
+    def verbose(self, verbose: int):
+        """设置输出等级
+
+        Args:
+            verbose: 输出等级 0~3
+        """
+        verbose = clamp_number(verbose, 0, 3)
+        if verbose >= 1:
+            self.set_log_level('DEBUG')
+        else:
+            self.set_log_level('INFO')
+        pyoption.verbose_level = verbose

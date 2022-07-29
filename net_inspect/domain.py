@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import re
 import abc
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
-from .logger import log
+from .data import pystr, pyoption
+from .func import print_log, pascal_case_to_snake_case
 from .vendor import DefaultVendor
 
 
@@ -67,7 +69,7 @@ class Cluster:
         device_cls.info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
         self.devices.append(device_cls)
 
-    def output(self, file_path: str, params: Optional[Dict[str, str]] = None):
+    def output(self, file_path: str = '', params: Dict[str, str] = {}):
         """输出到文件
 
         :param file_path: 文件路径"""
@@ -179,11 +181,21 @@ class Device:
         """对每条cmd进行解析"""
         for _, cmd in self.cmds.items():
             try:
+                # 首先判断是否为无效命令
+                if not cmd.is_vaild(self._vendor.INVALID_STR):
+                    if pyoption.verbose_level > 3:
+                        raise exception.TemplateError(
+                            f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank')
+                    continue
                 parse_result = self._plugin_manager.parse(
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                log.debug(f"ParseWarning -- {str(e)}")
+                print_log(
+                    f"{pystr.parse_waning_prefix} device:{self._device_info.name!r} {str(e)}",
+                    verbose=1)
+                continue
+            except exception.Continue:
                 continue
 
     def analysis(self):
@@ -265,9 +277,22 @@ class Cmd:
         self._content = stream
 
     def update_parse_reslut(self, result: List[Dict[str, str]]):
-        """在取到解析结果后，更新解析结果，并且删除命令的内容释放空间"""
+        """在取到解析结果后，更新解析结果"""
         self._parse_result = result
-        self._content = ''
+
+    def is_vaild(self, invalid_str: Optional[str] = None) -> bool:
+        """判断命令的内容是否为有效内容
+        Args:
+            invalid_str: 如果命令的内容包含这个字符串，则认为命令无效
+
+        Returns:
+            bool: 命令是否有效
+        """
+        if bool(self.content.strip()) == False:  # 如果为空则认为无效
+            return False
+        elif invalid_str and re.search(invalid_str, self.content):  # 如果包含无效字符串则认为无效
+            return False
+        return True
 
 
 class PluginManagerAbc(abc.ABC):
@@ -435,12 +460,28 @@ class AlarmLevel:
     @property
     def is_focus(self) -> bool:
         """是否为关注级别"""
-        return self._level >= AlarmLevel.FOCUS
+        return self._level == AlarmLevel.FOCUS
 
     @property
     def is_normal(self) -> bool:
         """是否为正常级别"""
         return self._level == AlarmLevel.NORMAL
+
+    @property
+    def include_focus(self) -> bool:
+        """是否包含关注级别, 即至少包含关注级别"""
+        return self._level >= AlarmLevel.FOCUS
+
+    # 级别描述
+    @property
+    def level_str(self) -> str:
+        """级别描述"""
+        if self._level == AlarmLevel.NORMAL:
+            return 'NORMAL'
+        elif self._level == AlarmLevel.FOCUS:
+            return 'FOCUS'
+        elif self._level == AlarmLevel.WARNING:
+            return 'WARNING'
 
     @property
     def doc(self) -> str:
@@ -523,6 +564,16 @@ class PluginAbstract(abc.ABC):
     def run(self):
         raise NotImplementedError
 
+    @property
+    def doc(self) -> str:
+        """返回分析模块的文档"""
+        return self.__doc__.strip() if self.__doc__ else ''
+
+    @property
+    def short_name(self) -> str:
+        """返回模块的简写"""
+        return pascal_case_to_snake_case(self.__class__.__name__.split('With', 1)[-1])
+
 
 class InputPluginAbstract(PluginAbstract):
     def run(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
@@ -544,18 +595,19 @@ class InputPluginAbstract(PluginAbstract):
 class OutputPluginAbstract(PluginAbstract):
 
     @dataclass
-    class OutputParams:
+    class OutputArgs:
+
         devices: DeviceList  # 设备列表
         path: str  # 输出文件的路径
-        output_params: Optional[Dict[str, str]] = None  # 输出文件的参数
+        output_params: Dict[str, str]  # 输出文件的参数
 
-    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]] = None):
+    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]]):
         """对设备列表进行输出
         :params: devices: 设备列表
         :params: path: 输出文件的路径
-        :params: params: 输出文件的参数"""
+        :params: output_params: 传递输出文件的参数"""
 
-        self.params = self.OutputParams(
+        self.args = self.OutputArgs(
             devices=devices, path=path, output_params=output_params)
         return self.main()
 

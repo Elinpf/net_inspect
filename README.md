@@ -49,7 +49,7 @@ Analysis插件的功能是将解析的信息进行分析，对分析的内容进
 `net_inspect`有三种使用方式
 
 1. 作为三方库提供API
-2. CLI命令行操作 (TODO)
+2. CLI命令行操作
 3. 本地Web界面操作 (TODO)
 
 
@@ -65,12 +65,12 @@ from rich.console import Console
 
 class Output(OutputPluginAbstract):
     def main(self):
-        if not self.params.output_params.get('company'):
+        if not self.args.output_params.get('company'):
             raise PluginError('name or age is missing')
 
         console = Console()
 
-        table = Table(title=self.params.output_params.get(
+        table = Table(title=self.args.output_params.get(
             'company'), show_lines=False)
         table.add_column('name', justify='center')
         table.add_column('ip', justify='center')
@@ -78,7 +78,7 @@ class Output(OutputPluginAbstract):
         table.add_column('version', justify='center')
         table.add_column('power', justify='center')
 
-        for device in self.params.devices:
+        for device in self.args.devices:
             if device.vendor.PLATFORM == 'huawei_vrp':
                 data = [device.info.name, device.info.ip]
                 ps = device.parse_result('display version')
@@ -87,7 +87,7 @@ class Output(OutputPluginAbstract):
                 power_analysis = device.analysis_result.get('Power Status')
                 power_desc = []
                 for alarm in power_analysis:
-                    if alarm.is_focus:
+                    if alarm.include_focus:
                         power_desc.append(alarm.message)
                 data.append('\n'.join(power_desc) if power_desc else 'Normal')
 
@@ -100,6 +100,123 @@ class Output(OutputPluginAbstract):
 net = NetInspect()
 # net.set_log_level('DEBUG')
 net.set_plugins('smartone', Output)
-cluster = net.run('log_files', 'output',
-                  output_plugin_params={'company': 'Company Name'})
+cluster = net.run('log_files', output_plugin_params={'company': 'Company Name'})
 ```
+
+## API 解释
+
+### 初始化
+
+```python
+from net_inspect import NetInspect
+
+net = NetInspect()
+```
+
+### 设置日志级别
+
+```python
+net.verbose(1)
+```
+
+开启`verbose`表示为打开了`DEBUG`级别的日志, 默认为`INFO`。
+`verbose`级别可以通过`verbose()`方法设置，总共0~3
+- 0: 日志关闭
+- 1: 提供Output模块的日志和Parse模块的日志
+- 2: 追加提供Analysis模块的日志
+- 3: 追加提供Parse模块不支持命令的信息日志和命令为无效的信息
+
+### 设置插件
+
+一般来说，只需要设置`input_plugin`和`output_plugin`即可。
+
+```python
+net.set_plugins(input_plugin='smartone', output_plugin='device_warning_logging')
+```
+可以使用字符串的简写，也可以自己继承插件类后重写`main()`方法，然后将类传递进来。
+
+### 执行
+
+提供输入的文件路径即可, 可以是文件或者目录。
+
+```python
+net.run('log_files')
+```
+
+如果output中需要提供参数，可以使用`output_plugin_params`参数，例如：
+
+```python
+net.run('log_files', output_plugin_params={'company': 'Company Name'})
+```
+
+## CLI 命令行操作
+
+![](resource/cli_1.png)
+
+```bash
+net_inspect -i log_files
+```
+
+
+
+## 关于贡献
+
+分析插件还在持续开发中，`develop_script.py`脚本就是为高效开发提供的一个工具。
+
+开发一个分析插件的流程，以开发检查风扇状态的`fan_status`插件为例：
+
+1. 创建一个新的插件文件, 对应的文件初始状态会一并准备好
+
+```bash
+python ./develop_script.py -p fan_status -g
+```
+
+2. 在对应的文件中实现插件对每个厂商分析的函数
+
+```py
+class AnalysisPluginWithFanStatus(AnalysisPluginAbc):
+    """
+    要求设备所有在位风扇模块运行在正常状态。
+    """
+    @analysis.vendor(vendor.H3C)
+    @analysis.template_key('hp_comware_display_fan.textfsm', ['slot', 'id', 'status'])
+    def hp_comware(template: TemplateInfo, result: AnalysisResult):
+        """模块状态不为Normal的时候告警"""
+        for row in template['display fan']:
+            if row['status'].lower() != 'normal':
+                result.add_warning(
+                    f'Slot {row["slot"]} Fan {row["id"]} 状态异常' if row['slot'] else f'Fan {row["id"]} 状态异常')
+```
+
+其中`@analysis`是用来记录插件的分析类型的，`vendor`记录插件的厂商类型，`template_key`记录分析模块所需要的`textfsm`文件以及里面的哪些值。
+这些值会在参数`template: TemplateInfo`中给出。
+
+`result: AnalysisResult`用来记录分析结果。可以添加告警信息。
+
+分析方法为类方法，不需要`self`,不需要给出返回值。
+
+插件中的类注释和方法注释都会被记录下来，方便后续调用。
+
+3. 创建对应的测试文件
+
+当编写了对应的分析方法后，再次执行创建命令，工具会自动根据分析方法中需要的命令，生成对应的测试文件。
+
+测试文件路径为`tests/check_analysis_plugins/<plugin_name>/<funcation_name>.raw`
+
+```bash
+python ./development_script.py -p fan_status -f hp_comware -g
+```
+
+4. 在测试文件中添加测试用例
+5. 执行测试
+
+```bash
+python ./development_script.py -p fan_status -f hp_comware -t
+```
+
+6. 完成测试，确认测试结果为正常后，生成yml文件作为参考文件。
+
+```bash
+python ./development_script.py -p fan_status -f hp_comware -y
+```
+

@@ -1,0 +1,4 @@
+---
+analysis_sample:
+  - level: "2"
+    message: "Slot 0 风扇状态不正常"

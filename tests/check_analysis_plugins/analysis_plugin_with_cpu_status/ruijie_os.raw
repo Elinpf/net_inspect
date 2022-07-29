@@ -1,0 +1,187 @@
+-------------------------show cpu-------------------------
+=======================================
+     CPU Using Rate Information
+CPU utilization in five seconds:  90.00%
+CPU utilization in one minute  :  91.67%
+CPU utilization in five minutes:  90.70%
+  NO   5Sec   1Min   5Min   Process 
+  0   0.00%   0.01%   0.01%    LISR INT 
+  1   0.00%   0.00%   0.00%    HISR INT 
+  2   0.00%   0.37%   0.29%    ktimer 
+  3   0.00%   0.02%   0.00%    atimer 
+  4   0.00%   0.00%   0.00%    printk_task 
+  5   0.00%   0.00%   0.00%    waitqueue_process 
+  6   0.00%   0.00%   0.00%    tasklet_task 
+  7   0.00%   0.00%   0.00%    Ttipc_timer 
+  8   0.00%   0.00%   0.00%    kevents 
+  9   0.00%   0.00%   0.00%    __ef_event_grp_TASK 
+ 10   0.00%   0.00%   0.00%    etp_task 
+ 11   0.00%   0.00%   0.00%    hpg_task 
+ 12   0.00%   0.00%   0.00%    dsrv_thread 
+ 13   0.00%   0.00%   0.00%    Tsnmpd-pkt 
+ 14   0.00%   0.00%   0.00%    snmpd 
+ 15   0.00%   0.00%   0.00%    snmp_trapd 
+ 16   0.00%   0.00%   0.00%    mtdblock 
+ 17   0.00%   0.00%   0.00%    gc_task 
+ 18   0.00%   0.00%   0.00%    Context 
+ 19   0.00%   0.00%   0.00%    kswapd 
+ 20   0.00%   0.00%   0.00%    bdflush 
+ 21   0.00%   0.00%   0.00%    kupdate 
+ 22   0.00%   0.00%   0.00%    usb_hub 
+ 23   0.00%   0.00%   0.00%    sd_hotplug_thread 
+ 24   0.00%   0.38%   0.11%    sripc 
+ 25   0.00%   0.00%   0.00%    sripc_rx 
+ 26   0.00%   0.00%   0.00%    refNotifyEventTask 
+ 27   0.00%   0.00%   0.00%    UPGRADE_TASK 
+ 28   0.00%   0.00%   0.00%    iftp_server 
+ 29   0.00%   0.00%   0.00%    upg_check_workq 
+ 30   0.00%   0.00%   0.00%    buffcopy 
+ 31   0.00%   0.00%   0.00%    ll_mt 
+ 32   0.00%   0.00%   0.00%    ll_main_process 
+ 33   0.00%   0.00%   0.00%    def_thread 
+ 34   0.00%   0.00%   0.00%    qos_tick 
+ 35   0.00%   0.00%   0.00%    ether_rldp 
+ 36   0.00%   0.00%   0.00%    eth_ap 
+ 37   0.00%   0.00%   0.00%    lacp_event 
+ 38   0.00%   0.00%   0.00%    lacp_async_event 
+ 39   0.00%   0.00%   0.00%    rldp_task 
+ 40   0.00%   0.00%   0.00%    TUNNEL_T 
+ 41   0.00%   0.00%   0.00%    ip6timer 
+ 42   0.00%   0.00%   0.00%    rtadvd 
+ 43   0.00%   0.00%   0.00%    rtsol_timer_thread 
+ 44   0.00%   0.00%   0.00%    rtsol_thread 
+ 45   0.00%   0.00%   0.00%    tnet6 
+ 46   0.00%   0.00%   0.00%    general_prefix 
+ 47   0.00%   0.00%   0.00%    rd_fsm_task 
+ 48   0.00%   0.00%   0.00%    rd_sync_task 
+ 49   0.00%   0.00%   0.00%    rd_tx_task 
+ 50   0.00%   0.00%   0.01%    tnet 
+ 51   0.00%   0.00%   0.00%    rping 
+ 52   0.00%   0.00%   0.00%    ipsla_tick 
+ 53   0.00%   0.00%   0.00%    acl_entry_tm_rng_thread 
+ 54   0.00%   0.00%   0.00%    fpm_age_task 
+ 55   0.00%   0.00%   0.00%    fpm_ip6 
+ 56   0.00%   0.00%   0.00%    fpm_dstr 
+ 57   0.00%   0.00%   0.00%    tnet_rdcy 
+ 58   0.00%   0.00%   0.00%    Tarptime 
+ 59   0.00%   0.00%   0.00%    gra_arp 
+ 60   0.00%   0.00%   0.00%    Ttcptimer 
+ 61   0.00%   0.00%   0.00%    igmp_host 
+ 62   0.00%   0.00%   0.00%    igmp_host_netlink 
+ 63   0.00%   0.00%   0.00%    tRefRes 
+ 64   0.00%   0.00%   0.00%    lbctrl_task 
+ 65   0.00%   0.00%   0.00%    lb_bw_ecmp_cache_task 
+ 66   0.00%   0.00%   0.00%    ip6_tunnel_rcv_pkt 
+ 67   0.00%   0.00%   0.00%    ipv6_tun6_rcv_pkt 
+ 68   0.00%   0.00%   0.00%    mrfd 
+ 69   0.00%   0.00%   0.00%    mrf6d 
+ 70   0.00%   0.00%   0.00%    tcpv6_rcv_task 
+ 71   0.00%   0.00%   0.00%    urpfd 
+ 72   0.00%   0.00%   0.00%    ef_dldp 
+ 73   0.00%   0.00%   0.00%    ef_bfd 
+ 74   0.00%   0.00%   0.00%    natpt_task 
+ 75   0.00%   0.00%   0.00%    nat64_task 
+ 76   0.00%   0.00%   0.00%    res6t 
+ 77   0.00%   0.00%   0.00%    defHbuEventTask 
+ 78   0.00%   0.00%   0.00%    defIp6HbuEventTask 
+ 79   0.00%   0.00%   0.00%    acl_dstr 
+ 80   0.00%   0.00%   0.00%    imid 
+ 81   0.00%   0.00%   0.00%    nsmd 
+ 82   0.00%   0.00%   0.00%    ripd 
+ 83   0.00%   0.12%   0.12%    ospfd 
+ 84   0.00%   0.00%   0.00%    ripngd 
+ 85   0.00%   0.00%   0.00%    ospf6d 
+ 86   0.00%   0.00%   0.00%    bgpd 
+ 87   0.00%   0.00%   0.00%    isisd 
+ 88   0.00%   0.00%   0.00%    ldpd 
+ 89   0.00%   0.00%   0.00%    pimd 
+ 90   0.00%   0.00%   0.00%    msdpd 
+ 91   0.00%   0.00%   0.00%    mdcd 
+ 92   0.00%   0.00%   0.00%    pdmd 
+ 93   0.00%   0.00%   0.00%    pim6d 
+ 94   0.00%   0.00%   0.00%    dvmrpd 
+ 95   0.00%   0.00%   0.00%    vaccess 
+ 96   0.00%   0.00%   0.00%    PPTP 
+ 97   0.00%   0.00%   0.00%    PPTP_T 
+ 98   0.00%   0.00%   0.00%    L2TPD 
+ 99   0.00%   0.00%   0.00%    L2TP_T 
+100   0.00%   0.00%   0.00%    ipsec_event_processs 
+101   0.00%   0.00%   0.00%    ipsec_mib_pro_task 
+102   0.00%   0.00%   0.00%    vty_connect 
+103   0.00%   0.00%   0.00%    aaa_task 
+104   0.00%   0.00%   0.00%    syslog_task 
+105   0.00%   0.00%   0.00%    Tlogtrap 
+106   0.00%   0.00%   0.00%    sntp_recv_task 
+107   0.00%   0.00%   0.00%    ntp_task 
+108   0.00%   0.00%   0.00%    ntp_s_task 
+109   0.00%   0.00%   0.00%    ddns_task 
+110   0.00%   0.00%   0.00%    sem_vty_task_00 
+111   0.00%   0.00%   0.00%    sem_vty_task_01 
+112   0.00%   0.00%   0.00%    sem_vty_task_02 
+113   0.00%   0.00%   0.00%    sem_vty_task_03 
+114   0.00%   0.00%   0.00%    sem_vty_task_04 
+115   0.00%   0.00%   0.00%    sem_server_task 
+116   0.00%   0.00%   0.00%    sem_task_server_schdulr 
+117   0.00%   0.00%   0.00%    sem_timer_task 
+118   0.00%   0.00%   0.00%    srm_monitor 
+119   0.00%   0.00%   0.00%    srm_dcs 
+120   0.00%   0.02%   0.00%    user-log task 
+121   0.00%   0.00%   0.00%    rns_daemon 
+122   0.00%   0.00%   0.00%    track_daemon 
+123   0.00%   0.00%   0.01%    bfd_server 
+124   0.00%   0.00%   0.00%    pbr_guard 
+125   0.00%   0.00%   0.00%    vrrpd 
+126   0.00%   0.00%   0.00%    flash_log 
+127   0.00%   0.00%   0.00%    IPSecPro 
+128   0.00%   0.00%   0.00%    pki_reap_task 
+129   0.00%   0.00%   0.00%    scep renew 
+130   0.00%   0.72%   0.14%    paramter 
+131   0.00%   0.00%   0.00%    radius_task 
+132   0.00%   0.00%   0.00%    rds_info_pool_task 
+133   0.00%   0.00%   0.00%    tac+_acct_task 
+134   0.00%   0.00%   0.00%    tac+_task 
+135   0.00%   0.00%   0.00%    dhcpd_task 
+136   0.00%   0.00%   0.00%    dhcps_task 
+137   0.00%   0.00%   0.00%    dhcpping_task 
+138   0.00%   0.00%   0.00%    dhcp_database_task 
+139   0.00%   0.00%   0.00%    dhcpc_task 
+140   0.00%   0.00%   0.00%    dhcp6_main 
+141   0.00%   0.03%   0.01%    dhcp6s 
+142   0.00%   0.00%   0.00%    dhcp6c 
+143   0.00%   0.00%   0.00%    dhcp6relay 
+144   0.00%   0.00%   0.00%    ssh_tty_inchar_ctrl 
+145   0.00%   0.00%   0.00%    ipfix_tick 
+146   0.00%   0.00%   0.00%    ipfix_export 
+147   0.00%   0.00%   0.00%    wan_ta_proxy 
+148   0.00%   0.00%   0.00%    g_dtct_track_task 
+149   0.00%   0.00%   0.00%    sem_record_clean 
+150   0.00%   0.00%   0.00%    sem_record_del_on_cmd 
+151   0.00%   0.00%   0.00%    sem_record_delete 
+152   0.00%   0.00%   0.00%    vrrp_plus 
+153   0.00%   0.00%   0.00%    def_ipfix_syn_info_task 
+154   0.00%   0.00%   0.00%    def_xlog_route_task 
+155   0.00%   0.00%   0.00%    eth_tipc_workq 
+156   0.00%   0.00%   0.00%    imtp_task_workq 
+157   0.00%   0.00%   0.00%    emi_test 
+158   0.00%   0.00%   0.00%    hbu_task 
+159   0.00%   0.00%   0.00%    funcirq_task 
+160   0.00%   0.00%   0.00%    uart_debug_file_task 
+161   0.00%   0.00%   0.00%    itftp_task 
+162   0.00%   0.00%   0.00%    itftp_job 
+163   0.00%   0.00%   0.00%    FP_FRM 
+164   0.00%   0.00%   0.00%    rl_listen 
+165   0.00%   0.00%   0.00%    ftp_task 
+166   0.00%   0.00%   0.00%    lldp_task 
+167   0.00%   0.00%   0.00%    oam 
+168   0.00%   0.00%   0.00%    device_info 
+169   0.00%   0.00%   0.00%    device_info 
+170   0.00%   0.00%   0.00%    hpgsyn_task 
+171   0.00%   0.00%   0.00%    drvagtrdnd 
+172   0.00%   0.00%   0.00%    hpg_trb 
+173   0.00%   0.00%   0.00%    dbg_core_task 
+174   0.00%   0.00%   0.00%    dhp_trb_cm_soft_timer_task 
+175   0.00%   0.00%   0.00%    lclogtocm_lc 
+176   0.00%   0.00%   0.00%    lclogtocm_cm 
+177   0.00%   0.00%   0.00%    peanut 
+178   0.00%   0.00%   0.00%    rl_ssh_2 
+179  100.00%  98.33%  99.30%    idle

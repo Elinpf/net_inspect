@@ -1,15 +1,20 @@
 import glob
 import os
 import re
-from typing import List, Tuple, Dict
+from typing import Dict, List, Tuple
+
 import pytest
 import yaml
-
-from net_inspect.domain import Device, InputPluginAbstract, DeviceInfo, AnalysisResult
-from net_inspect.vendor import DefaultVendor
-from net_inspect.plugin_manager import PluginManager
-from net_inspect.plugins.parse_plugin_with_ntc_templates import ParsePluginWithNtcTemplates
+from net_inspect.analysis_plugin import analysis
 from net_inspect.bootstrap import bootstrap
+from net_inspect.data import pypath
+from net_inspect.domain import (AnalysisResult, Device, DeviceInfo,
+                                InputPluginAbstract)
+from net_inspect.func import pascal_case_to_snake_case
+from net_inspect.plugin_manager import PluginManager
+from net_inspect.plugins.parse_plugin_with_ntc_templates import \
+    ParsePluginWithNtcTemplates
+from net_inspect.vendor import DefaultVendor
 
 command_line_reg = r'^-------------------------(?P<cmd>[^-].*?)-------------------------$'
 
@@ -157,3 +162,21 @@ def correct_data_in_entries_test(processed, reference):
             assert str(processed[i][key]) == reference[i][key], "entry #{0}, key: {1}".format(
                 i, key
             )
+
+
+def test_all_functions_has_a_test():
+    """所有AnalysisPlugin中的测试函数至少需要一个raw测试"""
+    bootstrap()
+    for func_info in analysis.store:
+        if 'test' in func_info.plugin_name.lower():  # 跳过做测试的插件
+            continue
+
+        plugin_name, func_name = func_info.plugin_name, func_info.function_name
+
+        # 如果是分析函数，则检查是否有测试文件
+        template_name_snake_case = pascal_case_to_snake_case(
+            plugin_name)
+        test_raw_file_path = os.path.join(pypath.project_path,
+                                          'tests', 'check_analysis_plugins', template_name_snake_case, func_name + '.raw')
+
+        assert os.path.exists(test_raw_file_path)

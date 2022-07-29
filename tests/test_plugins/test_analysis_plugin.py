@@ -1,6 +1,7 @@
 import pytest
+import logging
 from net_inspect.domain import Cluster
-from net_inspect.vendor import Huawei
+from net_inspect import vendor
 from net_inspect.plugins.parse_plugin_with_ntc_templates import ParsePluginWithNtcTemplates
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
 from net_inspect.plugin_manager import PluginManager
@@ -20,14 +21,20 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
     Test for AnalysisPlugin Doc.
     """
 
-    @analysis.vendor(Huawei)
-    @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'PRODUCT_VERSION'])
+    @analysis.vendor(vendor.Huawei)
+    @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'product_version'])
     def huawei(template: TemplateInfo, result: AnalysisResult):
         """
         Test for huawei version status
         """
-        assert template['huawei_vrp_display_version.textfsm'][0]['vrp_version'] == '8.180'
-        assert template['display version'][0]['vrp_version'] == '8.180'
+        assert template['huawei_vrp_display_version.textfsm'][0]['VRP_VERSION'] == '8.180'
+        assert template['display version'][0]['VRP_VERSION'] == '8.180'  # 简写支持
+
+        with pytest.raises(KeyError):
+            template['display version'][0]['vrp_version']  # 与给出的大小写应该对应
+
+        with pytest.raises(KeyError):
+            template['display version'][0]['PRODUCT_VERSION']  # 与给出的大小写应该对应
 
         with pytest.raises(exception.NtcTemplateNotDefined):  # 不支持简写
             template['dis ver']

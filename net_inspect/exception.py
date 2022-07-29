@@ -2,8 +2,12 @@ class Error(Exception):
     ...
 
 
+class Continue(Exception):
+    """用于控制循环"""
+
+
 class TemplateError(Error):
-    ...
+    """ntc-template 错误"""
 
 
 class PluginError(Error):
@@ -31,8 +35,8 @@ class AnalysisTemplateNameError(AnalysisPluginError):
 
 
 class AnalysisVendorNotSupport(AnalysisPluginError):
-    ...
+    """分析模块暂不支持该厂商"""
 
 
 class NtcTemplateNotDefined(AnalysisPluginError):
-    ...
+    """模板名称不存在"""

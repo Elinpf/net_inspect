@@ -1,0 +1,4 @@
+---
+analysis_sample:
+  - level: "2"
+    message: "CPU利用率达到90.0%"

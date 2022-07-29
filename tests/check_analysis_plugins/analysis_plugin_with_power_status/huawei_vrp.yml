@@ -1,4 +1,4 @@
 ---
 analysis_sample:
-  - level: "0"
-    message: ""
+  - level: "2"
+    message: "Power PWR2 电源状态异常"
