@@ -42,3 +42,18 @@ class AnalysisPluginWithFanStatus(AnalysisPluginAbc):
             if not match_lower(row['status'], 'normal'):
                 result.add_warning(
                     f'Slot {row["slot"]} Fan {row["id"]} 状态异常' if row['slot'] else f'Fan {row["id"]} 状态异常')
+
+    @analysis.vendor(vendor.Maipu)
+    @analysis.template_key('maipu_mypower_show_system_fan.textfsm', ['fan_id', 'status', 'work_status', 'statistics_ierr', 'statistics_oerr'])
+    def maipu_mypower(template: TemplateInfo, result: AnalysisResult):
+        """模块Status状态为Online的时候，检查WorkStatus不为Normal的时候告警, 否则Status不为Normal时警告，
+        并且检查模块的错误统计"""
+        for row in template['show system fan']:
+            if match_lower(row['status'], 'online'):
+                if not match_lower(row['work_status'], 'normal'):
+                    result.add_warning(f'Fan {row["fan_id"]} 状态异常')
+            elif not match_lower(row['status'], 'normal'):
+                result.add_warning(f'Fan {row["fan_id"]} 状态异常')
+
+            elif int(row['statistics_ierr']) + int(row['statistics_oerr']) > 0:
+                result.add_warning(f'Fan {row["fan_id"]} 状态异常')

@@ -1,7 +1,10 @@
 import re
+import sys
+from contextlib import _GeneratorContextManager
+from functools import wraps
 
-from .logger import log
 from .data import pyoption
+from .logger import log
 
 
 def reg_extend(reg: str) -> str:
@@ -90,3 +93,59 @@ def print_log(string: str, verbose: int = 0) -> None:
     verbose = clamp_number(verbose, 1, 3)
     if pyoption.verbose_level >= verbose:
         log.debug(string)
+
+
+class SkipWithBlock(Exception):
+    pass
+
+
+class _ContextManager(_GeneratorContextManager):
+    def __enter__(self):
+        del self.args, self.kwds, self.func
+        try:
+            return next(self.gen)
+        except StopIteration:
+            sys.settrace(lambda *args, **keys: None)
+            frame = sys._getframe(1)
+            frame.f_trace = self.trace
+
+    def trace(self, frame, event, arg):
+        raise SkipWithBlock()
+
+    def __exit__(self, type, value, traceback):
+        if type is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                raise RuntimeError("generator didn't stop")
+        elif issubclass(type, SkipWithBlock):
+            return True
+        else:
+            if value is None:
+                value = type()
+            try:
+                self.gen.throw(type, value, traceback)
+            except StopIteration as exc:
+                return exc is not value
+            except RuntimeError as exc:
+                if exc is value:
+                    return False
+                if type is StopIteration and exc.__cause__ is value:
+                    return False
+                raise
+            except:
+                if sys.exc_info()[1] is value:
+                    return False
+                raise
+            raise RuntimeError("generator didn't stop after throw()")
+
+
+def contextmanager(func):
+    """这个contextmanager可以在没有yield的时候，主动跳过代码块"""
+    @wraps(func)
+    def helper(*args, **kwds):
+        return _ContextManager(func, args, kwds)
+
+    return helper

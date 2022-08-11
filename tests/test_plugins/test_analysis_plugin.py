@@ -48,6 +48,20 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
         result.add(AlarmLevel(AlarmLevel.FOCUS, 'test_focus'))
         result.add(AlarmLevel(AlarmLevel.WARNING, 'test_warning'))
 
+    @analysis.vendor(vendor.Cisco)
+    @analysis.template_key('cisco_ios_show_processes_memory_sorted.textfsm', ['memory_total', 'memory_used'])
+    @analysis.template_key('cisco_ios_show_processes_memory.textfsm', ['memory_total', 'memory_used'])
+    def cisco(template: TemplateInfo, result: AnalysisResult):
+        """
+        测试多个模板
+        """
+        # 这个是存在的
+        assert template['cisco_ios_show_processes_memory.textfsm']
+        assert template['cisco_ios_show_processes_memory.textfsm'][0]['memory_used']
+
+        # sotred 这个是不存在的，但是会给个空列表，if 会判定为 False
+        assert not template['cisco_ios_show_processes_memory_sorted.textfsm']
+
 
 def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list = []) -> Cluster:
     """通用初始化Cluster函数"""
@@ -129,3 +143,10 @@ def test_analysis_plugin_function_doc(shared_datadir):
     result = cluster.devices[0].analysis_result
     doc = result.get('AnalysisPluginWithTest')[0].doc
     assert doc == 'Test for AnalysisPlugin Doc.'
+
+
+def test_analysis_plugin_with_two_templates(shared_datadir):
+    """测试有两个template的AnalysisPlugin"""
+    cluster = init_analysis_plugin(
+        shared_datadir, 'CISCO_BAD_MEMORY_21.2.2.2.diag')
+    result = cluster.devices[0].analysis_result

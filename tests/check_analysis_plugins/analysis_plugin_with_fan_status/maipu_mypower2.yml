@@ -1,0 +1,4 @@
+---
+analysis_sample:
+  - level: "2"
+    message: "Fan 0 状态异常"

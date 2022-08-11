@@ -10,6 +10,6 @@ class OutputPluginWithDeviceWarningLogging(OutputPluginAbstract):
     def main(self):
         for device in self.args.devices:
             for warn in device.analysis_result:
-                if warn.include_focus:
+                if warn.above_focus:
                     print(f"[green]%s[/] -- [{'red' if warn.is_warning else 'yellow'}]%s[/] -- %s" %
                           (device.info.name, warn.level_str, warn.message))
