@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Type
 
+from .base_info import get_base_info
 from .bootstrap import bootstrap
 from .data import pyoption, pystr
 from .domain import Cluster
@@ -11,6 +12,7 @@ from .logger import log
 from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
+    from .base_info import EachVendorDeviceInfo
     from .domain import (Device, InputPluginAbstract, OutputPluginAbstract,
                          ParsePluginAbstract, PluginAbstract)
 
@@ -147,3 +149,11 @@ class NetInspect:
         else:
             self.set_log_level('INFO')
         pyoption.verbose_level = verbose
+
+    def get_base_info(self) -> List[EachVendorDeviceInfo.BaseInfo]:
+        """获取所有设备的基本信息"""
+        ret = []
+        for device in self.cluster.devices:
+            ret.append(get_base_info(device))
+
+        return ret

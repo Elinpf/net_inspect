@@ -87,7 +87,7 @@ class Output(OutputPluginAbstract):
                 power_analysis = device.analysis_result.get('Power Status')
                 power_desc = []
                 for alarm in power_analysis:
-                    if alarm.include_focus:
+                    if alarm.above_focus:
                         power_desc.append(alarm.message)
                 data.append('\n'.join(power_desc) if power_desc else 'Normal')
 
@@ -148,6 +148,21 @@ net.run('log_files')
 ```python
 net.run('log_files', output_plugin_params={'company': 'Company Name'})
 ```
+
+### 获取设备的基本信息
+
+已经提供了获取设备的基本信息的方法，可以通过`NetInspect.get_base_info()`方法获取。
+
+例如:
+```python
+net.run('log_files')
+all_info = net.get_base_info()
+
+for info in all_info:
+    print(info.hostname)
+    print(info.sn)
+```
+
 
 ## CLI 命令行操作
 

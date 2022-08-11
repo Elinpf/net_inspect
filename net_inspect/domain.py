@@ -3,12 +3,13 @@ from __future__ import annotations
 import re
 import abc
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional, Tuple, Type
+from typing import Dict, Iterator, List, Optional, Tuple, Type, Generator
 
 from . import exception
 from .data import pystr, pyoption
 from .func import print_log, pascal_case_to_snake_case
 from .vendor import DefaultVendor
+from .func import contextmanager
 
 
 class Cluster:
@@ -204,10 +205,15 @@ class Device:
         self._analysis_result.merge(res)
 
     def search_cmd(self, cmd_name: str) -> Cmd | None:
-        """查找命令
+        """
+        查找命令, 返回Cmd类
 
-        :param cmd_name: 命令名
-        :return: 命令"""
+        Args:
+
+            cmd_name: 命令名
+        Return
+            Cmd类 或者 None
+        """
         res = None  # type: Tuple[Cmd, int]
         cmd_name_split = cmd_name.split()
         cmd_name_len = len(cmd_name_split)
@@ -244,6 +250,18 @@ class Device:
                     res = (self.cmds[command], score)
 
         return res[0] if res else None
+
+    @contextmanager
+    def search_cmd_with(self, cmd_name: str) -> Generator[Cmd, None, None]:
+        """
+        查找命令, 使用with语句
+
+        Args:
+            cmd_name: 命令名
+        """
+        cmd = self.search_cmd(cmd_name)
+        if cmd:
+            yield cmd
 
 
 class Cmd:
@@ -293,6 +311,10 @@ class Cmd:
         elif invalid_str and re.search(invalid_str, self.content):  # 如果包含无效字符串则认为无效
             return False
         return True
+
+    @property
+    def parse_result(self) -> List[Dict[str, str]]:
+        return self._parse_result
 
 
 class PluginManagerAbc(abc.ABC):
@@ -468,11 +490,10 @@ class AlarmLevel:
         return self._level == AlarmLevel.NORMAL
 
     @property
-    def include_focus(self) -> bool:
+    def above_focus(self) -> bool:
         """是否包含关注级别, 即至少包含关注级别"""
         return self._level >= AlarmLevel.FOCUS
 
-    # 级别描述
     @property
     def level_str(self) -> str:
         """级别描述"""
@@ -555,6 +576,14 @@ class AnalysisResult:
 
     def __len__(self) -> int:
         return len(self._result)
+
+    @property
+    def include_warning(self) -> bool:
+        """是否包含警告级别"""
+        for alarm in self._result:
+            if alarm.is_warning:
+                return True
+        return False
 
 
 class PluginAbstract(abc.ABC):

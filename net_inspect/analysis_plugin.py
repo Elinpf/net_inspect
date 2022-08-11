@@ -299,6 +299,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 print_log(
                     f'{pystr.analysis_warning_prefix} device:{device.info.name!r} cmd:{cmd!r} no found this command',
                     verbose=2)
+                ret[template_file] = []  # 并且返回一个空的列表，作为占位符
                 continue
 
             temp_list = []
@@ -325,7 +326,12 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                     template_keys, device)
 
                 # 没有数据时，说明不存在可以分析的命令，跳过
-                if not template_key_value:
+                skip_flag = True
+                for k, v in template_key_value.items():
+                    if v:
+                        skip_flag = False
+                        break
+                if skip_flag:
                     continue
 
                 # 放到数据类中

@@ -26,11 +26,16 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
 
     @analysis.vendor(vendor.Cisco)
     @analysis.template_key('cisco_ios_show_processes_memory_sorted.textfsm', ['memory_total', 'memory_used'])
+    @analysis.template_key('cisco_ios_show_processes_memory.textfsm', ['memory_total', 'memory_used'])
     def cisco_ios(template_info: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
         """
         for row in template_info['show processes memory sorted']:
+            check_memory_usage(
+                float(row['memory_used']) / float(row['memory_total']) * 100, result)
+
+        for row in template_info['show processes memory']:
             check_memory_usage(
                 float(row['memory_used']) / float(row['memory_total']) * 100, result)
 
