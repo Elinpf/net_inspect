@@ -1,9 +1,11 @@
 from __future__ import annotations
 from dataclasses import dataclass
+import re
 
 from typing import TYPE_CHECKING, Dict, Callable, List, Tuple, Optional
 from rich import print
 from . import vendor
+from .func import match_lower, print_log
 
 
 if TYPE_CHECKING:
@@ -20,6 +22,28 @@ class Singleton(object):
         return class_._instance
 
 
+@dataclass
+class AnalysisInfo:
+    cpu: Optional[bool] = None  # CPU利用率是否正常
+    memory: Optional[bool] = None  # Memory 利用率是否正常
+    fan: Optional[bool] = None  # 风扇是否正常
+    power: Optional[bool] = None  # 电源是否正常
+
+
+@dataclass
+class BaseInfo:
+    hostname: str = ''  # 主机名
+    vendor_platform = ''  # 厂商平台
+    model: str = ''  # 型号
+    version: str = ''  # 版本
+    uptime: str = ''  # 启动时间
+    ip: str = ''  # IP地址
+    sn = []  # type: List[Tuple[str, str]] # 序列号
+    cpu_usage: str = ''  # CPU使用率
+    memory_usage: str = ''  # 内存使用率
+    analysis: AnalysisInfo = None  # 检查项目结果
+
+
 class EachVendorDeviceInfo(Singleton):
     """可以重载这个类，实现不同的输出格式, 重写或者增加以`do_`开头的方法"""
 
@@ -30,60 +54,47 @@ class EachVendorDeviceInfo(Singleton):
         ('power_status', 'power')
     ]
 
-    @dataclass
-    class AnalysisInfo:
-        cpu: Optional[bool] = None  # CPU利用率是否正常
-        memory: Optional[bool] = None  # Memory 利用率是否正常
-        fan: Optional[bool] = None  # 风扇是否正常
-        power: Optional[bool] = None  # 电源是否正常
-
-    @dataclass
-    class BaseInfo:
-        hostname: str = ''  # 主机名
-        vendor_platform = ''  # 厂商平台
-        model: str = ''  # 型号
-        version: str = ''  # 版本
-        uptime: str = ''  # 启动时间
-        ip: str = ''  # IP地址
-        sn = []  # type: List[Tuple[str, str]] # 序列号
-        cpu_usage: str = ''  # CPU使用率
-        memory_usage: str = ''  # 内存使用率
-        analysis: EachVendorDeviceInfo.AnalysisInfo = None  # 检查项目结果
-
-    def run_fun(self, platform: vendor.DefaultVendor, type_name: str, device: Device) -> Dict[str, str]:
-        """获取输出的内容"""
-        try:
-            func = self.get_func(platform, type_name)
-            return func(device)
-        except AttributeError:
-            print(f'{platform} {type_name} is not implemented')
-            return {}
+    # 可用于重载的信息
+    base_info_class = BaseInfo
+    analysis_info_class = AnalysisInfo
+    append_analysis_items = []
 
     def run_baseinfo_func(self, device: Device) -> BaseInfo:
         """获取基本信息"""
 
-        base_info = self.BaseInfo()
+        base_info = self.base_info_class()
         base_info.hostname = device.info.name
         base_info.vendor_platform = device.vendor.PLATFORM
         base_info.ip = device.info.ip
         base_info.sn = []
-        base_info.analysis = self.AnalysisInfo()
+        base_info.analysis = self.analysis_info_class()
 
         platform = device.vendor
-        try:
-            func = self.get_func(platform, 'baseinfo')
-        except AttributeError:
-            print(f'{platform.PLATFORM} baseinfo is not implemented')
-            return base_info
+        funcs = self.get_funcs(platform, 'baseinfo')
+        if not funcs:
+            print_log(f'{platform} baseinfo is not implemented', verbose=1)
+            
+        for func in funcs:
+            func(device, base_info)
 
-        func(device, base_info)
         return base_info
 
-    def get_func(self, platform: vendor.DefaultVendor, type_name: str) -> Callable[[str], Dict[str, str]]:
-        return getattr(self, f'do_{platform.PLATFORM}_{type_name}')
+    def get_funcs(self, platform: vendor.DefaultVendor, type_name: str) -> List[Callable[[Device, BaseInfo]]]:
+        """取设备厂商所有的方法"""
+        ret = []
+        for i in dir(self):
+            if re.match(f'do_{platform.PLATFORM}_{type_name}.*', i):
+                ret.append(getattr(self, i))
+        return ret
 
     def do_huawei_vrp_baseinfo(self, device: Device, info: BaseInfo):
         """获取华为设备基本信息"""
+
+        if not info.ip:
+            with device.search_cmd_with('display ip interface brief') as cmd:
+                for row in cmd.parse_result:
+                    if match_lower(row.get('interface'), 'loopback0'):
+                        info.ip = row.get('ip')
 
         with device.search_cmd_with('display version') as cmd:
             for row in cmd.parse_result:
@@ -123,6 +134,12 @@ class EachVendorDeviceInfo(Singleton):
     def do_hp_comware_baseinfo(self, device: Device, info: BaseInfo):
         """获取华三设备基本信息"""
 
+        if not info.ip:
+            with device.search_cmd_with('display ip interface brief') as cmd:
+                for row in cmd.parse_result:
+                    if match_lower(row.get('interface'), 'loop0|loopback0'):
+                        info.ip = row.get('ip')
+
         with device.search_cmd_with('display version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
@@ -151,6 +168,12 @@ class EachVendorDeviceInfo(Singleton):
     def do_maipu_mypower_baseinfo(self, device: Device, info: BaseInfo):
         """获取迈普设备基本信息"""
 
+        if not info.ip:
+            with device.search_cmd_with('show ip interface brief') as cmd:
+                for row in cmd.parse_result:
+                    if match_lower(row.get('interface'), 'loopback0'):
+                        info.ip = row.get('ip')
+
         with device.search_cmd_with('show version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
@@ -175,6 +198,12 @@ class EachVendorDeviceInfo(Singleton):
 
     def do_ruijie_os_baseinfo(self, device: Device, info: BaseInfo):
         """获取锐捷设备基本信息"""
+
+        if not info.ip:
+            with device.search_cmd_with('show ip interface brief') as cmd:
+                for row in cmd.parse_result:
+                    if match_lower(row.get('interface'), 'loopback 0'):
+                        info.ip = row.get('ip')
 
         with device.search_cmd_with('show version') as cmd:
             if cmd.parse_result:
@@ -202,6 +231,14 @@ class EachVendorDeviceInfo(Singleton):
     def do_cisco_ios_baseinfo(self, device: Device, info: BaseInfo):
         """获取思科设备基本信息"""
 
+        # 当没有IP的时候，主动从配置中获取Loopback0的地址
+        if not info.ip:
+            with device.search_cmd_with('show ip interface brief') as cmd:
+                for row in cmd.parse_result:
+                    if match_lower(row.get('intf'), 'loopback0'):
+                        info.ip = row.get('ipaddr')
+                        break
+
         with device.search_cmd_with('show version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('hardware')[0]
@@ -226,9 +263,9 @@ class EachVendorDeviceInfo(Singleton):
                     int(int(used) / int(total) * 100)) + '%'
 
     def run_analysis_info(self, device: Device, info: BaseInfo):
-        """更新设备检查信息"""
+        """更新设备检查信息, 重载追加的内容也会添加进来"""
 
-        for item in self.analysis_items:
+        for item in (self.analysis_items + self.append_analysis_items):
             ar = device.analysis_result.get(item[0])
             if not ar._result:  # 如果没有检查结果，则不更新
                 continue
@@ -238,9 +275,9 @@ class EachVendorDeviceInfo(Singleton):
                 setattr(info.analysis, item[1], True)
 
 
-def get_base_info(device: Device) -> EachVendorDeviceInfo.BaseInfo:
+def get_base_info(device: Device, each_vendor_device_info_handler=EachVendorDeviceInfo) -> BaseInfo:
     """获取设备基本信息"""
-    info = EachVendorDeviceInfo()
+    info = each_vendor_device_info_handler()
     base_info = info.run_baseinfo_func(device)
     info.run_analysis_info(device, base_info)
     return base_info
