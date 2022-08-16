@@ -3,13 +3,12 @@ from __future__ import annotations
 import re
 import abc
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional, Tuple, Type, Generator
+from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
 from .data import pystr, pyoption
-from .func import print_log, pascal_case_to_snake_case
+from .func import print_log, pascal_case_to_snake_case, NoneSkip
 from .vendor import DefaultVendor
-from .func import contextmanager
 
 
 class Cluster:
@@ -204,7 +203,7 @@ class Device:
         res = self._plugin_manager.analysis(self)
         self._analysis_result.merge(res)
 
-    def search_cmd(self, cmd_name: str) -> Cmd | None:
+    def search_cmd(self, cmd_name: str) -> Cmd | NoneSkip:
         """
         查找命令, 返回Cmd类
 
@@ -249,19 +248,7 @@ class Device:
                 if (not res) or score > res[1]:
                     res = (self.cmds[command], score)
 
-        return res[0] if res else None
-
-    @contextmanager
-    def search_cmd_with(self, cmd_name: str) -> Generator[Cmd, None, None]:
-        """
-        查找命令, 使用with语句
-
-        Args:
-            cmd_name: 命令名
-        """
-        cmd = self.search_cmd(cmd_name)
-        if cmd:
-            yield cmd
+        return res[0] if res else NoneSkip()
 
 
 class Cmd:
@@ -275,6 +262,12 @@ class Cmd:
         self._parse_result: List[Dict[str, str]] = []
 
         self.command = cmd
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, tace):
+        pass
 
     @property
     def command(self) -> str:

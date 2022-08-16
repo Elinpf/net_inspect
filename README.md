@@ -163,6 +163,57 @@ for info in all_info:
     print(info.sn)
 ```
 
+#### 新增设备基本信息类
+
+```py
+from net_inspect import NetInspect, get_base_info, EachVendorDeviceInfo, BaseInfo, Device
+
+
+class AppendClock(BaseInfo):
+    clock: str = ''  # 巡检时间
+
+
+class EachVendorWithClock(EachVendorDeviceInfo):
+
+    base_info_class = AppendClock
+
+    def do_huawei_vrp_baseinfo_2(self, device: Device, info: AppendClock):
+        with device.search_cmd('display clock') as cmd:
+            if cmd.parse_result:
+                row = cmd.parse_result[0]
+                info.clock = f'{row["year"]}-{row["month"]}-{row["day"]} {row["time"]}'
+
+    # def do_<other_vendor_platform>_baseinfo_<index>
+    #     ...
+
+
+net = NetInspect()
+net.set_input_plugin('smartone')
+net.run_input('地市巡检')
+
+net.set_input_plugin('console')
+net.run_input('cisco')
+
+net.run_parse()
+net.run_analysis()
+
+with open('base_info.csv', 'w') as f:
+    for device in net.cluster.devices:
+        info = get_base_info(device, EachVendorWithClock)  # type: AppendClock
+        row = [
+            info.hostname,
+            info.vendor_platform,
+            info.model,
+            info.ip,
+            info.version,
+            info.uptime,
+            info.cpu_usage,
+            info.memory_usage,
+            info.clock  # 这是新增的
+        ]
+        f.write(' | '.join(row) + "\n")
+```
+
 
 ## CLI 命令行操作
 

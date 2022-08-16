@@ -41,6 +41,28 @@ class TestDevice:
         device.check_vendor()
         assert device.vendor.__name__ == 'Huawei'
 
+    def test_device_search_cmd(self):
+        """搜索命令"""
+        device = Device()
+        device.save_to_cmds(cmd_dict())
+        cmd = device.search_cmd('dis ver')
+        assert cmd.command == 'display version'
+
+    def test_device_search_cmd(self):
+        """测试search_cmd命令的上下文功能"""
+        device = Device()
+        device.save_to_cmds(cmd_dict())
+        with device.search_cmd('dis ver') as cmd:
+            assert cmd.command == 'display version'
+
+    def test_device_search_cmd_no_result(self):
+        """serach_cmd没有结果时, 将不会执行代码块中的内容"""
+        device = Device()
+        device.save_to_cmds(cmd_dict())
+
+        with device.search_cmd('other cmd') as cmd:
+            assert False
+
 
 def test_device_info():
     devinfo = DeviceInfo(name='Router-A')

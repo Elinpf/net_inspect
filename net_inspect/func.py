@@ -1,7 +1,5 @@
 import re
 import sys
-from contextlib import _GeneratorContextManager
-from functools import wraps
 
 from .data import pyoption
 from .logger import log
@@ -105,53 +103,41 @@ class SkipWithBlock(Exception):
     pass
 
 
-class _ContextManager(_GeneratorContextManager):
+class Singleton(object):
+    """单例类继承"""
+    _instance = None
+
+    def __new__(class_, *args, **kwargs):
+        if not isinstance(class_._instance, class_):
+            class_._instance = object.__new__(class_, *args, **kwargs)
+        return class_._instance
+
+
+class NoneSkip(Singleton):
+    """简单模仿None类，只能使用bool()来判断是否为空"""
+
+    def __init__(self):
+        self.none = None
+
     def __enter__(self):
-        del self.args, self.kwds, self.func
-        try:
-            return next(self.gen)
-        except StopIteration:
-            sys.settrace(lambda *args, **keys: None)
-            frame = sys._getframe(1)
-            frame.f_trace = self.trace
+        sys.settrace(lambda *args, **keys: None)
+        frame = sys._getframe(1)
+        frame.f_trace = self.trace
 
     def trace(self, frame, event, arg):
         raise SkipWithBlock()
 
+    def __bool__(self):
+        return False
+
     def __exit__(self, type, value, traceback):
         if type is None:
-            try:
-                next(self.gen)
-            except StopIteration:
-                return False
-            else:
-                raise RuntimeError("generator didn't stop")
-        elif issubclass(type, SkipWithBlock):
-            return True
-        else:
-            if value is None:
-                value = type()
-            try:
-                self.gen.throw(type, value, traceback)
-            except StopIteration as exc:
-                return exc is not value
-            except RuntimeError as exc:
-                if exc is value:
-                    return False
-                if type is StopIteration and exc.__cause__ is value:
-                    return False
-                raise
-            except:
-                if sys.exc_info()[1] is value:
-                    return False
-                raise
-            raise RuntimeError("generator didn't stop after throw()")
+            return  # No exception
+        if issubclass(type, SkipWithBlock):
+            return True  # Suppress special SkipWithBlock exception
 
+    def __eq__(self, other):
+        return self.none == other
 
-def contextmanager(func):
-    """这个contextmanager可以在没有yield的时候，主动跳过代码块"""
-    @wraps(func)
-    def helper(*args, **kwds):
-        return _ContextManager(func, args, kwds)
-
-    return helper
+    def __ne__(self, other):
+        return self.none != other

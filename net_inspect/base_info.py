@@ -2,24 +2,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 import re
 
-from typing import TYPE_CHECKING, Dict, Callable, List, Tuple, Optional
-from rich import print
+from typing import TYPE_CHECKING, Callable, List, Tuple, Optional
 from . import vendor
-from .func import match_lower, print_log
+from .func import match_lower, print_log, Singleton
 
 
 if TYPE_CHECKING:
     from .domain import Device
-
-
-class Singleton(object):
-    """单例类继承"""
-    _instance = None
-
-    def __new__(class_, *args, **kwargs):
-        if not isinstance(class_._instance, class_):
-            class_._instance = object.__new__(class_, *args, **kwargs)
-        return class_._instance
 
 
 @dataclass
@@ -73,7 +62,7 @@ class EachVendorDeviceInfo(Singleton):
         funcs = self.get_funcs(platform, 'baseinfo')
         if not funcs:
             print_log(f'{platform} baseinfo is not implemented', verbose=1)
-            
+
         for func in funcs:
             func(device, base_info)
 
@@ -91,40 +80,40 @@ class EachVendorDeviceInfo(Singleton):
         """获取华为设备基本信息"""
 
         if not info.ip:
-            with device.search_cmd_with('display ip interface brief') as cmd:
+            with device.search_cmd('display ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('interface'), 'loopback0'):
                         info.ip = row.get('ip')
 
-        with device.search_cmd_with('display version') as cmd:
+        with device.search_cmd('display version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
                 info.version = row.get('vrp_version')
                 info.uptime = row.get('uptime')
 
         # 获取序列号
-        with device.search_cmd_with('display device manufacture-info') as cmd:
+        with device.search_cmd('display device manufacture-info') as cmd:
             for row in cmd.parse_result:
                 info.sn.append((row.get('type'), row.get('serial')))
 
         # 如果没有获取到序列号，就从 display esn 和 display elabel brief里面找
         if not info.sn:
-            with device.search_cmd_with('display esn') as cmd:
+            with device.search_cmd('display esn') as cmd:
                 if cmd.parse_result:
                     sn = cmd.parse_result[0].get('esn')
                     info.sn.append(('chassis', sn))
 
-            with device.search_cmd_with('display elabel brief') as cmd:
+            with device.search_cmd('display elabel brief') as cmd:
                 for row in cmd.parse_result:
                     info.sn.append((row.get('slot'), row.get('bar_code')))
 
         # CPU利用率
-        with device.search_cmd_with('display cpu-usage') as cmd:
+        with device.search_cmd('display cpu-usage') as cmd:
             if cmd.parse_result:
                 info.cpu_usage = cmd.parse_result[0].get('cpu_5_min') + '%'
 
         # Memory 利用率
-        with device.search_cmd_with('display memory-usage') as cmd:
+        with device.search_cmd('display memory-usage') as cmd:
             if cmd.parse_result:
                 info.memory_usage = cmd.parse_result[0].get(
                     'memory_using_percent') + '%'
@@ -135,19 +124,19 @@ class EachVendorDeviceInfo(Singleton):
         """获取华三设备基本信息"""
 
         if not info.ip:
-            with device.search_cmd_with('display ip interface brief') as cmd:
+            with device.search_cmd('display ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('interface'), 'loop0|loopback0'):
                         info.ip = row.get('ip')
 
-        with device.search_cmd_with('display version') as cmd:
+        with device.search_cmd('display version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
                 info.version = row.get('software_version') + \
                     ' Release: ' + row.get('release')
                 info.uptime = row.get('uptime')
 
-        with device.search_cmd_with('display device manuinfo') as cmd:
+        with device.search_cmd('display device manuinfo') as cmd:
             for row in cmd.parse_result:
                 if row.get('device_serial_number').lower() == 'none':
                     continue
@@ -155,12 +144,12 @@ class EachVendorDeviceInfo(Singleton):
                     (row.get('device_name'), row.get('device_serial_number')))
 
         # CPU利用率
-        with device.search_cmd_with('display cpu-usage') as cmd:
+        with device.search_cmd('display cpu-usage') as cmd:
             if cmd.parse_result:
                 info.cpu_usage = cmd.parse_result[0].get('cpu_5_min') + '%'
 
         # Memory 利用率
-        with device.search_cmd_with('display memory') as cmd:
+        with device.search_cmd('display memory') as cmd:
             if cmd.parse_result:
                 info.memory_usage = cmd.parse_result[0].get(
                     'used_rate') + '%'
@@ -169,29 +158,29 @@ class EachVendorDeviceInfo(Singleton):
         """获取迈普设备基本信息"""
 
         if not info.ip:
-            with device.search_cmd_with('show ip interface brief') as cmd:
+            with device.search_cmd('show ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('interface'), 'loopback0'):
                         info.ip = row.get('ip')
 
-        with device.search_cmd_with('show version') as cmd:
+        with device.search_cmd('show version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
                 info.version = row.get('software_version')
                 info.uptime = row.get('uptime')
 
-        with device.search_cmd_with('show system module brief') as cmd:
+        with device.search_cmd('show system module brief') as cmd:
             for row in cmd.parse_result:
                 if row.get('name') != '/':
                     info.sn.append((row.get('name'), row.get('sn')))
 
         # CPU 利用率
-        with device.search_cmd_with('show cpu monitor') as cmd:
+        with device.search_cmd('show cpu monitor') as cmd:
             if cmd.parse_result:
                 info.cpu_usage = cmd.parse_result[0].get('cpu_5_min') + '%'
 
         # Memory 利用率
-        with device.search_cmd_with('show memory') as cmd:
+        with device.search_cmd('show memory') as cmd:
             if cmd.parse_result:
                 info.memory_usage = cmd.parse_result[0].get(
                     'used_percent') + '%'
@@ -200,12 +189,12 @@ class EachVendorDeviceInfo(Singleton):
         """获取锐捷设备基本信息"""
 
         if not info.ip:
-            with device.search_cmd_with('show ip interface brief') as cmd:
+            with device.search_cmd('show ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('interface'), 'loopback 0'):
                         info.ip = row.get('ip')
 
-        with device.search_cmd_with('show version') as cmd:
+        with device.search_cmd('show version') as cmd:
             if cmd.parse_result:
                 temp = cmd.parse_result[0]
                 info.model = temp.get('model')
@@ -218,12 +207,12 @@ class EachVendorDeviceInfo(Singleton):
                         (row.get('slot_name'), row.get('serial_number')))
 
         # CPU 利用率
-        with device.search_cmd_with('show cpu') as cmd:
+        with device.search_cmd('show cpu') as cmd:
             if cmd.parse_result:
                 info.cpu_usage = cmd.parse_result[0].get('cpu_5_min') + '%'
 
         # Memory 利用率
-        with device.search_cmd_with('show memory') as cmd:
+        with device.search_cmd('show memory') as cmd:
             if cmd.parse_result:
                 info.memory_usage = cmd.parse_result[0].get(
                     'system_memory_used_rate_precent') + '%'
@@ -233,29 +222,29 @@ class EachVendorDeviceInfo(Singleton):
 
         # 当没有IP的时候，主动从配置中获取Loopback0的地址
         if not info.ip:
-            with device.search_cmd_with('show ip interface brief') as cmd:
+            with device.search_cmd('show ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('intf'), 'loopback0'):
                         info.ip = row.get('ipaddr')
                         break
 
-        with device.search_cmd_with('show version') as cmd:
+        with device.search_cmd('show version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('hardware')[0]
                 info.version = row.get('version')
                 info.uptime = row.get('uptime')
 
-        with device.search_cmd_with('show inventory') as cmd:
+        with device.search_cmd('show inventory') as cmd:
             for row in cmd.parse_result:
                 info.sn.append((row.get('name'), row.get('sn')))
 
         # CPU 利用率
-        with device.search_cmd_with('show processes cpu') as cmd:
+        with device.search_cmd('show processes cpu') as cmd:
             if cmd.parse_result:
                 info.cpu_usage = cmd.parse_result[0].get('cpu_5_min') + '%'
 
         # Memory 利用率
-        with device.search_cmd_with('show processes memory') as cmd:
+        with device.search_cmd('show processes memory') as cmd:
             if cmd.parse_result:
                 total = cmd.parse_result[0].get('memory_total')
                 used = cmd.parse_result[0].get('memory_used')
