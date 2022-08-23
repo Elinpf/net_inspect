@@ -297,7 +297,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             cmd_find = device.search_cmd(cmd)  # 搜索命令
             if not cmd_find:  # 当插件中需要，但是设备命令中不存在时, 给出提示
                 print_log(
-                    f'{pystr.analysis_warning_prefix} device:{device.info.name!r} cmd:{cmd!r} no found this command',
+                    f'{pystr.analysis_warning_prefix} device:{device._device_info.name!r} cmd:{cmd!r} no found this command',
                     verbose=2)
                 ret[template_file] = []  # 并且返回一个空的列表，作为占位符
                 continue

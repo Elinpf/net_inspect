@@ -3,12 +3,12 @@ from dataclasses import dataclass
 import re
 
 from typing import TYPE_CHECKING, Callable, List, Tuple, Optional
-from . import vendor
 from .func import match_lower, print_log, Singleton
 
 
 if TYPE_CHECKING:
     from .domain import Device
+    from . import vendor
 
 
 @dataclass
@@ -52,9 +52,9 @@ class EachVendorDeviceInfo(Singleton):
         """获取基本信息"""
 
         base_info = self.base_info_class()
-        base_info.hostname = device.info.name
+        base_info.hostname = device._device_info.name
         base_info.vendor_platform = device.vendor.PLATFORM
-        base_info.ip = device.info.ip
+        base_info.ip = device._device_info.ip
         base_info.sn = []
         base_info.analysis = self.analysis_info_class()
 
@@ -251,8 +251,9 @@ class EachVendorDeviceInfo(Singleton):
                 info.memory_usage = str(
                     int(int(used) / int(total) * 100)) + '%'
 
-    def run_analysis_info(self, device: Device, info: BaseInfo):
+    def run_analysis_info(self, device: Device):
         """更新设备检查信息, 重载追加的内容也会添加进来"""
+        info = device.info
 
         for item in (self.analysis_items + self.append_analysis_items):
             ar = device.analysis_result.get(item[0])
@@ -264,9 +265,10 @@ class EachVendorDeviceInfo(Singleton):
                 setattr(info.analysis, item[1], True)
 
 
-def get_base_info(device: Device, each_vendor_device_info_handler=EachVendorDeviceInfo) -> BaseInfo:
+def get_base_info(device: Device, device_info_handler=EachVendorDeviceInfo) -> BaseInfo:
     """获取设备基本信息"""
-    info = each_vendor_device_info_handler()
+    info = device_info_handler() if type(
+        device_info_handler) == type else device_info_handler
     base_info = info.run_baseinfo_func(device)
-    info.run_analysis_info(device, base_info)
+    info.run_analysis_info(device)
     return base_info

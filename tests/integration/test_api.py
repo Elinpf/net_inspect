@@ -1,7 +1,10 @@
 import pytest
+from typing import TYPE_CHECKING
 from net_inspect.api import NetInspect
 from net_inspect.exception import NotPluginError
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
+from net_inspect.domain import Device
+from net_inspect.base_info import BaseInfo, EachVendorDeviceInfo
 
 
 def test_run_input(shared_datadir):
@@ -85,3 +88,33 @@ def test_run_analysis(shared_datadir):
     cluster.analysis()
     result = cluster.devices[0].analysis_result
     assert len(result) > 0  # 保证至少有一个结果
+
+
+class AppendClock(BaseInfo):
+    clock: str = ''  # 巡检时间
+
+
+class EachVendorWithClock(EachVendorDeviceInfo):
+
+    base_info_class = AppendClock
+
+    def do_huawei_vrp_baseinfo_2(self, device: Device, info: AppendClock):
+        with device.search_cmd('display clock') as cmd:
+            if cmd.parse_result:
+                row = cmd.parse_result[0]
+                info.clock = f'{row["year"]}-{row["month"]}-{row["day"]} {row["time"]}'
+
+
+def test_set_base_info_handler(shared_datadir):
+    """测试设置扩展基本信息处理器, 添加了新的clock信息"""
+    net = NetInspect()
+    net.set_input_plugin('smartone')
+    net.set_base_info_handler(EachVendorWithClock)
+    cluster = net.run_input(shared_datadir /
+                            'log_files/HUAWEI_BAD_POWER_21.1.1.1.diag')
+
+    cluster.parse()
+    cluster.analysis()
+
+    info = net.cluster.devices[0].info  # type: AppendClock
+    assert info.clock == '2022-02-21 16:22:26'
