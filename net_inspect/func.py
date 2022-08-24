@@ -114,12 +114,20 @@ class Singleton(object):
 
 
 class NoneSkip(Singleton):
-    """简单模仿None类，只能使用bool()来判断是否为空"""
+    """
+    简单模仿None类，但是可以用来作为-with-中的跳过
+    使用bool()来判断是否为空
+    """
 
     def __init__(self):
         self.none = None
 
     def __enter__(self):
+        if sys.gettrace():
+            return self
+
+        # NOTE 存在一定的问题，当程序处于调试状态的时候，调试进程会被破坏：
+        # https://pydev.blogspot.com/2007/06/why-cant-pydev-debugger-work-with.html
         sys.settrace(lambda *args, **keys: None)
         frame = sys._getframe(1)
         frame.f_trace = self.trace
@@ -141,3 +149,7 @@ class NoneSkip(Singleton):
 
     def __ne__(self, other):
         return self.none != other
+
+    def __getattr__(self, __name: str):
+        # NOTE 当处于Debug状态的时候，调用不存在的属性时，就会触发这个，跳过-with-后面的内容
+        raise SkipWithBlock()

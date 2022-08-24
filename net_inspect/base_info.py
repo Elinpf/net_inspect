@@ -22,7 +22,8 @@ class AnalysisInfo:
 @dataclass
 class BaseInfo:
     hostname: str = ''  # 主机名
-    vendor_platform = ''  # 厂商平台
+    vendor: str = ''  # 厂商名称
+    vendor_platform = ''  # 厂商软件平台
     model: str = ''  # 型号
     version: str = ''  # 版本
     uptime: str = ''  # 启动时间
@@ -53,6 +54,7 @@ class EachVendorDeviceInfo(Singleton):
 
         base_info = self.base_info_class()
         base_info.hostname = device._device_info.name
+        base_info.vendor = str(device.vendor).split('.')[-1][:-2]
         base_info.vendor_platform = device.vendor.PLATFORM
         base_info.ip = device._device_info.ip
         base_info.sn = []

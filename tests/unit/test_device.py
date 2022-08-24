@@ -61,7 +61,8 @@ class TestDevice:
         device.save_to_cmds(cmd_dict())
 
         with device.search_cmd('other cmd') as cmd:
-            assert False
+            for row in cmd.parse_result:
+                assert False
 
 
 def test_device_info():

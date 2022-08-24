@@ -113,7 +113,7 @@ class NetInspect:
         self.cluster.analysis()
         return self.cluster
 
-    def run_output(self, file_path: str, params: Optional[Dict[str, str]] = None):
+    def run_output(self, file_path: str = '', params: Dict[str, str] = {}):
         """运行输出插件"""
         self.cluster.output(file_path, params)
 
@@ -127,7 +127,9 @@ class NetInspect:
         self.run_input(path)
         self.run_parse()
         self.run_analysis()
-        self.run_output(output_file_path, output_plugin_params)
+
+        if self._plugin_manager.output_plugin:  # 当有output插件的时候执行
+            self.run_output(output_file_path, output_plugin_params)
 
         return self.cluster
 
