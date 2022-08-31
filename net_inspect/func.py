@@ -1,7 +1,5 @@
 import re
 import sys
-from contextlib import _GeneratorContextManager
-from functools import wraps
 
 from .data import pyoption
 from .logger import log
@@ -88,7 +86,13 @@ def print_log(string: str, verbose: int = 0) -> None:
 
     Args:
         string: 日志内容
-        level: 日志级别
+        verbose: 日志级别
+
+    `verbose`级别可以通过`verbose()`方法设置，总共0~3
+    - 0: 日志关闭
+    - 1: 提供Output模块的日志和Parse模块的日志
+    - 2: 追加提供Analysis模块的日志
+    - 3: 追加提供Parse模块不支持命令的信息日志和命令为无效的信息
     """
     verbose = clamp_number(verbose, 1, 3)
     if pyoption.verbose_level >= verbose:
@@ -99,53 +103,53 @@ class SkipWithBlock(Exception):
     pass
 
 
-class _ContextManager(_GeneratorContextManager):
+class Singleton(object):
+    """单例类继承"""
+    _instance = None
+
+    def __new__(class_, *args, **kwargs):
+        if not isinstance(class_._instance, class_):
+            class_._instance = object.__new__(class_, *args, **kwargs)
+        return class_._instance
+
+
+class NoneSkip(Singleton):
+    """
+    简单模仿None类，但是可以用来作为-with-中的跳过
+    使用bool()来判断是否为空
+    """
+
+    def __init__(self):
+        self.none = None
+
     def __enter__(self):
-        del self.args, self.kwds, self.func
-        try:
-            return next(self.gen)
-        except StopIteration:
-            sys.settrace(lambda *args, **keys: None)
-            frame = sys._getframe(1)
-            frame.f_trace = self.trace
+        if sys.gettrace():
+            return self
+
+        # NOTE 存在一定的问题，当程序处于调试状态的时候，调试进程会被破坏：
+        # https://pydev.blogspot.com/2007/06/why-cant-pydev-debugger-work-with.html
+        sys.settrace(lambda *args, **keys: None)
+        frame = sys._getframe(1)
+        frame.f_trace = self.trace
 
     def trace(self, frame, event, arg):
         raise SkipWithBlock()
 
+    def __bool__(self):
+        return False
+
     def __exit__(self, type, value, traceback):
         if type is None:
-            try:
-                next(self.gen)
-            except StopIteration:
-                return False
-            else:
-                raise RuntimeError("generator didn't stop")
-        elif issubclass(type, SkipWithBlock):
-            return True
-        else:
-            if value is None:
-                value = type()
-            try:
-                self.gen.throw(type, value, traceback)
-            except StopIteration as exc:
-                return exc is not value
-            except RuntimeError as exc:
-                if exc is value:
-                    return False
-                if type is StopIteration and exc.__cause__ is value:
-                    return False
-                raise
-            except:
-                if sys.exc_info()[1] is value:
-                    return False
-                raise
-            raise RuntimeError("generator didn't stop after throw()")
+            return  # No exception
+        if issubclass(type, SkipWithBlock):
+            return True  # Suppress special SkipWithBlock exception
 
+    def __eq__(self, other):
+        return self.none == other
 
-def contextmanager(func):
-    """这个contextmanager可以在没有yield的时候，主动跳过代码块"""
-    @wraps(func)
-    def helper(*args, **kwds):
-        return _ContextManager(func, args, kwds)
+    def __ne__(self, other):
+        return self.none != other
 
-    return helper
+    def __getattr__(self, __name: str):
+        # NOTE 当处于Debug状态的时候，调用不存在的属性时，就会触发这个，跳过-with-后面的内容
+        raise SkipWithBlock()

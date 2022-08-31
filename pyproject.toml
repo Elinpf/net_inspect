@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "net_inspect"
-version = "1.1.0"
+version = "1.2.0"
 description = "基于已收集的网络设备信息进行的结构化数据分析框架"
 authors = ["Elin <365433079@qq.com>"]
 license = "Apache-2.0"  
@@ -18,6 +18,7 @@ rich_typer = "^0.1.5"
 ntc_templates_elinpf = "^3.2.0"
 textfsm = "^1.1.2"
 python-Levenshtein-wheels = "^0.13.2"
+openpyxl = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

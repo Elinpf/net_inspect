@@ -3,13 +3,13 @@ from __future__ import annotations
 import re
 import abc
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional, Tuple, Type, Generator
+from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
 from .data import pystr, pyoption
-from .func import print_log, pascal_case_to_snake_case
+from .func import print_log, pascal_case_to_snake_case, NoneSkip
 from .vendor import DefaultVendor
-from .func import contextmanager
+from .base_info import BaseInfo, EachVendorDeviceInfo
 
 
 class Cluster:
@@ -18,14 +18,15 @@ class Cluster:
     def __init__(self):
         self._plugin_manager: PluginManagerAbc = None
         self.devices: DeviceList[Device] = DeviceList()
+        self.base_info_handler = EachVendorDeviceInfo()
 
     def parse(self):
         """递归对每个设备的命令进行解析"""
-        self.devices.parse()
+        self.devices.parse(base_info_handler=self.base_info_handler)
 
     def analysis(self):
         """递归对每个设备进行分析"""
-        self.devices.analysis()
+        self.devices.analysis(base_info_handler=self.base_info_handler)
 
     @property
     def plugin_manger(self) -> PluginManagerAbc:
@@ -67,7 +68,7 @@ class Cluster:
         device_cls = Device()
         device_cls._plugin_manager = self.plugin_manager
         device_cls.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-        device_cls.info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
+        device_cls._device_info = cmd_contents_and_deviceinfo[1]  # 保存设备简单信息
         self.devices.append(device_cls)
 
     def output(self, file_path: str = '', params: Dict[str, str] = {}):
@@ -98,27 +99,31 @@ class DeviceList(list):
         :param device: 设备"""
         self._devices.append(device)
 
-    def parse(self):
+    def parse(self, base_info_handler: EachVendorDeviceInfo):
         """递归对每个设备的命令进行解析"""
         for device in self._devices:
             device.parse()
+            # 将分析到的基础信息放到Device.info中
+            device.info = base_info_handler.run_baseinfo_func(device)
 
-    def analysis(self):
-        """递归对每个设备进行分析"""
+    def analysis(self, base_info_handler: EachVendorDeviceInfo):
+        """递归对每个设备进行分析, 必须在parse之后执行"""
         for device in self._devices:
             device.analysis()
+            # 将分析到的状态信息放到Device.info.analysis中
+            base_info_handler.run_analysis_info(device)
 
     def search(self, device_name: str) -> List[Device]:
         """查找设备
 
         :param device_name: 设备信息
         :return: 设备列表"""
-        return [device for device in self._devices if device_name in device.info.name]
+        return [device for device in self._devices if device_name in device._device_info.name]
 
 
 @dataclass
 class DeviceInfo:
-    """设备信息"""
+    """用于InputPlugin中获取到的设备信息"""
     name: str
     ip: str = ''  # manager_ip
 
@@ -131,17 +136,21 @@ class Device:
         self._vendor = DefaultVendor
         self._plugin_manager: PluginManagerAbc = None
         self._device_info: DeviceInfo = None
+        self._base_info: BaseInfo = None
 
         self._analysis_result = AnalysisResult()
 
     @property
-    def info(self) -> DeviceInfo:
-        """设备信息"""
-        return self._device_info
+    def info(self) -> BaseInfo:
+        """设备基础信息，会在parse和analysis后更新"""
+        if self._base_info is None:
+            return BaseInfo()
+        return self._base_info
 
     @info.setter
-    def info(self, device_info: DeviceInfo):
-        self._device_info = device_info
+    def info(self, obj: BaseInfo):
+        """设置设备基础信息"""
+        self._base_info = obj
 
     @property
     def analysis_result(self) -> AnalysisResult:
@@ -204,7 +213,7 @@ class Device:
         res = self._plugin_manager.analysis(self)
         self._analysis_result.merge(res)
 
-    def search_cmd(self, cmd_name: str) -> Cmd | None:
+    def search_cmd(self, cmd_name: str) -> Cmd | NoneSkip:
         """
         查找命令, 返回Cmd类
 
@@ -249,19 +258,7 @@ class Device:
                 if (not res) or score > res[1]:
                     res = (self.cmds[command], score)
 
-        return res[0] if res else None
-
-    @contextmanager
-    def search_cmd_with(self, cmd_name: str) -> Generator[Cmd, None, None]:
-        """
-        查找命令, 使用with语句
-
-        Args:
-            cmd_name: 命令名
-        """
-        cmd = self.search_cmd(cmd_name)
-        if cmd:
-            yield cmd
+        return res[0] if res else NoneSkip()
 
 
 class Cmd:
@@ -275,6 +272,12 @@ class Cmd:
         self._parse_result: List[Dict[str, str]] = []
 
         self.command = cmd
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, tace):
+        pass
 
     @property
     def command(self) -> str:

@@ -12,7 +12,7 @@ from .logger import log
 from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
-    from .base_info import EachVendorDeviceInfo
+    from .base_info import EachVendorDeviceInfo, BaseInfo
     from .domain import (Device, InputPluginAbstract, OutputPluginAbstract,
                          ParsePluginAbstract, PluginAbstract)
 
@@ -113,7 +113,7 @@ class NetInspect:
         self.cluster.analysis()
         return self.cluster
 
-    def run_output(self, file_path: str, params: Optional[Dict[str, str]] = None):
+    def run_output(self, file_path: str = '', params: Dict[str, str] = {}):
         """运行输出插件"""
         self.cluster.output(file_path, params)
 
@@ -127,7 +127,9 @@ class NetInspect:
         self.run_input(path)
         self.run_parse()
         self.run_analysis()
-        self.run_output(output_file_path, output_plugin_params)
+
+        if self._plugin_manager.output_plugin:  # 当有output插件的时候执行
+            self.run_output(output_file_path, output_plugin_params)
 
         return self.cluster
 
@@ -150,10 +152,16 @@ class NetInspect:
             self.set_log_level('INFO')
         pyoption.verbose_level = verbose
 
-    def get_base_info(self) -> List[EachVendorDeviceInfo.BaseInfo]:
+    def get_base_info(self) -> List[BaseInfo]:
         """获取所有设备的基本信息"""
         ret = []
         for device in self.cluster.devices:
-            ret.append(get_base_info(device))
+            ret.append(device.info)
 
         return ret
+
+    def set_base_info_handler(self, handler: Type[EachVendorDeviceInfo]):
+        """设置设备基本信息处理器
+        Args:
+         - handler 设备基本信息处理器"""
+        self.cluster.base_info_handler = handler()
