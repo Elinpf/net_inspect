@@ -18,6 +18,7 @@ rich_typer = "^0.1.5"
 ntc_templates_elinpf = "^3.2.0"
 textfsm = "^1.1.2"
 python-Levenshtein-wheels = "^0.13.2"
+openpyxl = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
