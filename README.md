@@ -66,7 +66,7 @@ from rich.console import Console
 class Output(OutputPluginAbstract):
     def main(self):
         if not self.args.output_params.get('company'):
-            raise PluginError('name or age is missing')
+            raise PluginError('args of `company` is missing')
 
         console = Console()
 
@@ -77,10 +77,11 @@ class Output(OutputPluginAbstract):
         table.add_column('model', justify='center')
         table.add_column('version', justify='center')
         table.add_column('power', justify='center')
+        table.row_styles = ['green']
 
-        for device in self.args.devices:
+        for device in self.args.devices:  # 一种方式是按照每台设备的对应情况进行单独设置
             if device.vendor.PLATFORM == 'huawei_vrp':
-                data = [device.info.name, device.info.ip]
+                data = [device.info.hostname, device.info.ip]
                 ps = device.parse_result('display version')
                 data.append(ps[0].get('model'))
                 data.append(ps[0].get('vrp_version'))
@@ -92,15 +93,25 @@ class Output(OutputPluginAbstract):
                 data.append('\n'.join(power_desc) if power_desc else 'Normal')
 
                 table.add_row(*data)
-                table.row_styles = ['green']
+
+            else: # 还有一种方式是将每台设备的基础信息直接调取出来使用
+                table.add_row(
+                    device.info.hostname,
+                    device.info.ip,
+                    device.info.model,
+                    device.info.version,
+                    'Abnormal' if device.info.analysis.power else 'Normal'
+                )
 
         console.print(table)
 
 
 net = NetInspect()
 # net.set_log_level('DEBUG')
-net.set_plugins('smartone', Output)
-cluster = net.run('log_files', output_plugin_params={'company': 'Company Name'})
+net.set_plugins(input_plugin='console', output_plugin=Output) # 设置输入输出插件
+cluster = net.run('warning_test', output_plugin_params={
+                  'company': 'Company Name'})
+
 ```
 
 ## API 解释
@@ -166,7 +177,9 @@ for info in all_info:
 #### 新增设备基本信息类
 
 ```py
-from net_inspect import NetInspect, get_base_info, EachVendorDeviceInfo, BaseInfo, Device
+from net_inspect import NetInspect, EachVendorDeviceInfo, BaseInfo, Device
+from rich.table import Table
+from rich import print
 
 
 class AppendClock(BaseInfo):
@@ -175,44 +188,46 @@ class AppendClock(BaseInfo):
 
 class EachVendorWithClock(EachVendorDeviceInfo):
 
-    base_info_class = AppendClock
+    base_info_class = AppendClock # 基本信息类
 
-    def do_huawei_vrp_baseinfo_2(self, device: Device, info: AppendClock):
+    def do_huawei_vrp_baseinfo_2(self, device: Device, info: AppendClock): 
+        # 添加do_<vendor_platform>_baseinfo_<something>方法，可以自动运行
         with device.search_cmd('display clock') as cmd:
             if cmd.parse_result:
                 row = cmd.parse_result[0]
                 info.clock = f'{row["year"]}-{row["month"]}-{row["day"]} {row["time"]}'
 
-    # def do_<other_vendor_platform>_baseinfo_<index>
-    #     ...
-
 
 net = NetInspect()
-net.set_input_plugin('smartone')
+net.set_base_info_handler(EachVendorWithClock) # 设置获取设备基本信息的处理类
+net.set_input_plugin('smartone') 
 net.run_input('地市巡检')
 
-net.set_input_plugin('console')
+net.set_input_plugin('console') # 可以多个输入插件同时使用
 net.run_input('cisco')
 
 net.run_parse()
 net.run_analysis()
 
-with open('base_info.csv', 'w') as f:
-    for device in net.cluster.devices:
-        info = get_base_info(device, EachVendorWithClock)  # type: AppendClock
-        row = [
-            info.hostname,
-            info.vendor_platform,
-            info.model,
-            info.ip,
-            info.version,
-            info.uptime,
-            info.cpu_usage,
-            info.memory_usage,
-            info.clock  # 这是新增的
-        ]
-        f.write(' | '.join(row) + "\n")
+table = Table(title='设备信息')
+table.add_column('设备名称', style='bold green')
+table.add_column('设备型号', style='bold green')
+table.add_column('CPU 利用率', style='bold green')
+table.add_column('巡检时间', style='bold green')
+for device in net.cluster.devices:
+    info = device.info  # type: AppendClock
+    row = [
+        info.hostname,
+        info.model,
+        info.cpu_usage,
+        info.clock # 这里的clock就是新增的
+    ]
+    table.add_row(*row)
+
+print(table)
 ```
+
+通过`set_base_info_handler()`方法设置获取设备基本信息的处理类，可以自己增加通用的基础信息，方便后面的调用。
 
 
 ## CLI 命令行操作
