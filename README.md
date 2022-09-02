@@ -230,6 +230,22 @@ print(table)
 通过`set_base_info_handler()`方法设置获取设备基本信息的处理类，可以自己增加通用的基础信息，方便后面的调用。
 
 
+### 调用外部的模板文件
+
+net_inspect支持调用外部模板文件，可以通过`NetInspect.set_external_templates(template_dir)`api设置。
+
+需要注意的是，调用的templates文件夹中必须包含`index`文件，并且文件开头必须为以下内容:
+
+```text
+Template, Hostname, Platform, Command
+```
+
+设置示例:
+
+```python
+net.set_external_templates('external_templates_dir')
+```
+
 ## CLI 命令行操作
 
 ![](resource/cli_1.png)

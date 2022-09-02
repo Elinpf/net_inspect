@@ -1,0 +1,5 @@
+Template, Hostname, Platform, Command
+
+huawei_vrp_display_version.textfsm, .*, huawei_vrp, dis[[play]] ver[[sion]]
+
+test_external_display_version.textfsm, .*, test_external, dis[[play]] ver[[sion]]
