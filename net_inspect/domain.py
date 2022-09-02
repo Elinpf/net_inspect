@@ -656,6 +656,10 @@ class ParsePluginAbstract(PluginAbstract):
     def main(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def set_external_templates(self, template_dir: str):
+        raise NotImplementedError
+
 
 class AnalysisPluginAbstract(PluginAbstract):
 

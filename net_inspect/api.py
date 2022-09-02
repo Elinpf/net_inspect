@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Type
 
-from .base_info import get_base_info
 from .bootstrap import bootstrap
 from .data import pyoption, pystr
 from .domain import Cluster
@@ -12,7 +11,7 @@ from .logger import log
 from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
-    from .base_info import EachVendorDeviceInfo, BaseInfo
+    from .base_info import BaseInfo, EachVendorDeviceInfo
     from .domain import (Device, InputPluginAbstract, OutputPluginAbstract,
                          ParsePluginAbstract, PluginAbstract)
 
@@ -78,17 +77,23 @@ class NetInspect:
         self._plugin_manager.parse_plugin = plugin_cls
 
     def set_plugins(self,
-                    input_plugin: Type[InputPluginAbstract] | str,
-                    output_plugin: Type[OutputPluginAbstract] | str,
-                    parse_plugin: Optional[Type[ParsePluginAbstract]] | str = None):
+                    input_plugin: Optional[Type[InputPluginAbstract] | str] = None,
+                    output_plugin: Optional[Type[OutputPluginAbstract] | str]  = None,
+                    parse_plugin: Optional[Type[ParsePluginAbstract] | str] = None):
         """设置插件
         :param input_plugin: 输入插件
         :param output_plugin: 输出插件
         :param parse_plugin: 解析插件"""
-        self.set_input_plugin(input_plugin)
-        self.set_output_plugin(output_plugin)
+        if input_plugin:
+            self.set_input_plugin(input_plugin)
+        if output_plugin:
+            self.set_output_plugin(output_plugin)
         if parse_plugin:
             self.set_parse_plugin(parse_plugin)
+
+    def set_external_templates(self, templates_dir: str):
+        """设置外部模板目录"""
+        self._plugin_manager.parse_plugin.set_external_templates(templates_dir)
 
     def run_input(self, path: str) -> Cluster:
         """运行输入插件
