@@ -287,10 +287,9 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
         ret = {}
 
         for template_file, keys in template_keys._key_store.items():
-            # 当结尾不是.textfsm时，报错
+            # 当结尾不是.textfsm时，补充完整
             if not template_file.endswith('.textfsm'):
-                raise exception.AnalysisTemplateNameError(
-                    '请正确填写文件名称以及扩展名')  # pragma: no cover
+                template_file += '.textfsm'
 
             cmd = get_command_from_textfsm(  # 通过模板文件名获得命令
                 device.vendor.PLATFORM, template_file)

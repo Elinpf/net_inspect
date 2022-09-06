@@ -15,7 +15,7 @@ simialr_huawei_reg = r'[\<|\[](?P<device_name>[\w_]+)(?:\-(?:.+?))?[\]|>]\s*(?P<
 
 
 class InputPluginWithConsole(InputPluginAbstract):
-    """通过Console获取命令的输出"""
+    """通过Console或者vty获取命令的输出"""
 
     def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
         device_name = ''

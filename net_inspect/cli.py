@@ -1,14 +1,14 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Dict, Type
 
-from rich import print
-from rich.table import Table
-from rich.console import Console
 import rich_typer as typer
+from rich import print
+from rich.console import Console
+from rich.table import Table
 
 from . import NetInspect, __version__
 from .analysis_plugin import analysis
-
 
 if TYPE_CHECKING:
     from .domain import PluginAbstract
@@ -68,6 +68,33 @@ def print_analysis_list():
     print()
 
 
+def print_base_info_list():
+    """打印基础信息所包含的属性"""
+    from .base_info import AnalysisInfo, BaseInfo
+
+    base_info = BaseInfo()
+    analysis_info = AnalysisInfo()
+    base_info_field = {
+        info: None for info in base_info.__dir__() if info[0] != '_' and info != 'analysis'}
+
+    analysis_info_field = [
+        info for info in analysis_info.__dir__() if info[0] != '_']
+
+    for info in base_info_field.keys():
+        type = str(getattr(base_info, info).__class__).split('\'')[1]
+        base_info_field[info] = type
+
+    rows = []
+    for info, type in base_info_field.items():
+        rows.append([info, type])
+
+    for info in analysis_info_field:  # analysis中的属性均为bool
+        rows.append(['analysis.'+info, 'bool'])
+
+    print_table('基础信息所包含的属性', ['属性名称', '类型'], rows)
+    print()
+
+
 @app.command(banner=BANNER, banner_justify='center', context_settings=CONTEXT_SETTINGS, epilog=URL)
 def main(
     ctx: typer.Context,
@@ -85,6 +112,8 @@ def main(
         False, '--plugin-list', '-l', help='显示插件列表'),
     analysis_list: bool = typer.Option(
         False, '--analysis-list', '-L', help='显示分析插件所支持的厂商列表'),
+    base_info_list: bool = typer.Option(
+        False, '--base-info-list', '-b', help='显示基础信息属性列表'),
 ):
     net = NetInspect()
     net.set_plugins(input_plugin=input_plugin, output_plugin=output_plugin)
@@ -98,6 +127,11 @@ def main(
     if analysis_list:
         print()
         print_analysis_list()
+        exit()
+
+    if base_info_list:
+        print()
+        print_base_info_list()
         exit()
 
     if input_path:
