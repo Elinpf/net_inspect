@@ -339,7 +339,12 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
 
                 each_result = AnalysisResult()
 
-                func(template_info, each_result)
+                try:
+                    func(template_info, each_result)
+                except TypeError as e:
+                    msg = "方法只需要两个参数，第一个是TemplateInfo，第二个是AnalysisResult, 不需要self"
+                    raise TypeError(
+                        f'{klass_name}.{func.__name__}() {msg}') from e
 
                 # 当没有分析结果的时候，说明没有问题，给出一个正常级别提示
                 if not each_result._result:
