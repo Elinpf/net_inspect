@@ -4,14 +4,14 @@ import re
 from ..domain import InputPluginAbstract, DeviceInfo
 
 # 类思科的情况
-# DEVICE_NAME>show version
-# device_name(config)# sh version
-similar_cisco_reg = r'^(?P<device_name>[\w\-_]+)(?:\(.*?\))?[#|>]\s*(?P<cmd>sh(?:o(?:w)?)?\s+.*)$'
+# device>show version
+# device(config)# sh version
+similar_cisco_reg = r'^(?P<device_name>[\w\-_\.]+)(?:\(.*?\))?[#|>]\s*(?P<cmd>sh(?:o(?:w)?)?\s+.*)$'
 
 # 类华为的情况
 # <device>display version
-# [device-Eth0] dis version
-simialr_huawei_reg = r'[\<|\[](?P<device_name>[\w_]+)(?:\-(?:.+?))?[\]|>]\s*(?P<cmd>dis(?:p(?:l(?:a(?:y)?)?)?)?\s+.*)$'
+# [device] dis version
+simialr_huawei_reg = r'[\<|\[](?P<device_name>[\w\-_\.]+)(?:\-(?:.+?))?[\]|>]\s*(?P<cmd>dis(?:p(?:l(?:a(?:y)?)?)?)?\s+.*)$'
 
 
 class InputPluginWithConsole(InputPluginAbstract):

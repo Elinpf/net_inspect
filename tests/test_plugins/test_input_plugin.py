@@ -1,3 +1,36 @@
+import re
+
+
+def test_input_plugin_with_console_simalr_huawei_reg():
+    from net_inspect.plugins.input_plugin_with_console import simialr_huawei_reg
+
+    test_list = [
+        ('<device>display version', 'device'),
+        ('[device] dis version', 'device'),
+        ('<GZ-24F-SN1-248.16>display version', 'GZ-24F-SN1-248.16')
+    ]
+
+    for (line, refer_hostname) in test_list:
+        match = re.match(simialr_huawei_reg, line)
+        assert match.group('device_name') == refer_hostname
+        assert re.match(r'\s*dis.*ver', match.group('cmd'))
+
+
+def test_input_pulgin_with_console_simalr_cisco_reg():
+    from net_inspect.plugins.input_plugin_with_console import similar_cisco_reg
+
+    test_list = [
+        ('device>show version', 'device'),
+        ('device(config)# sh version', 'device'),
+        ('device-1(config-if)# sh version', 'device-1'),
+    ]
+
+    for (line, refer_hostname) in test_list:
+        match = re.match(similar_cisco_reg, line)
+        assert match.group('device_name') == refer_hostname
+        assert re.match(r'\s*sh.*ver', match.group('cmd'))
+
+
 def test_smartone_plugin_state_1(shared_datadir):
     """测试 smartone plugin 情况一"""
     from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
