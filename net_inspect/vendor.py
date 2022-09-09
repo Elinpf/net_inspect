@@ -68,7 +68,7 @@ class Cisco(DefaultVendor):
 
     PLATFORM = 'cisco_ios'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
-    KEYWORD_REG = r'Cisco IOS Software'
+    KEYWORD_REG = r'Cisco IOS Software|Cisco Internetwork Operating System Software'
     INVALID_STR = r'Invalid input detected'
 
 
