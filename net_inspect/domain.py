@@ -613,7 +613,8 @@ class InputPluginAbstract(PluginAbstract):
 
         with open(file_path, 'r', encoding='utf_8_sig', errors='ignore') as f:
             stream = f.read()
-        return self.main(file_path, stream)
+        cmd_dict, device_info = self.main(file_path, stream)
+        return self._lower_keys(cmd_dict), device_info
 
     @abc.abstractmethod
     def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
@@ -622,6 +623,10 @@ class InputPluginAbstract(PluginAbstract):
         :params: stream: 文件的内容"""
 
         raise NotImplementedError
+
+    def _lower_keys(self, data: Dict[str, str]) -> Dict[str, str]:
+        """将字典的key转为小写"""
+        return {k.lower(): v for k, v in data.items()}
 
 
 class OutputPluginAbstract(PluginAbstract):

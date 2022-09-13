@@ -6,12 +6,14 @@ from ..domain import InputPluginAbstract, DeviceInfo
 # 类思科的情况
 # device>show version
 # device(config)# sh version
-similar_cisco_reg = r'^(?P<device_name>[\w\-_\.]+)(?:\(.*?\))?[#|>]\s*(?P<cmd>sh(?:o(?:w)?)?\s+.*)$'
+similar_cisco_reg = re.compile(
+    r'^(?P<device_name>[\w\-_\.]+)(?:\(.*?\))?[#|>]\s*(?P<cmd>sh(?:o(?:w)?)?\s+.*)$', re.IGNORECASE)
 
 # 类华为的情况
 # <device>display version
 # [device] dis version
-simialr_huawei_reg = r'[\<|\[](?P<device_name>[\w\-_\.]+)(?:\-(?:.+?))?[\]|>]\s*(?P<cmd>dis(?:p(?:l(?:a(?:y)?)?)?)?\s+.*)$'
+simialr_huawei_reg = re.compile(
+    r'[\<|\[](?P<device_name>[\w\-_\.]+)(?:\-(?:.+?))?[\]|>]\s*(?P<cmd>dis(?:p(?:l(?:a(?:y)?)?)?)?\s+.*)$', re.IGNORECASE)
 
 
 class InputPluginWithConsole(InputPluginAbstract):
