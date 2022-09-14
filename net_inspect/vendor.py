@@ -53,7 +53,7 @@ class Huawei(DefaultVendor):
     PLATFORM = 'huawei_vrp'
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'Huawei Versatile Routing Platform'
-    INVALID_STR = r'Error:.*found at'
+    INVALID_STR = r'Error:.*found at|% .* position'
 
 
 class H3C(DefaultVendor):

@@ -614,7 +614,8 @@ class InputPluginAbstract(PluginAbstract):
         with open(file_path, 'r', encoding='utf_8_sig', errors='ignore') as f:
             stream = f.read()
         cmd_dict, device_info = self.main(file_path, stream)
-        return self._lower_keys(cmd_dict), device_info
+        cmd_dict = self._lower_keys(cmd_dict)  # 将所有的key转换为小写
+        return cmd_dict, device_info
 
     @abc.abstractmethod
     def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
