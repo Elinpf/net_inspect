@@ -72,24 +72,16 @@ def print_base_info_list():
     """打印基础信息所包含的属性"""
     from .base_info import AnalysisInfo, BaseInfo
 
-    base_info = BaseInfo()
-    analysis_info = AnalysisInfo()
-    base_info_field = {
-        info: None for info in base_info.__dir__() if info[0] != '_' and info != 'analysis'}
-
-    analysis_info_field = [
-        info for info in analysis_info.__dir__() if info[0] != '_']
-
-    for info in base_info_field.keys():
-        type = str(getattr(base_info, info).__class__).split('\'')[1]
-        base_info_field[info] = type
-
+    base_info_field = BaseInfo().__annotations__
+    analysis_info_field = AnalysisInfo().__annotations__
     rows = []
-    for info, type in base_info_field.items():
-        rows.append([info, type])
+    for info, type in base_info_field.items():  # base_info中的属性
+        if info == 'analysis':
+            continue
+        rows.append([info, type.replace('[', '\[')])
 
-    for info in analysis_info_field:  # analysis中的属性均为bool
-        rows.append(['analysis.'+info, 'bool'])
+    for info, type in analysis_info_field.items():  # analysis中的属性
+        rows.append(['analysis.'+info, type.replace('[', '\[')])
 
     print_table('基础信息所包含的属性', ['属性名称', '类型'], rows)
     print()

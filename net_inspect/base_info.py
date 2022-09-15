@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import re
 
 from typing import TYPE_CHECKING, Callable, List, Tuple, Optional
@@ -28,7 +28,7 @@ class BaseInfo:
     version: str = ''  # 版本
     uptime: str = ''  # 启动时间
     ip: str = ''  # IP地址
-    sn = []  # type: List[Tuple[str, str]] # 序列号
+    sn: List[Tuple[str, str]] = field(default_factory=lambda: [])  # 序列号
     cpu_usage: str = ''  # CPU使用率
     memory_usage: str = ''  # 内存使用率
     analysis: AnalysisInfo = None  # 检查项目结果
