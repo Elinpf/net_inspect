@@ -77,6 +77,10 @@ Switch_C | 24.45.254.254 | H3C | 5.20 Release: 1238P08 | S9508E-V | 1%
 > `console`代表的是`vty`或者`console`连接设备的回显信息格式。
 
 > 可供使用的base_info属性信息在使用`net_inspect -b`查看
+> 其中`analysis`的分析结果均是`Optional[bool]` 类型
+> 1. 如果为`None`，则表示未分析出结果。
+> 2. 如果为`True`，则表示有告警级别的信息。
+> 3. 如果为`False`，则表示为正常或者只是关注级别的信息。
 
 ### 框架的组成
 
@@ -353,6 +357,9 @@ output:
 
 ![](asset/1.png)
 
+可以看到，我们自定义了一个输出模块，可以直接调用，而不需要写脚本。
+
+`output_plugin_params`中的所有参数都会传递到`Output`类中的`output_params`变量中，可以直接使用。
 
 ## 关于贡献
 
