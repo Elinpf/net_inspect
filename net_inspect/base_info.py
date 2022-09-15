@@ -254,17 +254,23 @@ class EachVendorDeviceInfo(Singleton):
                     int(int(used) / int(total) * 100)) + '%'
 
     def run_analysis_info(self, device: Device):
-        """更新设备检查信息, 重载追加的内容也会添加进来"""
+        """
+        更新设备检查信息, 重载追加的内容也会添加进来
+
+        如果没有检查信息，则为``None``，
+        如果检查信息为告警级别，则为``True``
+        如果检查信息为正常或者关注级别，则为``False``
+        """
         info = device.info
 
         for item in (self.analysis_items + self.append_analysis_items):
             ar = device.analysis_result.get(item[0])
             if not ar._result:  # 如果没有检查结果，则不更新
                 continue
-            elif ar.include_warning:  # 如果有检查结果，但是包含warning，则更新为False
-                setattr(info.analysis, item[1], False)
-            else:  # 如果检查的结果不包含warning， 则更新为True
+            elif ar.include_warning:  # 如果有检查结果，但是包含warning，则更新为True
                 setattr(info.analysis, item[1], True)
+            else:  # 如果检查的结果不包含warning， 则更新为False
+                setattr(info.analysis, item[1], False)
 
 
 def get_base_info(device: Device, device_info_handler=EachVendorDeviceInfo) -> BaseInfo:
