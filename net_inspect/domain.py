@@ -65,6 +65,10 @@ class Cluster:
         """将设备和命令保存到self.devices中
 
         :param device_cmds_and_deviceinfo: 命令和内容的字典 和 设备信息"""
+
+        if not cmd_contents_and_deviceinfo[1].name:  # 如果没有设备名，直接跳过
+            return
+
         device_cls = Device()
         device_cls._plugin_manager = self.plugin_manager
         device_cls.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
