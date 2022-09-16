@@ -643,7 +643,7 @@ class OutputPluginAbstract(PluginAbstract):
     class OutputArgs:
 
         devices: DeviceList  # 设备列表
-        path: str  # 输出文件的路径
+        file_path: str  # 输出文件的路径
         output_params: Dict[str, str]  # 输出文件的参数
 
     def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]]):
@@ -653,7 +653,7 @@ class OutputPluginAbstract(PluginAbstract):
         :params: output_params: 传递输出文件的参数"""
 
         self.args = self.OutputArgs(
-            devices=devices, path=path, output_params=output_params)
+            devices=devices, file_path=path, output_params=output_params)
         return self.main()
 
     @abc.abstractmethod
