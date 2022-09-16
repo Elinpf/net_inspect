@@ -30,9 +30,9 @@ class Excel():
         for col in range(1, column_index_from_string(max_col) + 1):
             self.sheet.column_dimensions[get_column_letter(col)].width = width
 
-    def write_row(self, row: List[CellContext]):
+    def write_row(self, row: List[CellContext], merge: List[Tuple[str, str]] = None):
         """写入一行数据"""
-        self.write_rows([row])
+        self.write_rows([row], merge)
 
     def write_rows(
         self,
