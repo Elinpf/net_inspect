@@ -65,6 +65,10 @@ class Cluster:
         """将设备和命令保存到self.devices中
 
         :param device_cmds_and_deviceinfo: 命令和内容的字典 和 设备信息"""
+
+        if not cmd_contents_and_deviceinfo[1].name:  # 如果没有设备名，直接跳过
+            return
+
         device_cls = Device()
         device_cls._plugin_manager = self.plugin_manager
         device_cls.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
@@ -126,6 +130,7 @@ class DeviceInfo:
     """用于InputPlugin中获取到的设备信息"""
     name: str
     ip: str = ''  # manager_ip
+    file_path: str = ''  # 文件路径
 
 
 class Device:
@@ -265,13 +270,14 @@ class Cmd:
     """用于存放命令名称，以及命令的内容，等待后续的解析
     在解析完成后删除命令的内容,并存放应有的解析内容"""
 
-    def __init__(self, cmd: str):
+    def __init__(self, cmd: str, content: str = ''):
         """ :params: cmd: 命令的完整名称"""
         self._command: str = ''
         self._content: str = ''
         self._parse_result: List[Dict[str, str]] = []
 
         self.command = cmd
+        self.content = content
 
     def __enter__(self):
         return self
@@ -613,7 +619,10 @@ class InputPluginAbstract(PluginAbstract):
 
         with open(file_path, 'r', encoding='utf_8_sig', errors='ignore') as f:
             stream = f.read()
-        return self.main(file_path, stream)
+        cmd_dict, device_info = self.main(file_path, stream)
+        cmd_dict = self._lower_keys(cmd_dict)  # 将所有的key转换为小写
+        device_info.file_path = file_path
+        return cmd_dict, device_info
 
     @abc.abstractmethod
     def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
@@ -623,6 +632,10 @@ class InputPluginAbstract(PluginAbstract):
 
         raise NotImplementedError
 
+    def _lower_keys(self, data: Dict[str, str]) -> Dict[str, str]:
+        """将字典的key转为小写"""
+        return {k.lower(): v for k, v in data.items()}
+
 
 class OutputPluginAbstract(PluginAbstract):
 
@@ -630,7 +643,7 @@ class OutputPluginAbstract(PluginAbstract):
     class OutputArgs:
 
         devices: DeviceList  # 设备列表
-        path: str  # 输出文件的路径
+        file_path: str  # 输出文件的路径
         output_params: Dict[str, str]  # 输出文件的参数
 
     def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]]):
@@ -640,7 +653,7 @@ class OutputPluginAbstract(PluginAbstract):
         :params: output_params: 传递输出文件的参数"""
 
         self.args = self.OutputArgs(
-            devices=devices, path=path, output_params=output_params)
+            devices=devices, file_path=path, output_params=output_params)
         return self.main()
 
     @abc.abstractmethod

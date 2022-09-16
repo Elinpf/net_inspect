@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import re
 
 from typing import TYPE_CHECKING, Callable, List, Tuple, Optional
@@ -22,13 +22,14 @@ class AnalysisInfo:
 @dataclass
 class BaseInfo:
     hostname: str = ''  # 主机名
+    file_path: str = ''  # 文件路径
     vendor: str = ''  # 厂商名称
     vendor_platform = ''  # 厂商软件平台
     model: str = ''  # 型号
     version: str = ''  # 版本
     uptime: str = ''  # 启动时间
     ip: str = ''  # IP地址
-    sn = []  # type: List[Tuple[str, str]] # 序列号
+    sn: List[Tuple[str, str]] = field(default_factory=lambda: [])  # 序列号
     cpu_usage: str = ''  # CPU使用率
     memory_usage: str = ''  # 内存使用率
     analysis: AnalysisInfo = None  # 检查项目结果
@@ -54,6 +55,7 @@ class EachVendorDeviceInfo(Singleton):
 
         base_info = self.base_info_class()
         base_info.hostname = device._device_info.name
+        base_info.file_path = device._device_info.file_path
         base_info.vendor = str(device.vendor).split('.')[-1][:-2]
         base_info.vendor_platform = device.vendor.PLATFORM
         base_info.ip = device._device_info.ip
@@ -254,17 +256,23 @@ class EachVendorDeviceInfo(Singleton):
                     int(int(used) / int(total) * 100)) + '%'
 
     def run_analysis_info(self, device: Device):
-        """更新设备检查信息, 重载追加的内容也会添加进来"""
+        """
+        更新设备检查信息, 重载追加的内容也会添加进来
+
+        如果没有检查信息，则为``None``，
+        如果检查信息为告警级别，则为``True``
+        如果检查信息为正常或者关注级别，则为``False``
+        """
         info = device.info
 
         for item in (self.analysis_items + self.append_analysis_items):
             ar = device.analysis_result.get(item[0])
             if not ar._result:  # 如果没有检查结果，则不更新
                 continue
-            elif ar.include_warning:  # 如果有检查结果，但是包含warning，则更新为False
-                setattr(info.analysis, item[1], False)
-            else:  # 如果检查的结果不包含warning， 则更新为True
+            elif ar.include_warning:  # 如果有检查结果，但是包含warning，则更新为True
                 setattr(info.analysis, item[1], True)
+            else:  # 如果检查的结果不包含warning， 则更新为False
+                setattr(info.analysis, item[1], False)
 
 
 def get_base_info(device: Device, device_info_handler=EachVendorDeviceInfo) -> BaseInfo:
