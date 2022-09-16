@@ -269,13 +269,14 @@ class Cmd:
     """用于存放命令名称，以及命令的内容，等待后续的解析
     在解析完成后删除命令的内容,并存放应有的解析内容"""
 
-    def __init__(self, cmd: str):
+    def __init__(self, cmd: str, content: str = ''):
         """ :params: cmd: 命令的完整名称"""
         self._command: str = ''
         self._content: str = ''
         self._parse_result: List[Dict[str, str]] = []
 
         self.command = cmd
+        self.content = content
 
     def __enter__(self):
         return self
