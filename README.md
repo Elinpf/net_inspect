@@ -327,20 +327,19 @@ class Output(OutputPluginAbstract):
 
         table = Table(title=self.args.output_params.get(
             'title'), show_lines=False)
-        table.add_column('name', justify='center')
-        table.add_column('ip', justify='center')
-        table.add_column('model', justify='center')
-        table.add_column('version', justify='center')
-        table.add_column('power', justify='center')
+        columns = ['hostname', 'ip', 'model', 'version', 'power status']
+        for col in columns:
+            table.add_column(col, justify='center')
         table.row_styles = ['green']
 
         for device in self.args.devices:
+            info = device.info
             table.add_row(
-                device.info.hostname,
-                device.info.ip,
-                device.info.model,
-                device.info.version,
-                'Abnormal' if device.info.analysis.power else 'Normal'
+                info.hostname,
+                info.ip,
+                info.model,
+                info.version,
+                'Abnormal' if info.analysis.power else 'Normal'
             )
 
         console.print(table)
