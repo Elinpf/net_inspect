@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 
 @dataclass
 class AnalysisInfo:
-    cpu: Optional[bool] = None  # CPU利用率是否正常
-    memory: Optional[bool] = None  # Memory 利用率是否正常
-    fan: Optional[bool] = None  # 风扇是否正常
-    power: Optional[bool] = None  # 电源是否正常
+    cpu: Optional[bool] = None  # CPU利用率是否异常
+    memory: Optional[bool] = None  # Memory 利用率是否异常
+    fan: Optional[bool] = None  # 风扇是否异常
+    power: Optional[bool] = None  # 电源是否异常
 
 
 @dataclass
