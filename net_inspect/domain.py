@@ -130,6 +130,7 @@ class DeviceInfo:
     """用于InputPlugin中获取到的设备信息"""
     name: str
     ip: str = ''  # manager_ip
+    file_path: str = ''  # 文件路径
 
 
 class Device:
@@ -620,6 +621,7 @@ class InputPluginAbstract(PluginAbstract):
             stream = f.read()
         cmd_dict, device_info = self.main(file_path, stream)
         cmd_dict = self._lower_keys(cmd_dict)  # 将所有的key转换为小写
+        device_info.file_path = file_path
         return cmd_dict, device_info
 
     @abc.abstractmethod

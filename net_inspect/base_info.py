@@ -22,6 +22,7 @@ class AnalysisInfo:
 @dataclass
 class BaseInfo:
     hostname: str = ''  # 主机名
+    file_path: str = ''  # 文件路径
     vendor: str = ''  # 厂商名称
     vendor_platform = ''  # 厂商软件平台
     model: str = ''  # 型号
@@ -54,6 +55,7 @@ class EachVendorDeviceInfo(Singleton):
 
         base_info = self.base_info_class()
         base_info.hostname = device._device_info.name
+        base_info.file_path = device._device_info.file_path
         base_info.vendor = str(device.vendor).split('.')[-1][:-2]
         base_info.vendor_platform = device.vendor.PLATFORM
         base_info.ip = device._device_info.ip
