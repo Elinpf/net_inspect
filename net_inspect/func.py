@@ -80,6 +80,19 @@ def match_lower(string: str, pattern: str) -> bool:
     return bool(re.match(pattern, string.lower()))
 
 
+def safe_float2str(num: float) -> str:
+    """安全的将浮点数转换为字符串"""
+    return '{:.1f}'.format(num)
+
+
+def safe_str2float(string: str) -> float:
+    """安全的将字符串转换为浮点数"""
+    try:
+        return float(string)
+    except ValueError:
+        return 0.0
+
+
 def print_log(string: str, verbose: int = 0) -> None:
     """
     根据级别打印日志

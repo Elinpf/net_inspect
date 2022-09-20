@@ -18,13 +18,16 @@ class AnalysisInfo:
     fan: Optional[bool] = None  # 风扇是否异常
     power: Optional[bool] = None  # 电源是否异常
 
+    def __getitem__(self, item: str):
+        return self.__getattribute__(item)
+
 
 @dataclass
 class BaseInfo:
     hostname: str = ''  # 主机名
     file_path: str = ''  # 文件路径
     vendor: str = ''  # 厂商名称
-    vendor_platform = ''  # 厂商软件平台
+    vendor_platform: str = ''  # 厂商软件平台
     model: str = ''  # 型号
     version: str = ''  # 版本
     uptime: str = ''  # 启动时间
@@ -33,6 +36,9 @@ class BaseInfo:
     cpu_usage: str = ''  # CPU使用率
     memory_usage: str = ''  # 内存使用率
     analysis: AnalysisInfo = None  # 检查项目结果
+
+    def __getitem__(self, item: str):
+        return self.__getattribute__(item)
 
 
 class EachVendorDeviceInfo(Singleton):
@@ -155,8 +161,13 @@ class EachVendorDeviceInfo(Singleton):
         # Memory 利用率
         with device.search_cmd('display memory') as cmd:
             if cmd.parse_result:
-                info.memory_usage = cmd.parse_result[0].get(
-                    'used_rate') + '%'
+                row = cmd.parse_result[0]
+                if row.get('used_rate'):
+                    info.memory_usage = row.get('used_rate') + '%'
+
+                # 当是free rate 的情况，需要转换
+                elif row.get('free_rate'):
+                    info.memory_usage = f"{(100 - float(row.get('free_rate'))):.1f}%"
 
     def do_maipu_mypower_baseinfo(self, device: Device, info: BaseInfo):
         """获取迈普设备基本信息"""

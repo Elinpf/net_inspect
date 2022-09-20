@@ -69,6 +69,7 @@ def raw_analysis_test(raw_file: str) -> Tuple[Dict[str, str], Dict[str, str]]:
 
 
 def analysis_device_with_raw_file(raw_file: str) -> Device:
+    """执行分析测试"""
     plugin_name = raw_file.split(os.path.sep)[2]
     device = set_device(raw_file)
     set_analysis_plugin(device, plugin_name)

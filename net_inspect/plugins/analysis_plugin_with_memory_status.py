@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from .. import vendor
 from ..analysis_plugin import AnalysisPluginAbc, analysis
+from ..func import safe_str2float
 
 if TYPE_CHECKING:
     from ..analysis_plugin import TemplateInfo
@@ -22,7 +23,7 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
         内存利用率高于80%，则告警。
         """
         for row in template_info['display memory-usage']:
-            check_memory_usage(float(row['MEMORY_USING_PERCENT']), result)
+            check_memory_usage(row['MEMORY_USING_PERCENT'], result)
 
     @analysis.vendor(vendor.Cisco)
     @analysis.template_key('cisco_ios_show_processes_memory_sorted.textfsm', ['memory_total', 'memory_used'])
@@ -46,8 +47,7 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
         内存利用率高于80%，则告警。
         """
         for row in template_info['show memory']:
-            check_memory_usage(
-                float(row['system_memory_used_rate_precent']), result)
+            check_memory_usage(row['system_memory_used_rate_precent'], result)
 
     @analysis.vendor(vendor.Maipu)
     @analysis.template_key('maipu_mypower_show_memory.textfsm', ['used_percent'])
@@ -56,18 +56,29 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
         内存利用率高于80%，则告警。
         """
         for row in template_info['show memory']:
-            check_memory_usage(float(row['used_percent']), result)
+            check_memory_usage(row['used_percent'], result)
 
     @analysis.vendor(vendor.H3C)
-    @analysis.template_key('hp_comware_display_memory.textfsm', ['used_rate'])
+    @analysis.template_key('hp_comware_display_memory.textfsm', ['used_rate', 'free_rate'])
     def hp_comware(template_info: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
         """
         for row in template_info['display memory']:
-            check_memory_usage(float(row['used_rate']), result)
+            if row['used_rate']:
+                check_memory_usage(row['used_rate'], result)
+
+            elif row['free_rate']:
+                check_memory_usage(
+                    100 - float(row.get('free_rate')), result)
 
 
-def check_memory_usage(memory_usage: float, result: AnalysisResult):
+def check_memory_usage(memory_usage: float | str, result: AnalysisResult):
+    if memory_usage == '':
+        return
+
+    if isinstance(memory_usage, str):
+        memory_usage = safe_str2float(memory_usage)
+
     if memory_usage > 80:
         result.add_warning(f"内存利用率达到{round(memory_usage,1)}%")

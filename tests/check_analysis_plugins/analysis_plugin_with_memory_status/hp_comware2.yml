@@ -1,0 +1,4 @@
+---
+analysis_sample:
+  - level: "2"
+    message: "内存利用率达到84.0%"
