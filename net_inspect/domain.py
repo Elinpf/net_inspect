@@ -425,14 +425,14 @@ class PluginManagerAbc(abc.ABC):
     def parse(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         """对单个命令的内容进行解析"""
         if self._parse_plugin is None:
-            raise exception.NotPluginError('parse plugin is None')
+            raise exception.PluginNotSpecify('parse plugin is None')
         return self._parse_plugin.run(cmd, platform)
 
     def analysis(self, device: Device) -> AnalysisResult:
         """对设备进行分析, 返回分析结果列表"""
         res = AnalysisResult()
         if not self._analysis_plugin:
-            raise exception.NotPluginError('analysis plugin list is empty')
+            raise exception.PluginNotSpecify('analysis plugin list is empty')
         for plugin in self._analysis_plugin:
             res.merge(plugin.run(device))
 
@@ -441,13 +441,13 @@ class PluginManagerAbc(abc.ABC):
     def input(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
         """对单个文件进行设备输入"""
         if self._input_plugin is None:
-            raise exception.NotPluginError('input plugin is None')
+            raise exception.PluginNotSpecify('input plugin is None')
         return self._input_plugin.run(file_path)
 
     def output(self, devices: DeviceList, file_path: str):
         """对设备列表进行输出"""
         if self._output_plugin is None:
-            raise exception.NotPluginError('output plugin is None')
+            raise exception.PluginNotSpecify('output plugin is None')
         self._output_plugin.run(devices, file_path)
 
     @abc.abstractmethod

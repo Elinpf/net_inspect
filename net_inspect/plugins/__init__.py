@@ -9,7 +9,7 @@ from . import __file__ as plugin_file
 from ..data import pystr
 from ..logger import log
 from ..domain import PluginAbstract
-from ..exception import NotPluginError
+from ..exception import PluginNotSpecify
 
 if TYPE_CHECKING:
     from ..domain import (
@@ -80,7 +80,7 @@ class PluginRepository():
             lower_name = f"{ptype}pluginwith{lower_name}"
 
         if lower_name not in self._easy_plugin_name:
-            raise NotPluginError('not found plugin: {}'.format(name))
+            raise PluginNotSpecify('not found plugin: {}'.format(name))
 
         plugin = self._easy_plugin_name[lower_name]
         if ptype == Input:
@@ -103,7 +103,7 @@ class PluginRepository():
     def _check_plugin(self, plugin_dict: Dict[str, PluginAbstract], plugin: PluginAbstract):
         """检查这个插件是否在plugin_dict中"""
         if plugin not in plugin_dict.values():
-            raise NotPluginError(
+            raise PluginNotSpecify(
                 'plugin `{}` not in this plugin type list'.format(plugin))
 
     def get_input_plugin(self, name: str) -> InputPluginAbstract:

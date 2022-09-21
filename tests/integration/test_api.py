@@ -1,7 +1,7 @@
 import pytest
 from typing import TYPE_CHECKING
 from net_inspect.api import NetInspect
-from net_inspect.exception import NotPluginError
+from net_inspect.exception import PluginNotSpecify
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
 from net_inspect.domain import Device
 from net_inspect.base_info import BaseInfo, EachVendorDeviceInfo
@@ -35,7 +35,7 @@ def test_run_input_with_class(shared_datadir):
 def test_run_input_with_wrong_name(shared_datadir):
     """测试错误的输入插件"""
     net = NetInspect()
-    with pytest.raises(NotPluginError):
+    with pytest.raises(PluginNotSpecify):
         net.set_input_plugin('not_found')
         net.run_input(shared_datadir / 'log_files')
 
