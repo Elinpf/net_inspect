@@ -42,7 +42,7 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
 
         if not CHECK_NTC_TEMPLATES:
             msg = """
-net_inspect 使用的是`ntc_templates_elinpf`这个包，与原`ntc_templates`不兼容，
+net_inspect 使用的是`ntc_templates_elinpf`这个包，与原`ntc_templates`命名空间重复造成冲突，
 请删除原`ntc_templates`包: `pip uninstall ntc_templates`,
 然后安装`ntc_templates_elinpf`包: `pip install ntc_templates_elinpf`
 """

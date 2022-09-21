@@ -15,9 +15,8 @@ net_inspect = "net_inspect.cli:app"
 python = "^3.7"
 rich = "^12.4.1"
 rich_typer = "^0.1.5"
-ntc_templates_elinpf = "^3.3.0"
 textfsm = "^1.1.2"
-openpyxl = "^3.0.0"
+ntc_templates_elinpf = "^3.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
