@@ -11,10 +11,11 @@ try:
     if TYPE_CHECKING:
         from openpyxl.worksheet.worksheet import Worksheet
 
-    CHECK_IMPORT = True
-
 except ImportError:
     CHECK_IMPORT = False
+
+else:
+    CHECK_IMPORT = True
 
 
 msg = "Please install openpyxl first"

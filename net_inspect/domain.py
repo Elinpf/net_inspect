@@ -94,7 +94,7 @@ class DeviceList(list):
     def __iter__(self) -> Iterator[Device]:
         return self._devices.__iter__()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._devices)
 
     def append(self, device: Device):
