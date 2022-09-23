@@ -7,7 +7,7 @@ from .bootstrap import bootstrap
 from .data import pyoption, pystr
 from .domain import Cluster
 from .func import clamp_number
-from .logger import log
+from .logger import LoggerConfig
 from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
@@ -22,15 +22,45 @@ class NetInspect:
         self._plugins = bootstrap()
         self._plugin_manager = PluginManager()
         self.cluster = Cluster()
+        self._logconfig = LoggerConfig()
 
         self._plugin_manager.parse_plugin = self._plugins.get_parse_plugin(
             pystr.default_parse_plugin)
         self._plugin_manager.analysis_plugin = self._plugins.get_analysis_plugin_list()
         self.cluster._plugin_manager = self._plugin_manager
 
-    def set_log_level(self, level: int | str):
-        """设置日志等级"""
-        log.setLevel(level)
+    def enbale_console_log(self, level: str = '', log_format: str = ''):
+        """启用控制台日志
+
+        Args:
+            level: 日志级别 
+            format: 日志格式，可以为空使用默认值
+
+        """
+        self._logconfig.enable_console_log(
+            level=level or pyoption.console_log_level,
+            log_format=log_format or pyoption.console_format,
+        )
+
+    def enable_file_log(
+        self,
+        file_path: str = '',
+        level: str = '',
+        rotation: str = '',
+        log_format: str = '',
+    ):
+        """启用文件日志
+
+        Args:
+            file_path: 日志文件路径, 为空使用默认值
+        """
+
+        self._logconfig.enable_file_log(
+            file_path or pyoption.logfile_name,
+            level=level or 'DEBUG',
+            rotation=rotation or pyoption.logfile_rotation,
+            log_format=log_format or pyoption.logfile_format,
+        )
 
     def get_all_plugins(self) -> Dict[str, Dict[str, Type[PluginAbstract]]]:
         """获取所有插件"""
@@ -76,10 +106,12 @@ class NetInspect:
             plugin_cls = self._plugins.get_parse_plugin(plugin_cls)
         self._plugin_manager.parse_plugin = plugin_cls
 
-    def set_plugins(self,
-                    input_plugin: Optional[Type[InputPluginAbstract] | str] = None,
-                    output_plugin: Optional[Type[OutputPluginAbstract] | str]  = None,
-                    parse_plugin: Optional[Type[ParsePluginAbstract] | str] = None):
+    def set_plugins(
+        self,
+        input_plugin: Optional[Type[InputPluginAbstract] | str] = None,
+        output_plugin: Optional[Type[OutputPluginAbstract] | str] = None,
+        parse_plugin: Optional[Type[ParsePluginAbstract] | str] = None
+    ):
         """设置插件
         :param input_plugin: 输入插件
         :param output_plugin: 输出插件
@@ -143,19 +175,6 @@ class NetInspect:
         :param device_name: 设备名称
         :return: 设备列表"""
         return self.cluster.search(device_name)
-
-    def verbose(self, verbose: int):
-        """设置输出等级
-
-        Args:
-            verbose: 输出等级 0~3
-        """
-        verbose = clamp_number(verbose, 0, 3)
-        if verbose >= 1:
-            self.set_log_level('DEBUG')
-        else:
-            self.set_log_level('INFO')
-        pyoption.verbose_level = verbose
 
     def get_base_info(self) -> List[BaseInfo]:
         """获取所有设备的基本信息"""

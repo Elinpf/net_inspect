@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-import re
 import abc
+import re
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
-from .data import pystr, pyoption
-from .func import print_log, pascal_case_to_snake_case, NoneSkip
-from .vendor import DefaultVendor
 from .base_info import BaseInfo, EachVendorDeviceInfo
+from .func import NoneSkip, pascal_case_to_snake_case
+from .logger import PARSE, logger
+from .vendor import DefaultVendor
 
 
 class Cluster:
@@ -198,17 +198,16 @@ class Device:
             try:
                 # 首先判断是否为无效命令
                 if not cmd.is_vaild(self._vendor.INVALID_STR):
-                    if pyoption.verbose_level > 3:
-                        raise exception.TemplateError(
-                            f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank')
-                    continue
+                    raise exception.TemplateError(
+                        f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank')
+
                 parse_result = self._plugin_manager.parse(
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                print_log(
-                    f"{pystr.parse_waning_prefix} device:{self._device_info.name!r} {str(e)}",
-                    verbose=1)
+                logger.log(
+                    PARSE, f'device:<blue>{self._device_info.name!r}</blue> {str(e)}')
+
                 continue
             except exception.Continue:
                 continue

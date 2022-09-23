@@ -141,9 +141,9 @@ net_inspect 使用的是`ntc_templates_elinpf`这个包，与原`ntc_templates`�
                                    command=match_command, data=cmd.content, template_dir=textfsm_info.dir)
             except Exception as e:
                 raise exception.TemplateError(
-                    f'platform: {platform!r} cmd: {command!r} {str(e)}')
+                    f'platform: <blue>{platform!r}</blue> cmd:<blue>{command!r}</blue> {str(e)}')
 
             if not res:  # 如果没有解析到结果，则抛出异常提示
                 raise exception.TemplateError(
-                    f'platform:{platform!r} cmd:{command!r} no parse result')
+                    f'platform:<blue>{platform!r}</blue> cmd:<blue>{command!r}</blue> no parse result')
             return res

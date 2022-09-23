@@ -5,8 +5,6 @@ from . import __file__ as module_file
 class PyStr:
     def __init__(self):
         self.software = 'net_inspect'
-        self.logger_format = "%(message)s"
-        # self.logger_format = "%(asctime)-15s - %(levelname)s - %(message)s"
         self.default_parse_plugin = 'ntc_templates'
         self.analysis_warning_prefix = 'AnalysisWarning --'
         self.parse_waning_prefix = 'ParseWarning --'
@@ -14,9 +12,15 @@ class PyStr:
 
 class PyOption:
     def __init__(self):
-        self.log_file_expend = ['.txt', '.log', '.diag']
-        self.log_level = 'INFO'
-        self.verbose_level = 0
+        self.input_file_expend = ['.txt', '.log', '.diag']
+
+        self.console_log_level = 'INFO'
+
+        self.console_format = "{time:HH:mm:ss} | <level>{level}</level> | {message}"
+
+        self.logfile_format = "{time:YYYY-MM-DD HH:mm:ss} | <level>{level}</level> | {message}"
+        self.logfile_name = 'net_inspect.log'
+        self.logfile_rotation = '2 MB'
 
 
 class PyPath:

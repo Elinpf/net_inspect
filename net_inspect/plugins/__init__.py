@@ -1,23 +1,18 @@
 from __future__ import annotations
+
 import os
 import re
-
-from typing import Dict, TYPE_CHECKING, List, Optional, Type
-
-from . import __file__ as plugin_file
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from ..data import pystr
-from ..logger import log
 from ..domain import PluginAbstract
 from ..exception import PluginNotSpecify
+from ..logger import logger
+from . import __file__ as plugin_file
 
 if TYPE_CHECKING:
-    from ..domain import (
-        InputPluginAbstract,
-        OutputPluginAbstract,
-        ParsePluginAbstract,
-        AnalysisPluginAbstract
-    )
+    from ..domain import (AnalysisPluginAbstract, InputPluginAbstract,
+                          OutputPluginAbstract, ParsePluginAbstract)
 
 
 def autoload_plugin():
@@ -29,7 +24,7 @@ def autoload_plugin():
             try:
                 __import__('.'.join([pystr.software, 'plugins', module_name]))
             except ImportError:
-                log.error('Failed to import plugin: {}'.format(module_name))
+                logger.error('Failed to import plugin: {}'.format(module_name))
 
 
 Input = 'input'

@@ -1,9 +1,6 @@
 import re
 import sys
 
-from .data import pyoption
-from .logger import log
-
 
 def reg_extend(reg: str) -> str:
     """扩展正则表达式写法，支持简单的逐字匹配
@@ -91,25 +88,6 @@ def safe_str2float(string: str) -> float:
         return float(string)
     except ValueError:
         return 0.0
-
-
-def print_log(string: str, verbose: int = 0) -> None:
-    """
-    根据级别打印日志
-
-    Args:
-        string: 日志内容
-        verbose: 日志级别
-
-    `verbose`级别可以通过`verbose()`方法设置，总共0~3
-    - 0: 日志关闭
-    - 1: 提供Output模块的日志和Parse模块的日志
-    - 2: 追加提供Analysis模块的日志
-    - 3: 追加提供Parse模块不支持命令的信息日志和命令为无效的信息
-    """
-    verbose = clamp_number(verbose, 1, 3)
-    if pyoption.verbose_level >= verbose:
-        log.debug(string)
 
 
 class SkipWithBlock(Exception):

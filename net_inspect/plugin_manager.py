@@ -25,7 +25,7 @@ class PluginManager(PluginManagerAbc):
         devices = []
 
         if expend is None:
-            expend = pyoption.log_file_expend
+            expend = pyoption.input_file_expend
         elif expend is str:
             expend = [expend]
 

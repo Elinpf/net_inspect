@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Dict, List, Iterator, Type, Tuple
+from typing import TYPE_CHECKING, Callable, Dict, Iterator, List, Tuple, Type
 
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
-from .func import get_command_from_textfsm, snake_case_to_pascal_case, print_log
-from .data import pystr
+from .func import get_command_from_textfsm, snake_case_to_pascal_case
+from .logger import ANALYSIS, logger
 
 if TYPE_CHECKING:
     from .domain import DefaultVendor, Device
@@ -295,9 +295,8 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 device.vendor.PLATFORM, template_file)
             cmd_find = device.search_cmd(cmd)  # 搜索命令
             if not cmd_find:  # 当插件中需要，但是设备命令中不存在时, 给出提示
-                print_log(
-                    f'{pystr.analysis_warning_prefix} device:{device._device_info.name!r} cmd:{cmd!r} no found this command',
-                    verbose=2)
+                logger.log(
+                    ANALYSIS, f"device:<blue>{device._device_info.name!r}</blue> cmd:<blue>{cmd!r}</blue> no found this command")
                 ret[template_file] = []  # 并且返回一个空的列表，作为占位符
                 continue
 
