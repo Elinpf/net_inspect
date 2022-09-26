@@ -1,31 +1,24 @@
 import sys
 
-from loguru import logger
+from loguru import logger as loguru_logger
 
-INPUT = 'INPUT'
-ANALYSIS = 'ANALYSIS'
-PARSE = 'PARSE'
-OUTPUT = 'OUTPUT'
+from .func import Singleton
 
-
-logger = logger.opt(colors=True)
+logger = loguru_logger.opt(colors=True)
 
 
-class LoggerConfig:
+class LoggerConfig(Singleton):
     def __init__(self):
-        self._logger = logger
-        self._logger.remove()
-
+        self._logger = loguru_logger
         self._enable_file_log = False
         self._ebable_console_log = False
-        self._setup_logger()
 
-    def _setup_logger(self):
+        self.remove()
 
-        self._logger.level(OUTPUT, no=6, color='<blue>')
-        self._logger.level(ANALYSIS, no=7, color='<blue>')
-        self._logger.level(PARSE, no=8, color='<blue>')
-        self._logger.level(INPUT, no=9, color='<blue>')
+    def remove(self):
+        self._logger.remove()
+        self._enable_file_log = False
+        self._ebable_console_log = False
 
     def enable_file_log(
         self,

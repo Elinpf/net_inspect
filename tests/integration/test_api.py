@@ -1,5 +1,4 @@
 import pytest
-from typing import TYPE_CHECKING
 from net_inspect.api import NetInspect
 from net_inspect.exception import PluginNotSpecify
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne

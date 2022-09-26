@@ -6,8 +6,8 @@ class PyStr:
     def __init__(self):
         self.software = 'net_inspect'
         self.default_parse_plugin = 'ntc_templates'
-        self.analysis_warning_prefix = 'AnalysisWarning --'
-        self.parse_waning_prefix = 'ParseWarning --'
+        self.parse_plugin_prefix = 'parse --'
+        self.analysis_plugin_prefix = 'analysis --'
 
 
 class PyOption:
@@ -18,7 +18,7 @@ class PyOption:
 
         self.console_format = "{time:HH:mm:ss} | <level>{level}</level> | {message}"
 
-        self.logfile_format = "{time:YYYY-MM-DD HH:mm:ss} | <level>{level}</level> | {message}"
+        self.logfile_format = "{time:YYYY-MM-DD HH:mm:ss} [<level>{level}</level>] | {name}: {message}"
         self.logfile_name = 'net_inspect.log'
         self.logfile_rotation = '2 MB'
 

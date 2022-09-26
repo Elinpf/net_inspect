@@ -8,7 +8,8 @@ from typing import Dict, Iterator, List, Optional, Tuple, Type
 from . import exception
 from .base_info import BaseInfo, EachVendorDeviceInfo
 from .func import NoneSkip, pascal_case_to_snake_case
-from .logger import PARSE, logger
+from .data import pystr
+from .logger import logger
 from .vendor import DefaultVendor
 
 
@@ -22,11 +23,15 @@ class Cluster:
 
     def parse(self):
         """递归对每个设备的命令进行解析"""
+        logger.info('start parse')
         self.devices.parse(base_info_handler=self.base_info_handler)
+        logger.info('parse finished')
 
     def analysis(self):
         """递归对每个设备进行分析"""
+        logger.info('start analysis')
         self.devices.analysis(base_info_handler=self.base_info_handler)
+        logger.info('analysis finished')
 
     @property
     def plugin_manger(self) -> PluginManagerAbc:
@@ -48,6 +53,7 @@ class Cluster:
 
         :param dir_path: 目录路径
         :param expend: 包含的文件后缀"""
+        logger.info(f'input dir: {dir_path!r}')
         devices_list = self.plugin_manager.input_dir(dir_path, expend)
 
         for cmd_contents_and_device_info in devices_list:
@@ -57,6 +63,7 @@ class Cluster:
         """输入文件，对文件中的设备和命令进行提取，并保存到self.devices中
 
         :param file_path: 文件路径"""
+        logger.info(f'input file: {file_path!r}')
         cmd_contents_and_deviceinfo = self.plugin_manager.input(file_path)
         self.save_device_with_cmds(cmd_contents_and_deviceinfo)
 
@@ -199,17 +206,16 @@ class Device:
                 # 首先判断是否为无效命令
                 if not cmd.is_vaild(self._vendor.INVALID_STR):
                     raise exception.TemplateError(
-                        f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank')
+                        f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank command.')
 
                 parse_result = self._plugin_manager.parse(
                     cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                logger.log(
-                    PARSE, f'device:<blue>{self._device_info.name!r}</blue> {str(e)}')
+                logger.debug(
+                    f'{pystr.parse_plugin_prefix} device:{self._device_info.name!r} {str(e)}')
 
-                continue
-            except exception.Continue:
+            finally:
                 continue
 
     def analysis(self):

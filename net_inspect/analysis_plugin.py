@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable, Dict, Iterator, List, Tuple, Type
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
 from .func import get_command_from_textfsm, snake_case_to_pascal_case
-from .logger import ANALYSIS, logger
+from .logger import logger
 
 if TYPE_CHECKING:
     from .domain import DefaultVendor, Device
@@ -225,13 +225,13 @@ class TemplateInfo:
         - 完整命令: display version
 
         Args:
-            - name: 模板名称
+            name: 模板名称
 
         Return:
-            - 模板变量和值的字典列表
+            模板变量和值的字典列表
 
         Exception:
-            - exception.NtcTemplateNotDefined: 使用缩写或者不存在的模板名称时抛出异常
+            exception.NtcTemplateNotDefined: 使用缩写或者不存在的模板名称时抛出异常
         """
         name = self._from_command_to_template_file(name)
         if not name in self.template_key_value:
@@ -295,8 +295,8 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 device.vendor.PLATFORM, template_file)
             cmd_find = device.search_cmd(cmd)  # 搜索命令
             if not cmd_find:  # 当插件中需要，但是设备命令中不存在时, 给出提示
-                logger.log(
-                    ANALYSIS, f"device:<blue>{device._device_info.name!r}</blue> cmd:<blue>{cmd!r}</blue> no found this command")
+                logger.debug(
+                    f"device:{device._device_info.name!r} cmd:{cmd!r} not found this command")
                 ret[template_file] = []  # 并且返回一个空的列表，作为占位符
                 continue
 
