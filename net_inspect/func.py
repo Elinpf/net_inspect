@@ -1,15 +1,17 @@
 import re
 import sys
 
-from .data import pyoption
-from .logger import log
-
 
 def reg_extend(reg: str) -> str:
     """扩展正则表达式写法，支持简单的逐字匹配
-    e.g
-    r'sh[[ow]] ver[[sion]]'
-    将变成
+
+    Args:
+        reg: 扩展的正则表达式
+
+    Returns:
+        str: 还原成可识别的正则表达式
+
+    >>> reg_extend(r'sh[[ow]] ver[[sion]]')
     'sh(o(w)?)? ver(s(i(o(n)?)?)?)?'
     """
     def _completion(match):
@@ -21,10 +23,13 @@ def reg_extend(reg: str) -> str:
 
 def get_command_from_textfsm(vendor_platform: str, template: str) -> str:
     """从模板文件名中获得命令
-    :param vendor_platform: 平台名称
-    :param template: 模板文件名
 
-    :return: 命令
+    Args:
+        vendor_platform: 平台名称
+        template: 模板文件名
+
+    Returns:
+        str: 命令
 
     >>> self.get_command('huawei_os', 'huawei_os_display_interface_status.textfsm')
     'display interface status'
@@ -91,25 +96,6 @@ def safe_str2float(string: str) -> float:
         return float(string)
     except ValueError:
         return 0.0
-
-
-def print_log(string: str, verbose: int = 0) -> None:
-    """
-    根据级别打印日志
-
-    Args:
-        string: 日志内容
-        verbose: 日志级别
-
-    `verbose`级别可以通过`verbose()`方法设置，总共0~3
-    - 0: 日志关闭
-    - 1: 提供Output模块的日志和Parse模块的日志
-    - 2: 追加提供Analysis模块的日志
-    - 3: 追加提供Parse模块不支持命令的信息日志和命令为无效的信息
-    """
-    verbose = clamp_number(verbose, 1, 3)
-    if pyoption.verbose_level >= verbose:
-        log.debug(string)
 
 
 class SkipWithBlock(Exception):

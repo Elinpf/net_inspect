@@ -9,7 +9,7 @@ from net_inspect.analysis_plugin import analysis
 from net_inspect.bootstrap import bootstrap
 from net_inspect.data import pypath
 from net_inspect.domain import (AnalysisResult, Device, DeviceInfo,
-                                InputPluginAbstract)
+                                InputPluginAbstract, InputPluginResult)
 from net_inspect.func import pascal_case_to_snake_case
 from net_inspect.plugin_manager import PluginManager
 from net_inspect.plugins.parse_plugin_with_ntc_templates import \
@@ -21,7 +21,8 @@ command_line_reg = r'^-------------------------(?P<cmd>[^-].*?)-----------------
 
 class InputPluginWithTestRawFile(InputPluginAbstract):
 
-    def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def main(self, file_path: str, stream: str) -> InputPluginResult:
+        result = InputPluginResult()
 
         cmd_dict = {}
         content = []
@@ -39,7 +40,9 @@ class InputPluginWithTestRawFile(InputPluginAbstract):
         if content:
             cmd_dict[command] = '\n'.join(content)
 
-        return cmd_dict, DeviceInfo('TestDevice', '')
+        result.cmd_dict = cmd_dict
+        result.hostname = 'TestDevice'
+        return result
 
 
 def return_test_raw_files() -> List[str]:
@@ -95,10 +98,10 @@ def set_device(raw_file: str) -> Device:
     device._vendor = vendor_class
     device._plugin_manager = PluginManager(
         input_plugin=InputPluginWithTestRawFile, parse_plugin=ParsePluginWithNtcTemplates)
-    cmd_contents_and_deviceinfo = device._plugin_manager.input(raw_file)
+    input_result = device._plugin_manager.input(raw_file)
 
-    device.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-    device._device_info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
+    device.save_to_cmds(input_result.cmd_dict)  # 保存命令信息
+    device._device_info = input_result._device_info  # 保存设备信息
     return device
 
 

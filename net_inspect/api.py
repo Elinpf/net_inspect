@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Type
 from .bootstrap import bootstrap
 from .data import pyoption, pystr
 from .domain import Cluster
-from .func import clamp_number
-from .logger import log
+from .logger import LoggerConfig, logger
 from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
@@ -22,18 +21,54 @@ class NetInspect:
         self._plugins = bootstrap()
         self._plugin_manager = PluginManager()
         self.cluster = Cluster()
+        self._logconfig = LoggerConfig()
 
         self._plugin_manager.parse_plugin = self._plugins.get_parse_plugin(
             pystr.default_parse_plugin)
         self._plugin_manager.analysis_plugin = self._plugins.get_analysis_plugin_list()
         self.cluster._plugin_manager = self._plugin_manager
 
-    def set_log_level(self, level: int | str):
-        """设置日志等级"""
-        log.setLevel(level)
+    def enbale_console_log(self, level: str = '', log_format: str = ''):
+        """启用控制台日志
+
+        Args:
+            level: 日志级别
+            log_format: 日志格式，可以为空使用默认值
+        """
+        self._logconfig.enable_console_log(
+            level=level or pyoption.console_log_level,
+            log_format=log_format or pyoption.console_format,
+        )
+
+    def enable_file_log(
+        self,
+        file_path: str = '',
+        level: str = '',
+        rotation: str = '',
+        log_format: str = '',
+    ):
+        """启用文件日志
+
+        Args:
+            file_path: 日志文件路径, 为空使用默认值
+            level: 日志级别, 为空使用默认值
+            rotation: 日志轮转, 为空使用默认值
+            log_format: 日志格式, 为空使用默认值
+        """
+
+        self._logconfig.enable_file_log(
+            file_path or pyoption.logfile_name,
+            level=level or 'DEBUG',
+            rotation=rotation or pyoption.logfile_rotation,
+            log_format=log_format or pyoption.logfile_format,
+        )
 
     def get_all_plugins(self) -> Dict[str, Dict[str, Type[PluginAbstract]]]:
-        """获取所有插件"""
+        """获取所有插件
+
+        Returns:
+            所有插件以字典的形式返回
+        """
         return {'input_plugins': self.get_input_plugins(),
                 'output_plugins': self.get_output_plugins(),
                 'parse_plugins': self.get_parse_plugins(),
@@ -76,14 +111,19 @@ class NetInspect:
             plugin_cls = self._plugins.get_parse_plugin(plugin_cls)
         self._plugin_manager.parse_plugin = plugin_cls
 
-    def set_plugins(self,
-                    input_plugin: Optional[Type[InputPluginAbstract] | str] = None,
-                    output_plugin: Optional[Type[OutputPluginAbstract] | str]  = None,
-                    parse_plugin: Optional[Type[ParsePluginAbstract] | str] = None):
+    def set_plugins(
+        self,
+        input_plugin: Optional[Type[InputPluginAbstract] | str] = None,
+        output_plugin: Optional[Type[OutputPluginAbstract] | str] = None,
+        parse_plugin: Optional[Type[ParsePluginAbstract] | str] = None
+    ):
         """设置插件
-        :param input_plugin: 输入插件
-        :param output_plugin: 输出插件
-        :param parse_plugin: 解析插件"""
+
+        Args:
+            input_plugin: 输入插件
+            output_plugin: 输出插件
+            parse_plugin: 解析插件
+        """
         if input_plugin:
             self.set_input_plugin(input_plugin)
         if output_plugin:
@@ -95,70 +135,113 @@ class NetInspect:
         """设置外部模板目录"""
         self._plugin_manager.parse_plugin.set_external_templates(templates_dir)
 
+    @logger.catch(reraise=True)
     def run_input(self, path: str) -> Cluster:
-        """运行输入插件
-        :param path: 文件或者目录路径"""
+        """运行输入插件, 如果没有指定输入插件则跳过
+
+        Args:
+            path: 输入路径
+
+        Returns:
+            Cluster: 集群对象
+        """
+
+        if not self._plugin_manager.input_plugin:
+            logger.info(
+                '未指定`input_plugin`, 跳过 `run_input` 函数.')
+            return self.cluster
 
         if os.path.isfile(path):
             self.cluster.input(path)
         elif os.path.isdir(path):
             self.cluster.input_dir(path)
         else:
-            raise ValueError('path must be a file or directory')
+            raise ValueError('`path`必须是文件或者目录')
 
+        logger.info('输入插件运行完成, 总共发现 {} 台设备.', len(self.cluster.devices))
         return self.cluster
 
+    @logger.catch(reraise=True)
     def run_parse(self) -> Cluster:
-        """运行解析插件"""
+        """运行解析插件
+
+        Returns:
+            Cluster: 解析后的集群
+        """
         self.cluster.parse()
         return self.cluster
 
+    @logger.catch(reraise=True)
     def run_analysis(self) -> Cluster:
-        """运行分析插件"""
+        """运行分析插件
+
+        Returns:
+            Cluster: 分析后的集群
+        """
         self.cluster.analysis()
         return self.cluster
 
+    @logger.catch(reraise=True)
     def run_output(self, file_path: str = '', params: Dict[str, str] = {}):
-        """运行输出插件"""
-        self.cluster.output(file_path, params)
+        """运行输出插件
 
-    def run(self, path: str, output_file_path: str = '', output_plugin_params: Dict[str, str] = {}) -> Cluster:
-        """运行输入解析输出插件
-        :param path: 文件或者目录路径
-        :param output_file_path: 输出文件路径
-        :param output_plugin_params: 输出插件参数
+        Args:
+            file_path: 输出文件路径, 为空使用默认值
+            params: 传递给output_plugin的参数
+        """
+        if self._plugin_manager.output_plugin:  # 当有output插件的时候执行
+            self.cluster.output(file_path, params)
+        else:
+            logger.info(
+                '未指定`output_plugin`, 跳过 `run_output` 函数.')
 
-        :return Cluster: 设备列表"""
-        self.run_input(path)
+    def run(self, input_path: str = '', output_file_path: str = '', output_plugin_params: Dict[str, str] = {}) -> Cluster:
+        """执行所有插件
+
+        Args:
+            input_path: 输入路径，可以为空
+            output_file_path: 输出文件路径, 可以为空
+            output_plugin_params: 传递给output_plugin的参数, 可以为空
+
+        Returns:
+            Cluster: 集群对象
+        """
+        self.run_input(input_path)
         self.run_parse()
         self.run_analysis()
-
-        if self._plugin_manager.output_plugin:  # 当有output插件的时候执行
-            self.run_output(output_file_path, output_plugin_params)
+        self.run_output(output_file_path, output_plugin_params)
 
         return self.cluster
 
-    def search(self, device_name: str) -> List[Device]:
-        """搜索设备
-        :param device_name: 设备名称
-        :return: 设备列表"""
-        return self.cluster.search(device_name)
-
-    def verbose(self, verbose: int):
-        """设置输出等级
+    def add_device(self, hostname: str, ip: str = '', cmd_contents: Dict[str, str] = {}):
+        """添加设备到集群中
 
         Args:
-            verbose: 输出等级 0~3
+            hostname: 主机名
+            ip: 管理ip
+            cmd_contents: 命令内容
         """
-        verbose = clamp_number(verbose, 0, 3)
-        if verbose >= 1:
-            self.set_log_level('DEBUG')
-        else:
-            self.set_log_level('INFO')
-        pyoption.verbose_level = verbose
+        self.cluster.add_device(hostname, ip, cmd_contents)
+
+    def search(self, device_name: str) -> List[Device]:
+        """搜索设备
+
+        Args:
+            device_name: 设备名称
+
+        Returns:
+            设备列表
+        """
+
+        return self.cluster.search(device_name)
 
     def get_base_info(self) -> List[BaseInfo]:
-        """获取所有设备的基本信息"""
+        """获取所有设备的基本信息
+
+        Returns:
+            List[BaseInfo]: 基本信息列表
+        """
+
         ret = []
         for device in self.cluster.devices:
             ret.append(device.info)
@@ -167,6 +250,8 @@ class NetInspect:
 
     def set_base_info_handler(self, handler: Type[EachVendorDeviceInfo]):
         """设置设备基本信息处理器
+
         Args:
-         - handler 设备基本信息处理器"""
+            handler: 设备基本信息处理器
+        """
         self.cluster.base_info_handler = handler()

@@ -1,6 +1,6 @@
 import pytest
 from net_inspect.bootstrap import bootstrap, PluginRepository
-from net_inspect.exception import NotPluginError
+from net_inspect.exception import PluginNotSpecify
 
 
 def test_bootstrap():
@@ -28,12 +28,12 @@ def test_plugin_repository_get_with_short_name():
 def test_plugin_reporsitory_get_plugin_not_found():
     """当名字错误时"""
     plugins = bootstrap()
-    with pytest.raises(NotPluginError):
+    with pytest.raises(PluginNotSpecify):
         plugins.get_input_plugin('not_found')
 
 
 def test_plugin_repository_get_error_type_plugin():
     """当取得类型错误时"""
     plugins = bootstrap()
-    with pytest.raises(NotPluginError):
+    with pytest.raises(PluginNotSpecify):
         plugins.get_parse_plugin('input_plugin_with_smartone')

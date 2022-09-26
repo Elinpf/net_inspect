@@ -16,8 +16,3 @@ from .domain import (
     Device,
     Cmd
 )
-from .exception import (
-    NotPluginError,
-    PluginError,
-    TemplateError
-)

@@ -3,7 +3,8 @@ from dataclasses import dataclass, field
 import re
 
 from typing import TYPE_CHECKING, Callable, List, Tuple, Optional
-from .func import match_lower, print_log, Singleton
+from .func import match_lower, Singleton
+from .logger import logger
 
 
 if TYPE_CHECKING:
@@ -71,7 +72,7 @@ class EachVendorDeviceInfo(Singleton):
         platform = device.vendor
         funcs = self.get_funcs(platform, 'baseinfo')
         if not funcs:
-            print_log(f'{platform} baseinfo is not implemented', verbose=1)
+            logger.warning(f'{platform} baseinfo is not implemented')
 
         for func in funcs:
             func(device, base_info)
