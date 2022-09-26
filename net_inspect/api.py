@@ -11,8 +11,9 @@ from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
     from .base_info import BaseInfo, EachVendorDeviceInfo
-    from .domain import (Device, InputPluginAbstract, OutputPluginAbstract,
-                         ParsePluginAbstract, PluginAbstract)
+    from .domain import (Device, InputPluginAbstract, InputPluginResult,
+                         OutputPluginAbstract, ParsePluginAbstract,
+                         PluginAbstract)
 
 
 class NetInspect:
@@ -213,15 +214,23 @@ class NetInspect:
 
         return self.cluster
 
-    def add_device(self, hostname: str, ip: str = '', cmd_contents: Dict[str, str] = {}):
+    def add_device_with_raw_data(self, hostname: str, ip: str = '', cmd_contents: Dict[str, str] = {}):
         """添加设备到集群中
 
         Args:
             hostname: 主机名
-            ip: 管理ip
+            ip: 管理ip, 可以为空
             cmd_contents: 命令内容
         """
-        self.cluster.add_device(hostname, ip, cmd_contents)
+        self.cluster.add_device_with_raw_data(hostname, ip, cmd_contents)
+
+    def add_device(self, input_plugin_result: InputPluginResult):
+        """添加设备到集群中
+
+        Args:
+            input_plugin_result: InputPluginResult的实例
+        """
+        self.cluster.add_device_use_input_plugin_result(input_plugin_result)
 
     def search(self, device_name: str) -> List[Device]:
         """搜索设备

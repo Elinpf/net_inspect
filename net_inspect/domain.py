@@ -111,7 +111,15 @@ class Cluster:
             ip: 设备ip
             cmd_contents: 命令内容
         """
-        ...
+        result = InputPluginResult()
+        result.hostname = hostname
+        result.ip = ip
+        result.cmd_dict = cmd_contents
+
+        self.add_device_use_input_plugin_result(result)
+
+    def add_device_use_input_plugin_result(self, input_plugin_result: InputPluginResult):
+        self.save_device_with_cmds(input_plugin_result)
 
 
 class DeviceList(list):

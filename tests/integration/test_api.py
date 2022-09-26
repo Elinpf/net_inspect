@@ -1,9 +1,10 @@
 import pytest
 from net_inspect.api import NetInspect
-from net_inspect.exception import PluginNotSpecify
-from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
-from net_inspect.domain import Device
 from net_inspect.base_info import BaseInfo, EachVendorDeviceInfo
+from net_inspect.domain import Device, InputPluginResult
+from net_inspect.exception import PluginNotSpecify
+from net_inspect.plugins.input_plugin_with_smartone import \
+    InputPluginWithSmartOne
 
 
 def test_run_input(shared_datadir):
@@ -87,6 +88,38 @@ def test_run_analysis(shared_datadir):
     cluster.analysis()
     result = cluster.devices[0].analysis_result
     assert len(result) > 0  # 保证至少有一个结果
+
+
+def test_add_device_with_input_plugin_result():
+    """使用InputPluginResult手动添加设备"""
+
+    result = InputPluginResult()
+    result.hostname = 'Device1'
+    result.ip = '192.168.1.1'
+    result.add_cmd('cmd1', 'content1')
+    result.add_cmd('cmd2', 'content2')
+
+    net = NetInspect()
+    net.add_device(result)
+    assert len(net.cluster.devices) == 1
+
+    device = net.search('Device1')
+    assert device[0].search_cmd('cmd1').content == 'content1'
+
+
+def test_add_device_with_raw_data():
+    """使用字典方式添加设备"""
+    cmds = {'cmd1': 'content1', 'cmd2': 'content2'}
+    net = NetInspect()
+    net.add_device_with_raw_data(
+        hostname='Device1',
+        ip='192.168.1.1',
+        cmd_contents=cmds)
+
+    assert len(net.cluster.devices) == 1
+
+    device = net.search('Device1')
+    assert device[0].search_cmd('cmd1').content == 'content1'
 
 
 class AppendClock(BaseInfo):
