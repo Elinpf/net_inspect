@@ -67,7 +67,7 @@ class InputPluginWithSmartOne(InputPluginAbstract):
             for line in lines:
                 if re.match(command_line_reg, line):  # 当遇到的是第一种情况
                     if command:  # 当有命令的时候，说明是上一个命令的结尾，要保存
-                        cmd_dict[command] = '\n'.join(content)
+                        result.add_cmd(command, '\n'.join(content))
                     command = re.match(command_line_reg, line).group('cmd')
                     content.clear()  # 清空内容
                     continue
@@ -79,7 +79,7 @@ class InputPluginWithSmartOne(InputPluginAbstract):
                     command = line.strip()  # 第一行为命令
                     continue
                 if re.match(command_line_reg2, line):
-                    cmd_dict[command] = '\n'.join(content)
+                    result.add_cmd(command, '\n'.join(content))
                     command = ''
                     content.clear()
                     continue

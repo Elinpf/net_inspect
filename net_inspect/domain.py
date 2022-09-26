@@ -524,10 +524,17 @@ class InputPluginResult:
         self._device_info.ip = value
 
     def add_cmd(self, cmd: str, content: str):
-        """添加命令和对应的回显，如果命令已经存在，则取长的
+        """添加命令和对应的回显，所有命令将转为小写,
+        如果命令已经存在，则取长的
 
+        Args:
+            cmd: 待添加的命令
+            content: 命令对应的回显
         """
         cmd = cmd.strip().lower()
+        if cmd in self._cmd_dict and \
+                len(self._cmd_dict[cmd]) >= len(content):
+            return
         self._cmd_dict[cmd] = content
 
     @property
@@ -728,11 +735,6 @@ class InputPluginAbstract(PluginAbstract):
         """
 
         raise NotImplementedError
-
-    # FIXME 可以删除
-    def _lower_keys(self, data: Dict[str, str]) -> Dict[str, str]:
-        """将字典的key转为小写"""
-        return {k.lower(): v for k, v in data.items()}
 
 
 class OutputPluginAbstract(PluginAbstract):
