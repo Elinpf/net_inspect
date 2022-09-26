@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Callable, Dict, Iterator, List, Tuple, Type
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
 from .func import get_command_from_textfsm, snake_case_to_pascal_case
-from .logger import logger
 
 if TYPE_CHECKING:
     from .domain import DefaultVendor, Device
@@ -46,7 +45,7 @@ class StoreTemplateKey:
         设置只运行指定的插件
 
         Args:
-            - plugins: 指定的插件列表
+            plugins: 指定的插件列表
         """
         self._only_run_plugins = [plugin.__name__ for plugin in plugins]
 
@@ -55,8 +54,8 @@ class StoreTemplateKey:
         将模板名称和变量名称存入临时存储器中
 
         Args:
-            - template_name: 模板名称
-            - keys: 变量名称列表
+            template_name: 模板名称
+            keys: 变量名称列表
         """
         self._temp_store.append((template_name, keys))
 
@@ -68,11 +67,11 @@ class StoreTemplateKey:
         如果设置了only_run_plugins，则只运行指定的插件
 
         Args:
-            - plugin_name: 分析插件类名称
-            - vendor: 厂商
+            plugin_name: 分析插件类名称
+            vendor: 厂商
 
         Return:
-            - 分析函数和TemplateKey的迭代器
+            分析函数和TemplateKey的迭代器
         """
         vendor_name = vendor.PLATFORM
         func_list = []
@@ -95,12 +94,12 @@ class StoreTemplateKey:
         返回指定的分析函数列表
 
         Args:
-            - plugin_name: 分析插件类名称
-            - vendor_platform: 厂商平台名称
-            - function_name: 分析函数名称
+            plugin_name: 分析插件类名称
+            vendor_platform: 厂商平台名称
+            function_name: 分析函数名称
 
         Return:
-            - 分析函数的列表
+            分析函数的列表
         """
         res = []
         for info in self.store:
@@ -123,8 +122,8 @@ class StoreTemplateKey:
         将存储的模板名称和变量名称放入对应的厂商存储器中
 
         Args:
-            - vendor: 厂商类
-            - func: 厂商的分析函数
+            vendor: 厂商类
+            func: 厂商的分析函数
         """
         plugin_name, function_name = func.__qualname__.split('.', maxsplit=2)
         template_keys_value = TemplateKeyValue(vendor.PLATFORM)
@@ -150,7 +149,7 @@ class StoreTemplateKey:
         方法的装饰器，用来确定装饰的方法是对哪个厂商的分析
 
         Args:
-            - vendor: 厂商
+            vendor: 厂商
         """
         def func_init(func):
             self.store_vendor(vendor, func)
@@ -163,8 +162,8 @@ class StoreTemplateKey:
         方法的装饰器，用来确定装饰的方法需要使用哪些模板和内容
 
         Args:
-            - template: 模板文件名
-            - keys: 变量名称列表
+            template: 模板文件名
+            keys: 变量名称列表
         """
         def func_init(func):
             self.temp_store(template, keys)
@@ -183,6 +182,15 @@ class AlarmLevel(AlarmLevel):
 
     @level.setter
     def level(self, level: int):
+        """
+        设置告警级别
+
+        Args:
+            level: 告警级别
+
+        Raises:
+            ValueError: 告警级别不在0-2之间
+        """
         if level < AlarmLevel.NORMAL or level > AlarmLevel.WARNING:
             raise exception.AnalysisLevelError
         self._level = level
@@ -227,10 +235,10 @@ class TemplateInfo:
         Args:
             name: 模板名称
 
-        Return:
+        Returns:
             模板变量和值的字典列表
 
-        Exception:
+        Raises:
             exception.NtcTemplateNotDefined: 使用缩写或者不存在的模板名称时抛出异常
         """
         name = self._from_command_to_template_file(name)
@@ -242,10 +250,10 @@ class TemplateInfo:
         """
         将命令还原为模板文件名
         Args:
-            - command 命令
+            command 命令
 
         Return:
-            - 模板文件名
+            模板文件名
 
         >>> self._from_command_to_template_file('display interface status')
         'huawei_os_display_interface_status.textfsm'
@@ -273,15 +281,15 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
         搜索Device中的cmd，将需要用到的模板和值取出来放到返回值中
 
         Args:
-            - template_keys: 模板和值字典
-            - device: 设备对象
+            template_keys: 模板和值字典
+            device: 设备对象
 
-        Return:
-            - 模板和值的字典
+        Returns:
+            模板和值的字典
 
-        Exception:
-            - exception.AnalysisTemplateNameError  名称后缀不是.textfsm
-            - KeyError
+        Raises:
+            exception.AnalysisTemplateNameError  名称后缀不是.textfsm
+            KeyError 模板中的Value不存在
 
         """
         ret = {}
@@ -294,9 +302,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             cmd = get_command_from_textfsm(  # 通过模板文件名获得命令
                 device.vendor.PLATFORM, template_file)
             cmd_find = device.search_cmd(cmd)  # 搜索命令
-            if not cmd_find:  # 当插件中需要，但是设备命令中不存在时, 给出提示
-                logger.debug(
-                    f"device:{device._device_info.name!r} cmd:{cmd!r} not found this command")
+            if not cmd_find:  # 如果命令不存在，跳过
                 ret[template_file] = []  # 并且返回一个空的列表，作为占位符
                 continue
 

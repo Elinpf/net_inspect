@@ -44,15 +44,22 @@ class Cluster:
     def search(self, device_name: str) -> List[Device]:
         """搜索设备
 
-        :param device_name: 搜索字符串
-        :return: 设备列表"""
+        Args:
+            device_name: 设备名
+
+        Returns:
+            List[Device]: 设备列表
+        """
         return self.devices.search(device_name)
 
     def input_dir(self, dir_path: str, expend: str | List[str] = None):
         """输入整个目录，对目录中的文件进行提取设备和命令, 并保存到self.devices中
 
-        :param dir_path: 目录路径
-        :param expend: 包含的文件后缀"""
+        Args:
+            dir_path: 目录路径
+            expend: 文件扩展名
+        """
+
         logger.info(f'input dir: {dir_path!r}')
         devices_list = self.plugin_manager.input_dir(dir_path, expend)
 
@@ -62,7 +69,10 @@ class Cluster:
     def input(self, file_path: str):
         """输入文件，对文件中的设备和命令进行提取，并保存到self.devices中
 
-        :param file_path: 文件路径"""
+        Args:
+            file_path: 文件路径
+        """
+
         logger.info(f'input file: {file_path!r}')
         cmd_contents_and_deviceinfo = self.plugin_manager.input(file_path)
         self.save_device_with_cmds(cmd_contents_and_deviceinfo)
@@ -71,7 +81,9 @@ class Cluster:
                               cmd_contents_and_deviceinfo: Tuple[Dict[str, str], DeviceInfo]):
         """将设备和命令保存到self.devices中
 
-        :param device_cmds_and_deviceinfo: 命令和内容的字典 和 设备信息"""
+        Args:
+            cmd_contents_and_deviceinfo: 命令内容和设备信息
+        """
 
         if not cmd_contents_and_deviceinfo[1].name:  # 如果没有设备名，直接跳过
             return
@@ -85,7 +97,10 @@ class Cluster:
     def output(self, file_path: str = '', params: Dict[str, str] = {}):
         """输出到文件
 
-        :param file_path: 文件路径"""
+        Args:
+            file_path: 文件路径
+            params: 传入output_plugin的参数
+        """
         self.plugin_manager._output_plugin.run(self.devices, file_path, params)
 
 
@@ -107,7 +122,9 @@ class DeviceList(list):
     def append(self, device: Device):
         """添加设备
 
-        :param device: 设备"""
+        Args:
+            device: 设备
+        """
         self._devices.append(device)
 
     def parse(self, base_info_handler: EachVendorDeviceInfo):
@@ -127,8 +144,12 @@ class DeviceList(list):
     def search(self, device_name: str) -> List[Device]:
         """查找设备
 
-        :param device_name: 设备信息
-        :return: 设备列表"""
+        Args:
+            device_name: 设备名
+
+        Returns:
+            List[Device]: 设备列表
+        """
         return [device for device in self._devices if device_name in device._device_info.name]
 
 
@@ -171,8 +192,12 @@ class Device:
     def parse_result(self, cmd: str) -> List[dict] | None:
         """解析命令结果
 
-        :param cmd: 命令
-        :return: 命令结果"""
+        Args:
+            cmd: 命令
+
+        Returns:
+            List[dict] | None: 解析结果
+        """
         command = self.search_cmd(cmd)
         if not command:
             return None
@@ -276,7 +301,11 @@ class Cmd:
     在解析完成后删除命令的内容,并存放应有的解析内容"""
 
     def __init__(self, cmd: str, content: str = ''):
-        """ :params: cmd: 命令的完整名称"""
+        """
+        Args:
+            cmd: 命令
+            content: 命令回显内容
+        """
         self._command: str = ''
         self._content: str = ''
         self._parse_result: List[Dict[str, str]] = []
@@ -653,9 +682,12 @@ class OutputPluginAbstract(PluginAbstract):
 
     def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]]):
         """对设备列表进行输出
-        :params: devices: 设备列表
-        :params: path: 输出文件的路径
-        :params: output_params: 传递输出文件的参数"""
+
+        Args:
+            devices: 设备列表
+            path: 输出文件的路径
+            output_params: 输出文件的参数
+        """
 
         self.args = self.OutputArgs(
             devices=devices, file_path=path, output_params=output_params)

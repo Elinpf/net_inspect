@@ -4,9 +4,14 @@ import sys
 
 def reg_extend(reg: str) -> str:
     """扩展正则表达式写法，支持简单的逐字匹配
-    e.g
-    r'sh[[ow]] ver[[sion]]'
-    将变成
+
+    Args:
+        reg: 扩展的正则表达式
+
+    Returns:
+        str: 还原成可识别的正则表达式
+
+    >>> reg_extend(r'sh[[ow]] ver[[sion]]')
     'sh(o(w)?)? ver(s(i(o(n)?)?)?)?'
     """
     def _completion(match):
@@ -18,10 +23,13 @@ def reg_extend(reg: str) -> str:
 
 def get_command_from_textfsm(vendor_platform: str, template: str) -> str:
     """从模板文件名中获得命令
-    :param vendor_platform: 平台名称
-    :param template: 模板文件名
 
-    :return: 命令
+    Args:
+        vendor_platform: 平台名称
+        template: 模板文件名
+
+    Returns:
+        str: 命令
 
     >>> self.get_command('huawei_os', 'huawei_os_display_interface_status.textfsm')
     'display interface status'

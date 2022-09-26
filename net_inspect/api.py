@@ -158,6 +158,7 @@ class NetInspect:
         else:
             raise ValueError('`path`必须是文件或者目录')
 
+        logger.info('输入插件运行完成, 总共发现 {} 台设备.', len(self.cluster.devices))
         return self.cluster
 
     @logger.catch(reraise=True)

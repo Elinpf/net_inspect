@@ -15,7 +15,6 @@ class PyOption:
         self.input_file_expend = ['.txt', '.log', '.diag']
 
         self.console_log_level = 'INFO'
-
         self.console_format = "{time:HH:mm:ss} | <level>{level}</level> | {message}"
 
         self.logfile_format = "{time:YYYY-MM-DD HH:mm:ss} [<level>{level}</level>] | {name}: {message}"
