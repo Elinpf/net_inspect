@@ -1,7 +1,7 @@
 from typing import Dict, Tuple
 import re
 
-from ..domain import InputPluginAbstract, DeviceInfo
+from ..domain import InputPluginAbstract, DeviceInfo, InputPluginResult
 
 # 类思科的情况
 # device>show version
@@ -21,13 +21,16 @@ prompt_reg = r'\S+[>|\]|\)|#]'
 class InputPluginWithConsole(InputPluginAbstract):
     """通过Console或者vty获取命令的输出"""
 
-    def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def main(self, file_path: str, stream: str) -> InputPluginResult:
         device_name = ''
         command = ''
         cmd_dict = {}
         content = []
 
         prompt = ''  # 用于记录当前的提示符
+
+        result = InputPluginResult()
+
         for line in stream.splitlines():
             match = re.match(similar_cisco_reg, line) or \
                 re.match(simialr_huawei_reg, line)  # 判断是否为命令的行
@@ -69,4 +72,7 @@ class InputPluginWithConsole(InputPluginAbstract):
         if content and command:  # 最后将没有保存的内容保存
             cmd_dict[command] = '\n'.join(content)
 
-        return cmd_dict, DeviceInfo(device_name, '')
+        result.hostname = device_name
+        result.cmd_dict = cmd_dict
+
+        return result

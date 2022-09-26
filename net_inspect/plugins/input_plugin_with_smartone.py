@@ -2,7 +2,7 @@ import os
 import re
 from typing import Dict, Tuple
 
-from ..domain import InputPluginAbstract, DeviceInfo
+from ..domain import InputPluginAbstract, DeviceInfo, InputPluginResult
 
 """
 这个插件是分析的从OSmartOne平台获取的输入文件，有两种情况
@@ -44,9 +44,13 @@ class InputPluginWithSmartOne(InputPluginAbstract):
     """通过iSmartOne平台获取的输出"""
 
     def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+
+        result = InputPluginResult()
+
         match = re.match(device_info_reg, os.path.basename(file_path))
-        device_info = DeviceInfo(
-            name=match.group('name'), ip=match.group('ip'))
+
+        result.hostname = match.group('name')
+        result.ip = match.group('ip')
 
         cmd_dict = {}
         content = []
@@ -84,4 +88,5 @@ class InputPluginWithSmartOne(InputPluginAbstract):
         if content:
             cmd_dict[command] = '\n'.join(content)
 
-        return (cmd_dict, device_info)
+        result.cmd_dict = cmd_dict
+        return result

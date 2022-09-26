@@ -74,24 +74,24 @@ class Cluster:
         """
 
         logger.info(f'input file: {file_path!r}')
-        cmd_contents_and_deviceinfo = self.plugin_manager.input(file_path)
-        self.save_device_with_cmds(cmd_contents_and_deviceinfo)
+        input_plugin_result = self.plugin_manager.input(file_path)
+        self.save_device_with_cmds(input_plugin_result)
 
     def save_device_with_cmds(self,
-                              cmd_contents_and_deviceinfo: Tuple[Dict[str, str], DeviceInfo]):
+                              input_plugin_result: InputPluginResult):
         """将设备和命令保存到self.devices中
 
         Args:
             cmd_contents_and_deviceinfo: 命令内容和设备信息
         """
 
-        if not cmd_contents_and_deviceinfo[1].name:  # 如果没有设备名，直接跳过
+        if not input_plugin_result.hostname:  # 如果没有设备名，直接跳过
             return
 
         device_cls = Device()
         device_cls._plugin_manager = self.plugin_manager
-        device_cls.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-        device_cls._device_info = cmd_contents_and_deviceinfo[1]  # 保存设备简单信息
+        device_cls.save_to_cmds(input_plugin_result.cmd_dict)  # 保存命令信息
+        device_cls._device_info = input_plugin_result._device_info  # 保存设备简单信息
         self.devices.append(device_cls)
 
     def output(self, file_path: str = '', params: Dict[str, str] = {}):
@@ -102,6 +102,16 @@ class Cluster:
             params: 传入output_plugin的参数
         """
         self.plugin_manager._output_plugin.run(self.devices, file_path, params)
+
+    def add_device_with_raw_data(self, hostname: str, ip: str, cmd_contents: Dict[str, str]):
+        """添加设备和命令
+
+        Args:
+            hostname: 设备名
+            ip: 设备ip
+            cmd_contents: 命令内容
+        """
+        ...
 
 
 class DeviceList(list):
@@ -156,7 +166,7 @@ class DeviceList(list):
 @dataclass
 class DeviceInfo:
     """用于InputPlugin中获取到的设备信息"""
-    name: str
+    name: str = ''  # 设备名
     ip: str = ''  # manager_ip
     file_path: str = ''  # 文件路径
 
@@ -472,7 +482,7 @@ class PluginManagerAbc(abc.ABC):
 
         return res
 
-    def input(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def input(self, file_path: str) -> InputPluginResult:
         """对单个文件进行设备输入"""
         if self._input_plugin is None:
             raise exception.PluginNotSpecify('input plugin is None')
@@ -485,9 +495,50 @@ class PluginManagerAbc(abc.ABC):
         self._output_plugin.run(devices, file_path)
 
     @abc.abstractmethod
-    def input_dir(self, dir_path: str, expend: str | List = None) -> List[Tuple[Dict[str, str], DeviceInfo]]:
+    def input_dir(self, dir_path: str, expend: str | List = None) -> List[InputPluginResult]:
         """对目录中的文件进行设备输入"""
         raise NotImplementedError
+
+
+class InputPluginResult:
+    """输入插件的结果"""
+
+    def __init__(self):
+        self._device_info: DeviceInfo = DeviceInfo()
+        self._cmd_dict: Dict[str, str] = {}
+
+    @property
+    def hostname(self):
+        return self._device_info.name
+
+    @hostname.setter
+    def hostname(self, value: str):
+        self._device_info.name = value
+
+    @property
+    def ip(self):
+        return self._device_info.ip
+
+    @ip.setter
+    def ip(self, value: str):
+        self._device_info.ip = value
+
+    def add_cmd(self, cmd: str, content: str):
+        """添加命令和对应的回显，如果命令已经存在，则取长的
+
+        """
+        cmd = cmd.strip().lower()
+        self._cmd_dict[cmd] = content
+
+    @property
+    def cmd_dict(self) -> Dict[str, str]:
+        return self._cmd_dict
+
+    @cmd_dict.setter
+    def cmd_dict(self, cmd_dict: Dict[str, str]):
+        """直接添加命令字典"""
+        for cmd, content in cmd_dict.items():
+            self.add_cmd(cmd, content)
 
 
 class AlarmLevel:
@@ -648,24 +699,37 @@ class PluginAbstract(abc.ABC):
 
 
 class InputPluginAbstract(PluginAbstract):
-    def run(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
-        """对单个文件进行设备输入"""
+    def run(self, file_path: str) -> InputPluginResult:
+        """对单个文件进行设备输入
+
+        Args:
+            file_path: 文件路径
+
+        Returens:
+            InputPluginResult: 输入插件的返回结果
+        """
 
         with open(file_path, 'r', encoding='utf_8_sig', errors='ignore') as f:
             stream = f.read()
-        cmd_dict, device_info = self.main(file_path, stream)
-        cmd_dict = self._lower_keys(cmd_dict)  # 将所有的key转换为小写
-        device_info.file_path = file_path
-        return cmd_dict, device_info
+        result = self.main(file_path, stream)
+        result._device_info.file_path = file_path
+        return result
 
     @abc.abstractmethod
-    def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def main(self, file_path: str, stream: str) -> InputPluginResult:
         """输入插件的具体实现
-        :params: file_path: 文件的路径
-        :params: stream: 文件的内容"""
+
+        Args:
+            file_path: 文件路径
+            stream: 文件内容
+
+        Returns: 
+            InputPluginResult: 输入插件的返回结果
+        """
 
         raise NotImplementedError
 
+    # FIXME 可以删除
     def _lower_keys(self, data: Dict[str, str]) -> Dict[str, str]:
         """将字典的key转为小写"""
         return {k.lower(): v for k, v in data.items()}

@@ -32,7 +32,7 @@ class NetInspect:
         """启用控制台日志
 
         Args:
-            level: 日志级别 
+            level: 日志级别
             log_format: 日志格式，可以为空使用默认值
         """
         self._logconfig.enable_console_log(
@@ -212,6 +212,16 @@ class NetInspect:
         self.run_output(output_file_path, output_plugin_params)
 
         return self.cluster
+
+    def add_device(self, hostname: str, ip: str = '', cmd_contents: Dict[str, str] = {}):
+        """添加设备到集群中
+
+        Args:
+            hostname: 主机名
+            ip: 管理ip
+            cmd_contents: 命令内容
+        """
+        self.cluster.add_device(hostname, ip, cmd_contents)
 
     def search(self, device_name: str) -> List[Device]:
         """搜索设备
