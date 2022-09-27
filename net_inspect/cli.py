@@ -95,11 +95,11 @@ def main(
     input_plugin: str = typer.Option(
         'console', '--input-plugin', '-I', help='设置输入插件'),
     output_plugin: str = typer.Option(
-        'device_warning_logging', '--output-plugin', '-O', help='设置输出插件'),
+        'device_list', '--output-plugin', '-O', help='设置输出插件'),
     output_path: str = typer.Option(
         '', '--output', '-o', help='输出的文件路径'),
     verbose: int = typer.Option(
-        0, '--verbose', '-v', help='设置DEBUG等级(-v, -vv, -vvv)', count=True, show_default=False),
+        0, '--verbose', '-v', help='设置DEBUG等级(-v, -vv)', count=True, show_default=False),
     plugin_list: bool = typer.Option(
         False, '--plugin-list', '-l', help='显示插件列表'),
     analysis_list: bool = typer.Option(
@@ -109,7 +109,10 @@ def main(
 ):
     net = NetInspect()
     net.set_plugins(input_plugin=input_plugin, output_plugin=output_plugin)
-    net.verbose(verbose)
+    if verbose == 1:
+        net.enbale_console_log('INFO')
+    elif verbose == 2:
+        net.enbale_console_log('DEBUG')
 
     if plugin_list:
         print()
@@ -127,5 +130,5 @@ def main(
         exit()
 
     if input_path:
-        net.run(path=input_path, output_file_path=output_path)
+        net.run(input_path=input_path, output_file_path=output_path)
         exit()
