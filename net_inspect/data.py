@@ -17,7 +17,9 @@ class PyOption:
         self.console_log_level = 'INFO'
         self.console_format = "{time:HH:mm:ss} | <level>{level}</level> | {message}"
 
-        self.logfile_format = "{time:YYYY-MM-DD HH:mm:ss} [<level>{level}</level>] | {name}: {message}"
+        self.logfile_format = (
+            "{time:YYYY-MM-DD HH:mm:ss} [<level>{level}</level>] | {name}: {message}"
+        )
         self.logfile_name = 'net_inspect.log'
         self.logfile_rotation = '2 MB'
 

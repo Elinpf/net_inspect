@@ -7,6 +7,7 @@ from typing import List, Tuple
 @dataclass
 class BaseInfoExpect:
     """期望值"""
+
     hostname: str
     vendor: str
     vendor_platform: str
@@ -35,7 +36,7 @@ def check_base_info(file_path: str, expected: BaseInfoExpect):
 
 
 def test_run_cisco_ios_base_info(shared_datadir):
-    file_path = (shared_datadir / 'base_info_logs' / 'cisco_ios.txt')
+    file_path = shared_datadir / 'base_info_logs' / 'cisco_ios.txt'
 
     expected = BaseInfoExpect(
         hostname='AA_BB_SW1',
@@ -45,8 +46,11 @@ def test_run_cisco_ios_base_info(shared_datadir):
         version='12.2(55)SE7',
         uptime='7 weeks, 6 days, 2 hours, 39 minutes',
         ip='10.0.1.2',
-        sn=[('1', 'FCQ1XXXX58D'), ('GigabitEthernet0/1', 'FNSXXXX1LVU'),
-            ('GigabitEthernet0/2', 'FNSXXXX2FBJ')],
+        sn=[
+            ('1', 'FCQ1XXXX58D'),
+            ('GigabitEthernet0/1', 'FNSXXXX1LVU'),
+            ('GigabitEthernet0/2', 'FNSXXXX2FBJ'),
+        ],
         cpu_usage='23%',
         memory_usage='68%',
     )
@@ -55,7 +59,7 @@ def test_run_cisco_ios_base_info(shared_datadir):
 
 
 def test_run_huawei_vrp_base_info(shared_datadir):
-    file_path = (shared_datadir / 'base_info_logs' / 'huawei_vrp.txt')
+    file_path = shared_datadir / 'base_info_logs' / 'huawei_vrp.txt'
 
     expected = BaseInfoExpect(
         hostname='Huawei_AA',
@@ -65,8 +69,12 @@ def test_run_huawei_vrp_base_info(shared_datadir):
         version='5.170',
         uptime='19 weeks, 5 days, 5 hours, 27 minutes',
         ip='11.22.255.238',
-        sn=[('', '2102XXXXXXXXXXXX0288'), ('', '031XXXXXXXXX0235'),
-            ('', '031XXXXXXXXX0289'), ('', '031XXXXXXXXXX274')],
+        sn=[
+            ('', '2102XXXXXXXXXXXX0288'),
+            ('', '031XXXXXXXXX0235'),
+            ('', '031XXXXXXXXX0289'),
+            ('', '031XXXXXXXXXX274'),
+        ],
         cpu_usage='7%',
         memory_usage='13%',
     )
@@ -75,7 +83,7 @@ def test_run_huawei_vrp_base_info(shared_datadir):
 
 
 def test_run_hp_comware_base_info(shared_datadir):
-    file_path = (shared_datadir / 'base_info_logs' / 'hp_comware.txt')
+    file_path = shared_datadir / 'base_info_logs' / 'hp_comware.txt'
 
     expected = BaseInfoExpect(
         hostname='H3C_AA',
@@ -95,7 +103,7 @@ def test_run_hp_comware_base_info(shared_datadir):
 
 def test_run_hp_comware_2_base_info(shared_datadir):
     """display memory 第二种情况"""
-    file_path = (shared_datadir / 'base_info_logs' / 'hp_comware_2.txt')
+    file_path = shared_datadir / 'base_info_logs' / 'hp_comware_2.txt'
 
     expected = BaseInfoExpect(
         hostname='H3C_AA',
@@ -114,7 +122,7 @@ def test_run_hp_comware_2_base_info(shared_datadir):
 
 
 def test_run_maipu_mypower_base_info(shared_datadir):
-    file_path = (shared_datadir / 'base_info_logs' / 'maipu_mypower.txt')
+    file_path = shared_datadir / 'base_info_logs' / 'maipu_mypower.txt'
 
     expected = BaseInfoExpect(
         hostname='MAIPU_AA',
@@ -124,8 +132,11 @@ def test_run_maipu_mypower_base_info(shared_datadir):
         version='6.3.17(integrity)',
         uptime='345 weeks 4 days',
         ip='11.77.243.21',
-        sn=[('MPU_RM3B_206_4GE', '591XXXXXXXXXXX49'), ('LPU_RM3B_4GET4GEFH',
-                                                       '123XXXXXXXXXXX29'), ('SJJ1109-B', '253XXXXXXXXXXX08')],
+        sn=[
+            ('MPU_RM3B_206_4GE', '591XXXXXXXXXXX49'),
+            ('LPU_RM3B_4GET4GEFH', '123XXXXXXXXXXX29'),
+            ('SJJ1109-B', '253XXXXXXXXXXX08'),
+        ],
         cpu_usage='9%',
         memory_usage='12.80%',
     )
@@ -134,7 +145,7 @@ def test_run_maipu_mypower_base_info(shared_datadir):
 
 
 def test_run_ruijie_os_base_info(shared_datadir):
-    file_path = (shared_datadir / 'base_info_logs' / 'ruijie_os.txt')
+    file_path = shared_datadir / 'base_info_logs' / 'ruijie_os.txt'
 
     expected = BaseInfoExpect(
         hostname='RUIJIE_AA',

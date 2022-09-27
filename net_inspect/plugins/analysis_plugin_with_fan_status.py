@@ -17,7 +17,9 @@ class AnalysisPluginWithFanStatus(AnalysisPluginAbc):
     """
 
     @analysis.vendor(vendor.Huawei)
-    @analysis.template_key('huawei_vrp_display_fan.textfsm', ['slot_id', 'present', 'registered', 'status'])
+    @analysis.template_key(
+        'huawei_vrp_display_fan.textfsm', ['slot_id', 'present', 'registered', 'status']
+    )
     def huawei_vrp(template: TemplateInfo, result: AnalysisResult):
         """检查设备所有在位风扇模块运行在正常状态"""
         for row in template['display fan']:
@@ -41,10 +43,16 @@ class AnalysisPluginWithFanStatus(AnalysisPluginAbc):
         for row in template['display fan']:
             if not match_lower(row['status'], 'normal'):
                 result.add_warning(
-                    f'Slot {row["slot"]} Fan {row["id"]} 状态异常' if row['slot'] else f'Fan {row["id"]} 状态异常')
+                    f'Slot {row["slot"]} Fan {row["id"]} 状态异常'
+                    if row['slot']
+                    else f'Fan {row["id"]} 状态异常'
+                )
 
     @analysis.vendor(vendor.Maipu)
-    @analysis.template_key('maipu_mypower_show_system_fan.textfsm', ['fan_id', 'status', 'work_status', 'statistics_ierr', 'statistics_oerr'])
+    @analysis.template_key(
+        'maipu_mypower_show_system_fan.textfsm',
+        ['fan_id', 'status', 'work_status', 'statistics_ierr', 'statistics_oerr'],
+    )
     def maipu_mypower(template: TemplateInfo, result: AnalysisResult):
         """模块Status状态为Online的时候，检查WorkStatus不为Normal的时候告警, 否则Status不为Normal时警告，
         并且检查模块的错误统计"""

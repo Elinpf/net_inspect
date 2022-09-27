@@ -11,8 +11,12 @@ from ..logger import logger
 from . import __file__ as plugin_file
 
 if TYPE_CHECKING:
-    from ..domain import (AnalysisPluginAbstract, InputPluginAbstract,
-                          OutputPluginAbstract, ParsePluginAbstract)
+    from ..domain import (
+        AnalysisPluginAbstract,
+        InputPluginAbstract,
+        OutputPluginAbstract,
+        ParsePluginAbstract,
+    )
 
 
 def autoload_plugin():
@@ -33,14 +37,16 @@ Parse = 'parse'
 Analysis = 'analysis'
 
 
-class PluginRepository():
+class PluginRepository:
     """插件仓库，存放插件并且提供插件的获取"""
 
-    def __init__(self,
-                 input_plugins: Dict[str, InputPluginAbstract],
-                 output_plugins: Dict[str, OutputPluginAbstract],
-                 parse_plugins: Dict[str, ParsePluginAbstract],
-                 analysis_plugins: Dict[str, AnalysisPluginAbstract]):
+    def __init__(
+        self,
+        input_plugins: Dict[str, InputPluginAbstract],
+        output_plugins: Dict[str, OutputPluginAbstract],
+        parse_plugins: Dict[str, ParsePluginAbstract],
+        analysis_plugins: Dict[str, AnalysisPluginAbstract],
+    ):
         self.input_plugins = input_plugins
         self.output_plugins = output_plugins
         self.parse_plugins = parse_plugins
@@ -50,8 +56,12 @@ class PluginRepository():
     def _to_easy_plugin_name(self) -> Dict[str, PluginAbstract]:
         """变成一个简单的dict，方便查找"""
         ret = {}
-        for plugins in [self.input_plugins, self.output_plugins,
-                        self.parse_plugins, self.analysis_plugins]:
+        for plugins in [
+            self.input_plugins,
+            self.output_plugins,
+            self.parse_plugins,
+            self.analysis_plugins,
+        ]:
             for plugin_name, plugin in plugins.items():
                 ret[self._lower_name(plugin_name)] = plugin
 
@@ -95,11 +105,14 @@ class PluginRepository():
 
         return plugin
 
-    def _check_plugin(self, plugin_dict: Dict[str, PluginAbstract], plugin: PluginAbstract):
+    def _check_plugin(
+        self, plugin_dict: Dict[str, PluginAbstract], plugin: PluginAbstract
+    ):
         """检查这个插件是否在plugin_dict中"""
         if plugin not in plugin_dict.values():
             raise PluginNotSpecify(
-                'plugin `{}` not in this plugin type list'.format(plugin))
+                'plugin `{}` not in this plugin type list'.format(plugin)
+            )
 
     def get_input_plugin(self, name: str) -> InputPluginAbstract:
         """获取输入插件
@@ -155,15 +168,18 @@ class PluginRepository():
         """获取分析插件列表"""
         return self.plugin_list(Analysis)
 
-    def get_plugins(self, input_plugin_name: Optional[str] = None,
-                    output_plugin_name: Optional[str] = None,
-                    parse_plugin_name: Optional[str] = None
-                    ) -> List[Optional[PluginAbstract]]:
+    def get_plugins(
+        self,
+        input_plugin_name: Optional[str] = None,
+        output_plugin_name: Optional[str] = None,
+        parse_plugin_name: Optional[str] = None,
+    ) -> List[Optional[PluginAbstract]]:
         """同时获取三个插件
         :param input_plugin_name: 输入插件名称
         :param output_plugin_name: 输出插件名称
         :param parse_plugin_name: 解析插件名称"""
-        return [self.get_input_plugin(input_plugin_name) if input_plugin_name else None,
-                self.get_output_plugin(
-                    output_plugin_name) if output_plugin_name else None,
-                self.get_parse_plugin(parse_plugin_name) if parse_plugin_name else None]
+        return [
+            self.get_input_plugin(input_plugin_name) if input_plugin_name else None,
+            self.get_output_plugin(output_plugin_name) if output_plugin_name else None,
+            self.get_parse_plugin(parse_plugin_name) if parse_plugin_name else None,
+        ]

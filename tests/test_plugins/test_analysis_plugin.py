@@ -2,7 +2,9 @@ import pytest
 import logging
 from net_inspect.domain import Cluster
 from net_inspect import vendor
-from net_inspect.plugins.parse_plugin_with_ntc_templates import ParsePluginWithNtcTemplates
+from net_inspect.plugins.parse_plugin_with_ntc_templates import (
+    ParsePluginWithNtcTemplates,
+)
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
 from net_inspect.plugin_manager import PluginManager
 from net_inspect.analysis_plugin import (
@@ -10,10 +12,12 @@ from net_inspect.analysis_plugin import (
     AnalysisResult,
     TemplateInfo,
     AlarmLevel,
-    analysis
+    analysis,
 )
 import net_inspect.exception as exception
-from net_inspect.plugins.analysis_plugin_with_power_status import AnalysisPluginWithPowerStatus
+from net_inspect.plugins.analysis_plugin_with_power_status import (
+    AnalysisPluginWithPowerStatus,
+)
 
 
 class AnalysisPluginWithTest(AnalysisPluginAbc):
@@ -22,12 +26,16 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
     """
 
     @analysis.vendor(vendor.Huawei)
-    @analysis.template_key('huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'product_version'])
+    @analysis.template_key(
+        'huawei_vrp_display_version.textfsm', ['VRP_VERSION', 'product_version']
+    )
     def huawei(template: TemplateInfo, result: AnalysisResult):
         """
         Test for huawei version status
         """
-        assert template['huawei_vrp_display_version.textfsm'][0]['VRP_VERSION'] == '8.180'
+        assert (
+            template['huawei_vrp_display_version.textfsm'][0]['VRP_VERSION'] == '8.180'
+        )
         assert template['display version'][0]['VRP_VERSION'] == '8.180'  # 简写支持
 
         with pytest.raises(KeyError):
@@ -39,8 +47,7 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
         with pytest.raises(exception.NtcTemplateNotDefined):  # 不支持简写
             template['dis ver']
 
-        assert template['display version'][0].get(
-            'model') is None  # 不在需求范围内值会被排除
+        assert template['display version'][0].get('model') is None  # 不在需求范围内值会被排除
 
         with pytest.raises(exception.NtcTemplateNotDefined):  # 测试报错
             template['display cpu']
@@ -49,8 +56,13 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
         result.add(AlarmLevel(AlarmLevel.WARNING, 'test_warning'))
 
     @analysis.vendor(vendor.Cisco)
-    @analysis.template_key('cisco_ios_show_processes_memory_sorted.textfsm', ['memory_total', 'memory_used'])
-    @analysis.template_key('cisco_ios_show_processes_memory.textfsm', ['memory_total', 'memory_used'])
+    @analysis.template_key(
+        'cisco_ios_show_processes_memory_sorted.textfsm',
+        ['memory_total', 'memory_used'],
+    )
+    @analysis.template_key(
+        'cisco_ios_show_processes_memory.textfsm', ['memory_total', 'memory_used']
+    )
     def cisco(template: TemplateInfo, result: AnalysisResult):
         """
         测试多个模板
@@ -63,7 +75,9 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
         assert not template['cisco_ios_show_processes_memory_sorted.textfsm']
 
 
-def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list = []) -> Cluster:
+def init_analysis_plugin(
+    shared_datadir, file: str = '', analysis_plugins: list = []
+) -> Cluster:
     """通用初始化Cluster函数"""
     file = file or 'B_FOO_BAR_AR01_21.1.1.1.diag'
 
@@ -73,7 +87,7 @@ def init_analysis_plugin(shared_datadir, file: str = '', analysis_plugins: list 
     plugin_manager = PluginManager(
         input_plugin=input_plugin,
         parse_plugin=parse_plugin,
-        analysis_plugin=analysis_plugins
+        analysis_plugin=analysis_plugins,
     )
 
     cluster = Cluster()
@@ -107,7 +121,10 @@ def test_analysis_plugin_reslut(shared_datadir):
 def test_analysis_plugin_with_power(shared_datadir):
     """测试AnalysisPluginWithPower插件，能够正确识别Power异常信息"""
     cluster = init_analysis_plugin(
-        shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPowerStatus])
+        shared_datadir,
+        'HUAWEI_BAD_POWER_21.1.1.1.diag',
+        [AnalysisPluginWithPowerStatus],
+    )
 
     device = cluster.devices[0]
     assert len(device._analysis_result) > 0
@@ -116,17 +133,25 @@ def test_analysis_plugin_with_power(shared_datadir):
 def test_analysis_result_get_function(shared_datadir):
     """测试AnalysisResult类的get()"""
     cluster = init_analysis_plugin(
-        shared_datadir, 'HUAWEI_BAD_POWER_21.1.1.1.diag', [AnalysisPluginWithPowerStatus])
+        shared_datadir,
+        'HUAWEI_BAD_POWER_21.1.1.1.diag',
+        [AnalysisPluginWithPowerStatus],
+    )
     result = cluster.devices[0].analysis_result
-    assert result.get(
-        'AnalysisPluginWithPowerStatus')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
+    assert (
+        result.get('AnalysisPluginWithPowerStatus')[0].plugin_name
+        == 'AnalysisPluginWithPowerStatus'
+    )
 
-    assert result.get(
-        'analysis_plugin_with_power_status')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
-    assert result.get(
-        'analysispluginwithpowerstatus')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
-    assert result.get(
-        'power status')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
+    assert (
+        result.get('analysis_plugin_with_power_status')[0].plugin_name
+        == 'AnalysisPluginWithPowerStatus'
+    )
+    assert (
+        result.get('analysispluginwithpowerstatus')[0].plugin_name
+        == 'AnalysisPluginWithPowerStatus'
+    )
+    assert result.get('power status')[0].plugin_name == 'AnalysisPluginWithPowerStatus'
 
 
 def test_analysi_result_get_function_have_multiple_alarm_level(shared_datadir):
@@ -147,6 +172,5 @@ def test_analysis_plugin_function_doc(shared_datadir):
 
 def test_analysis_plugin_with_two_templates(shared_datadir):
     """测试有两个template的AnalysisPlugin"""
-    cluster = init_analysis_plugin(
-        shared_datadir, 'CISCO_BAD_MEMORY_21.2.2.2.diag')
+    cluster = init_analysis_plugin(shared_datadir, 'CISCO_BAD_MEMORY_21.2.2.2.diag')
     result = cluster.devices[0].analysis_result

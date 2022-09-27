@@ -19,7 +19,7 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
         ('vendor', '厂商'),
         ('model', '型号'),
         ('version', '软件版本'),
-        ('uptime', '启动时长')
+        ('uptime', '启动时长'),
     ]
 
     status_info_keys = [
@@ -62,7 +62,8 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
     def set_excel(self):
         """对表格的设置"""
         self.excel.set_all_column_width(
-            self.values.column_width, self.values.max_column)
+            self.values.column_width, self.values.max_column
+        )
 
     def report(self, device: Device):
         """单一报告生成流程"""
@@ -73,13 +74,10 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
 
     def report_header(self, device: Device):
         """生成报告头"""
-        cell = CellContext(self.values.header_title
-                           ).set_font(name=self.values.header_font,
-                                      size=self.values.header_font_size)
-        self.excel.write_rows(
-            rows=[[cell]],
-            merge=[('A', self.values.max_column)]
+        cell = CellContext(self.values.header_title).set_font(
+            name=self.values.header_font, size=self.values.header_font_size
         )
+        self.excel.write_rows(rows=[[cell]], merge=[('A', self.values.max_column)])
 
     def report_body(self, device: Device):
         """生成报告体"""
@@ -87,12 +85,10 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
 
     def report_title(self, title: str):
         """生成标题头"""
-        cell = CellContext(title).set_font(name=self.values.body_font,
-                                           size=self.values.body_font_size)
-        self.excel.write_rows(
-            rows=[[cell]],
-            merge=[('A', self.values.max_column)]
+        cell = CellContext(title).set_font(
+            name=self.values.body_font, size=self.values.body_font_size
         )
+        self.excel.write_rows(rows=[[cell]], merge=[('A', self.values.max_column)])
 
     def report_body_baseinfo(self, device: Device):
         """生成基本信息"""
@@ -100,8 +96,7 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
         rows = self._mulit_keys(self.base_info_keys, device, 2)
 
         self.excel.write_rows(
-            rows=rows,
-            merge=[('B', 'C'), ('E', self.values.max_column)]
+            rows=rows, merge=[('B', 'C'), ('E', self.values.max_column)]
         )
 
     def report_serial_number(self, device: Device):
@@ -116,7 +111,7 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
         for pid, sn in sn_list:
             self.excel.write_rows(
                 rows=[[CellContext(pid), CellContext(sn)]],
-                merge=[('A', 'B'), ('C', self.values.max_column)]
+                merge=[('A', 'B'), ('C', self.values.max_column)],
             )
 
     def report_status(self, device: Device):
@@ -124,11 +119,12 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
         self.report_title('3. 状态信息')
         rows = self._mulit_keys(self.status_info_keys, device, 2)
         self.excel.write_rows(
-            rows=rows,
-            merge=[('B', 'C'), ('E', self.values.max_column)]
+            rows=rows, merge=[('B', 'C'), ('E', self.values.max_column)]
         )
 
-    def _mulit_keys(self, keys: List[Tuple[str, str]], device: Device, num: int) -> List[List[CellContext]]:
+    def _mulit_keys(
+        self, keys: List[Tuple[str, str]], device: Device, num: int
+    ) -> List[List[CellContext]]:
         """
         每行写入多个值
             Args:

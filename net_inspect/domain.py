@@ -77,8 +77,7 @@ class Cluster:
         input_plugin_result = self.plugin_manager.input(file_path)
         self.save_device_with_cmds(input_plugin_result)
 
-    def save_device_with_cmds(self,
-                              input_plugin_result: InputPluginResult):
+    def save_device_with_cmds(self, input_plugin_result: InputPluginResult):
         """将设备和命令保存到self.devices中
 
         Args:
@@ -103,7 +102,9 @@ class Cluster:
         """
         self.plugin_manager._output_plugin.run(self.devices, file_path, params)
 
-    def add_device_with_raw_data(self, hostname: str, ip: str, cmd_contents: Dict[str, str]):
+    def add_device_with_raw_data(
+        self, hostname: str, ip: str, cmd_contents: Dict[str, str]
+    ):
         """添加设备和命令
 
         Args:
@@ -118,7 +119,9 @@ class Cluster:
 
         self.add_device_use_input_plugin_result(result)
 
-    def add_device_use_input_plugin_result(self, input_plugin_result: InputPluginResult):
+    def add_device_use_input_plugin_result(
+        self, input_plugin_result: InputPluginResult
+    ):
         self.save_device_with_cmds(input_plugin_result)
 
 
@@ -168,12 +171,17 @@ class DeviceList(list):
         Returns:
             List[Device]: 设备列表
         """
-        return [device for device in self._devices if device_name in device._device_info.name]
+        return [
+            device
+            for device in self._devices
+            if device_name in device._device_info.name
+        ]
 
 
 @dataclass
 class DeviceInfo:
     """用于InputPlugin中获取到的设备信息"""
+
     name: str = ''  # 设备名
     ip: str = ''  # manager_ip
     file_path: str = ''  # 文件路径
@@ -249,14 +257,15 @@ class Device:
                 # 首先判断是否为无效命令
                 if not cmd.is_vaild(self._vendor.INVALID_STR):
                     raise exception.TemplateError(
-                        f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank command.')
+                        f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank command.'
+                    )
 
-                parse_result = self._plugin_manager.parse(
-                    cmd, self.vendor.PLATFORM)
+                parse_result = self._plugin_manager.parse(cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
                 logger.debug(
-                    f'{pystr.parse_plugin_prefix} device:{self._device_info.name!r} {str(e)}')
+                    f'{pystr.parse_plugin_prefix} device:{self._device_info.name!r} {str(e)}'
+                )
 
             finally:
                 continue
@@ -381,11 +390,13 @@ class Cmd:
 class PluginManagerAbc(abc.ABC):
     """对插件的管理的抽象接口, 管理output和parse"""
 
-    def __init__(self,
-                 input_plugin: Optional[Type[InputPluginAbstract]] = None,
-                 output_plugin: Optional[Type[OutputPluginAbstract]] = None,
-                 parse_plugin: Optional[Type[ParsePluginAbstract]] = None,
-                 analysis_plugin: List[Type[AnalysisPluginAbstract]] = []):
+    def __init__(
+        self,
+        input_plugin: Optional[Type[InputPluginAbstract]] = None,
+        output_plugin: Optional[Type[OutputPluginAbstract]] = None,
+        parse_plugin: Optional[Type[ParsePluginAbstract]] = None,
+        analysis_plugin: List[Type[AnalysisPluginAbstract]] = [],
+    ):
         self._input_plugin: Optional[InputPluginAbstract] = None
         self._output_plugin: Optional[OutputPluginAbstract] = None
         self._parse_plugin: Optional[ParsePluginAbstract] = None
@@ -411,10 +422,11 @@ class PluginManagerAbc(abc.ABC):
                     plugin_cls = plugin_cls.__class__
                 # 如果不是指定的类型
                 if not issubclass(plugin_cls, globals()[check_type]):
-                    raise TypeError(
-                        f'{plugin_cls.__name__} is not {check_type}')
+                    raise TypeError(f'{plugin_cls.__name__} is not {check_type}')
                 return func(self, plugin_cls)
+
             return inner
+
         return wrapper
 
     def check_cls_list(check_type: str):
@@ -430,11 +442,12 @@ class PluginManagerAbc(abc.ABC):
                         plugin_cls = plugin_cls.__class__
                     # 如果不是指定的类型
                     if not issubclass(plugin_cls, globals()[check_type]):
-                        raise TypeError(
-                            f'{plugin_cls.__name__} is not {check_type}')
+                        raise TypeError(f'{plugin_cls.__name__} is not {check_type}')
                     cls_list.append(plugin_cls)
                 return func(self, cls_list)
+
             return inner
+
         return wrapper
 
     @property
@@ -471,8 +484,7 @@ class PluginManagerAbc(abc.ABC):
     @analysis_plugin.setter
     @check_cls_list("AnalysisPluginAbstract")
     def analysis_plugin(self, plugin_cls_list: List[Type[AnalysisPluginAbstract]]):
-        self._analysis_plugin = [plugin_cls()
-                                 for plugin_cls in plugin_cls_list]
+        self._analysis_plugin = [plugin_cls() for plugin_cls in plugin_cls_list]
 
     def parse(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         """对单个命令的内容进行解析"""
@@ -503,7 +515,9 @@ class PluginManagerAbc(abc.ABC):
         self._output_plugin.run(devices, file_path)
 
     @abc.abstractmethod
-    def input_dir(self, dir_path: str, expend: str | List = None) -> List[InputPluginResult]:
+    def input_dir(
+        self, dir_path: str, expend: str | List = None
+    ) -> List[InputPluginResult]:
         """对目录中的文件进行设备输入"""
         raise NotImplementedError
 
@@ -540,8 +554,7 @@ class InputPluginResult:
             content: 命令对应的回显
         """
         cmd = cmd.strip().lower()
-        if cmd in self._cmd_dict and \
-                len(self._cmd_dict[cmd]) >= len(content):
+        if cmd in self._cmd_dict and len(self._cmd_dict[cmd]) >= len(content):
             return
         self._cmd_dict[cmd] = content
 
@@ -558,11 +571,17 @@ class InputPluginResult:
 
 class AlarmLevel:
     """告警级别"""
+
     NORMAL = 0
     FOCUS = 1
     WARNING = 2
 
-    def __init__(self, level: int, message: str = '', plugin_cls: Type[AnalysisPluginAbstract] = None):
+    def __init__(
+        self,
+        level: int,
+        message: str = '',
+        plugin_cls: Type[AnalysisPluginAbstract] = None,
+    ):
         self._level = level
         self.message = message
         self.plugin_cls = plugin_cls
@@ -738,7 +757,7 @@ class InputPluginAbstract(PluginAbstract):
             file_path: 文件路径
             stream: 文件内容
 
-        Returns: 
+        Returns:
             InputPluginResult: 输入插件的返回结果
         """
 
@@ -746,7 +765,6 @@ class InputPluginAbstract(PluginAbstract):
 
 
 class OutputPluginAbstract(PluginAbstract):
-
     @dataclass
     class OutputArgs:
 
@@ -754,7 +772,12 @@ class OutputPluginAbstract(PluginAbstract):
         file_path: str  # 输出文件的路径
         output_params: Dict[str, str]  # 输出文件的参数
 
-    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]]):
+    def run(
+        self,
+        devices: DeviceList[Device],
+        path: str,
+        output_params: Optional[Dict[str, str]],
+    ):
         """对设备列表进行输出
 
         Args:
@@ -764,7 +787,8 @@ class OutputPluginAbstract(PluginAbstract):
         """
 
         self.args = self.OutputArgs(
-            devices=devices, file_path=path, output_params=output_params)
+            devices=devices, file_path=path, output_params=output_params
+        )
         return self.main()
 
     @abc.abstractmethod
@@ -786,7 +810,6 @@ class ParsePluginAbstract(PluginAbstract):
 
 
 class AnalysisPluginAbstract(PluginAbstract):
-
     @abc.abstractmethod
     def run(self, device: Device) -> AnalysisResult:
         raise NotImplementedError

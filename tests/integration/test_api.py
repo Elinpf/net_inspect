@@ -3,16 +3,16 @@ from net_inspect.api import NetInspect
 from net_inspect.base_info import BaseInfo, EachVendorDeviceInfo
 from net_inspect.domain import Device, InputPluginResult
 from net_inspect.exception import PluginNotSpecify
-from net_inspect.plugins.input_plugin_with_smartone import \
-    InputPluginWithSmartOne
+from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
 
 
 def test_run_input(shared_datadir):
     """测试单个文件输入插件"""
     net = NetInspect()
     net.set_input_plugin('smartone')
-    net.run_input(shared_datadir /
-                  'log_files/B_FOO_BAR_DS02_21.2.3.4_20220221170516.diag')
+    net.run_input(
+        shared_datadir / 'log_files/B_FOO_BAR_DS02_21.2.3.4_20220221170516.diag'
+    )
     assert len(net.cluster.devices) == 1
 
 
@@ -45,8 +45,7 @@ def test_run_parse(shared_datadir):
     net = NetInspect()
     net.set_input_plugin('smartone')
     net.set_parse_plugin('ntc_templates')
-    net.run_input(shared_datadir /
-                  'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
+    net.run_input(shared_datadir / 'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
 
     net.run_parse()
     res = net.cluster.devices[0].cmds['dis version']._parse_result
@@ -57,8 +56,7 @@ def test_run_parse_with_default(shared_datadir):
     """测试单个文件解析插件"""
     net = NetInspect()
     net.set_input_plugin('smartone')
-    net.run_input(shared_datadir /
-                  'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
+    net.run_input(shared_datadir / 'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
 
     net.run_parse()
     res = net.cluster.devices[0].cmds['dis version']._parse_result
@@ -69,8 +67,7 @@ def test_run_parse_with_default2(shared_datadir):
     """测试单个文件解析插件"""
     net = NetInspect()
     net.set_input_plugin('smartone')
-    cluster = net.run_input(shared_datadir /
-                            'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
+    cluster = net.run_input(shared_datadir / 'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
 
     cluster.parse()
     res = cluster.devices[0].cmds['dis version']._parse_result
@@ -81,8 +78,7 @@ def test_run_analysis(shared_datadir):
     """执行分析测试"""
     net = NetInspect()
     net.set_input_plugin('smartone')
-    cluster = net.run_input(shared_datadir /
-                            'log_files/HUAWEI_BAD_POWER_21.1.1.1.diag')
+    cluster = net.run_input(shared_datadir / 'log_files/HUAWEI_BAD_POWER_21.1.1.1.diag')
 
     cluster.parse()
     cluster.analysis()
@@ -112,9 +108,8 @@ def test_add_device_with_raw_data():
     cmds = {'cmd1': 'content1', 'cmd2': 'content2'}
     net = NetInspect()
     net.add_device_with_raw_data(
-        hostname='Device1',
-        ip='192.168.1.1',
-        cmd_contents=cmds)
+        hostname='Device1', ip='192.168.1.1', cmd_contents=cmds
+    )
 
     assert len(net.cluster.devices) == 1
 
@@ -142,8 +137,7 @@ def test_set_base_info_handler(shared_datadir):
     net = NetInspect()
     net.set_input_plugin('smartone')
     net.set_base_info_handler(EachVendorWithClock)
-    cluster = net.run_input(shared_datadir /
-                            'log_files/HUAWEI_BAD_POWER_21.1.1.1.diag')
+    cluster = net.run_input(shared_datadir / 'log_files/HUAWEI_BAD_POWER_21.1.1.1.diag')
 
     cluster.parse()
     cluster.analysis()

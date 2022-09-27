@@ -20,6 +20,7 @@ def test_cluster_save_device_with_cmds():
 def test_cluster_input(mocker):
     """测试输入"""
     from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
+
     input_plugin = InputPluginWithSmartOne
     plugin_manager = PluginManager(input_plugin=input_plugin)
     cluster = Cluster()
@@ -30,8 +31,9 @@ def test_cluster_input(mocker):
     input_result.add_cmd('cmd2', 'content2')
     input_result.hostname = 'device1'
 
-    mocker.patch('net_inspect.domain.InputPluginAbstract.run',
-                 return_value=input_result)
+    mocker.patch(
+        'net_inspect.domain.InputPluginAbstract.run', return_value=input_result
+    )
 
     cluster.input('file_path')
     assert len(cluster.devices) == 1

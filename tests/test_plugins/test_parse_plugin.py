@@ -1,4 +1,6 @@
-from net_inspect.plugins.parse_plugin_with_ntc_templates import ParsePluginWithNtcTemplates
+from net_inspect.plugins.parse_plugin_with_ntc_templates import (
+    ParsePluginWithNtcTemplates,
+)
 from net_inspect.domain import Cmd
 
 huawei_verison = """

@@ -17,7 +17,9 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
     """
 
     @analysis.vendor(vendor.Huawei)
-    @analysis.template_key('huawei_vrp_display_memory-usage.textfsm', ['MEMORY_USING_PERCENT'])
+    @analysis.template_key(
+        'huawei_vrp_display_memory-usage.textfsm', ['MEMORY_USING_PERCENT']
+    )
     def huawei_vrp(template_info: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
@@ -26,22 +28,31 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
             check_memory_usage(row['MEMORY_USING_PERCENT'], result)
 
     @analysis.vendor(vendor.Cisco)
-    @analysis.template_key('cisco_ios_show_processes_memory_sorted.textfsm', ['memory_total', 'memory_used'])
-    @analysis.template_key('cisco_ios_show_processes_memory.textfsm', ['memory_total', 'memory_used'])
+    @analysis.template_key(
+        'cisco_ios_show_processes_memory_sorted.textfsm',
+        ['memory_total', 'memory_used'],
+    )
+    @analysis.template_key(
+        'cisco_ios_show_processes_memory.textfsm', ['memory_total', 'memory_used']
+    )
     def cisco_ios(template_info: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
         """
         for row in template_info['show processes memory sorted']:
             check_memory_usage(
-                float(row['memory_used']) / float(row['memory_total']) * 100, result)
+                float(row['memory_used']) / float(row['memory_total']) * 100, result
+            )
 
         for row in template_info['show processes memory']:
             check_memory_usage(
-                float(row['memory_used']) / float(row['memory_total']) * 100, result)
+                float(row['memory_used']) / float(row['memory_total']) * 100, result
+            )
 
     @analysis.vendor(vendor.Ruijie)
-    @analysis.template_key('ruijie_os_show_memory.textfsm', ['system_memory_used_rate_precent'])
+    @analysis.template_key(
+        'ruijie_os_show_memory.textfsm', ['system_memory_used_rate_precent']
+    )
     def ruijie_os(template_info: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
@@ -59,7 +70,9 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
             check_memory_usage(row['used_percent'], result)
 
     @analysis.vendor(vendor.H3C)
-    @analysis.template_key('hp_comware_display_memory.textfsm', ['used_rate', 'free_rate'])
+    @analysis.template_key(
+        'hp_comware_display_memory.textfsm', ['used_rate', 'free_rate']
+    )
     def hp_comware(template_info: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
@@ -69,8 +82,7 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
                 check_memory_usage(row['used_rate'], result)
 
             elif row['free_rate']:
-                check_memory_usage(
-                    100 - float(row.get('free_rate')), result)
+                check_memory_usage(100 - float(row.get('free_rate')), result)
 
 
 def check_memory_usage(memory_usage: float | str, result: AnalysisResult):

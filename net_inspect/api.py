@@ -11,13 +11,17 @@ from .plugin_manager import PluginManager
 
 if TYPE_CHECKING:
     from .base_info import BaseInfo, EachVendorDeviceInfo
-    from .domain import (Device, InputPluginAbstract, InputPluginResult,
-                         OutputPluginAbstract, ParsePluginAbstract,
-                         PluginAbstract)
+    from .domain import (
+        Device,
+        InputPluginAbstract,
+        InputPluginResult,
+        OutputPluginAbstract,
+        ParsePluginAbstract,
+        PluginAbstract,
+    )
 
 
 class NetInspect:
-
     def __init__(self):
         self._plugins = bootstrap()
         self._plugin_manager = PluginManager()
@@ -25,7 +29,8 @@ class NetInspect:
         self._logconfig = LoggerConfig()
 
         self._plugin_manager.parse_plugin = self._plugins.get_parse_plugin(
-            pystr.default_parse_plugin)
+            pystr.default_parse_plugin
+        )
         self._plugin_manager.analysis_plugin = self._plugins.get_analysis_plugin_list()
         self.cluster._plugin_manager = self._plugin_manager
 
@@ -70,10 +75,12 @@ class NetInspect:
         Returns:
             所有插件以字典的形式返回
         """
-        return {'input_plugins': self.get_input_plugins(),
-                'output_plugins': self.get_output_plugins(),
-                'parse_plugins': self.get_parse_plugins(),
-                'analysis_plugins': self.get_analysis_plugins()}
+        return {
+            'input_plugins': self.get_input_plugins(),
+            'output_plugins': self.get_output_plugins(),
+            'parse_plugins': self.get_parse_plugins(),
+            'analysis_plugins': self.get_analysis_plugins(),
+        }
 
     def get_input_plugins(self) -> Dict[str, Type[PluginAbstract]]:
         """取得所有的输入插件"""
@@ -116,7 +123,7 @@ class NetInspect:
         self,
         input_plugin: Optional[Type[InputPluginAbstract] | str] = None,
         output_plugin: Optional[Type[OutputPluginAbstract] | str] = None,
-        parse_plugin: Optional[Type[ParsePluginAbstract] | str] = None
+        parse_plugin: Optional[Type[ParsePluginAbstract] | str] = None,
     ):
         """设置插件
 
@@ -148,8 +155,7 @@ class NetInspect:
         """
 
         if not self._plugin_manager.input_plugin:
-            logger.info(
-                '未指定`input_plugin`, 跳过 `run_input` 函数.')
+            logger.info('未指定`input_plugin`, 跳过 `run_input` 函数.')
             return self.cluster
 
         if os.path.isfile(path):
@@ -193,10 +199,14 @@ class NetInspect:
         if self._plugin_manager.output_plugin:  # 当有output插件的时候执行
             self.cluster.output(file_path, params)
         else:
-            logger.info(
-                '未指定`output_plugin`, 跳过 `run_output` 函数.')
+            logger.info('未指定`output_plugin`, 跳过 `run_output` 函数.')
 
-    def run(self, input_path: str = '', output_file_path: str = '', output_plugin_params: Dict[str, str] = {}) -> Cluster:
+    def run(
+        self,
+        input_path: str = '',
+        output_file_path: str = '',
+        output_plugin_params: Dict[str, str] = {},
+    ) -> Cluster:
         """执行所有插件
 
         Args:
@@ -214,7 +224,9 @@ class NetInspect:
 
         return self.cluster
 
-    def add_device_with_raw_data(self, hostname: str, ip: str = '', cmd_contents: Dict[str, str] = {}):
+    def add_device_with_raw_data(
+        self, hostname: str, ip: str = '', cmd_contents: Dict[str, str] = {}
+    ):
         """添加设备到集群中
 
         Args:

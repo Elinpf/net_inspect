@@ -7,13 +7,17 @@ from ..domain import InputPluginAbstract, DeviceInfo, InputPluginResult
 # device>show version
 # device(config)# sh version
 similar_cisco_reg = re.compile(
-    r'^(?P<device_name>[\w\-_\.]+)(?:\(.*?\))?[#|>]\s*(?P<cmd>sh(?:o(?:w)?)?\s+.*)$', re.IGNORECASE)
+    r'^(?P<device_name>[\w\-_\.]+)(?:\(.*?\))?[#|>]\s*(?P<cmd>sh(?:o(?:w)?)?\s+.*)$',
+    re.IGNORECASE,
+)
 
 # 类华为的情况
 # <device>display version
 # [device] dis version
 simialr_huawei_reg = re.compile(
-    r'[\<|\[](?P<device_name>[\w\-_\.]+)(?:\-(?:.+?))?[\]|>]\s*(?P<cmd>dis(?:p(?:l(?:a(?:y)?)?)?)?\s+.*)$', re.IGNORECASE)
+    r'[\<|\[](?P<device_name>[\w\-_\.]+)(?:\-(?:.+?))?[\]|>]\s*(?P<cmd>dis(?:p(?:l(?:a(?:y)?)?)?)?\s+.*)$',
+    re.IGNORECASE,
+)
 
 prompt_reg = r'\S+[>|\]|\)|#]'
 
@@ -30,8 +34,9 @@ class InputPluginWithConsole(InputPluginAbstract):
         result = InputPluginResult()
 
         for line in stream.splitlines():
-            match = re.match(similar_cisco_reg, line) or \
-                re.match(simialr_huawei_reg, line)  # 判断是否为命令的行
+            match = re.match(similar_cisco_reg, line) or re.match(
+                simialr_huawei_reg, line
+            )  # 判断是否为命令的行
             if match:
                 if not result.hostname:  # 如果没有设备名称就记录
                     result.hostname = match.group('device_name')

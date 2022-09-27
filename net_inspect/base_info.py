@@ -49,7 +49,7 @@ class EachVendorDeviceInfo(Singleton):
         ('cpu_status', 'cpu'),
         ('memory_status', 'memory'),
         ('fan_status', 'fan'),
-        ('power_status', 'power')
+        ('power_status', 'power'),
     ]
 
     # 可用于重载的信息
@@ -79,7 +79,9 @@ class EachVendorDeviceInfo(Singleton):
 
         return base_info
 
-    def get_funcs(self, platform: vendor.DefaultVendor, type_name: str) -> List[Callable[[Device, BaseInfo]]]:
+    def get_funcs(
+        self, platform: vendor.DefaultVendor, type_name: str
+    ) -> List[Callable[[Device, BaseInfo]]]:
         """取设备厂商所有的方法"""
         ret = []
         for i in dir(self):
@@ -126,8 +128,9 @@ class EachVendorDeviceInfo(Singleton):
         # Memory 利用率
         with device.search_cmd('display memory-usage') as cmd:
             if cmd.parse_result:
-                info.memory_usage = cmd.parse_result[0].get(
-                    'memory_using_percent') + '%'
+                info.memory_usage = (
+                    cmd.parse_result[0].get('memory_using_percent') + '%'
+                )
 
         device.analysis_result
 
@@ -143,8 +146,9 @@ class EachVendorDeviceInfo(Singleton):
         with device.search_cmd('display version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
-                info.version = row.get('software_version') + \
-                    ' Release: ' + row.get('release')
+                info.version = (
+                    row.get('software_version') + ' Release: ' + row.get('release')
+                )
                 info.uptime = row.get('uptime')
 
         with device.search_cmd('display device manuinfo') as cmd:
@@ -152,7 +156,8 @@ class EachVendorDeviceInfo(Singleton):
                 if row.get('device_serial_number').lower() == 'none':
                     continue
                 info.sn.append(
-                    (row.get('device_name'), row.get('device_serial_number')))
+                    (row.get('device_name'), row.get('device_serial_number'))
+                )
 
         # CPU利用率
         with device.search_cmd('display cpu-usage') as cmd:
@@ -198,8 +203,7 @@ class EachVendorDeviceInfo(Singleton):
         # Memory 利用率
         with device.search_cmd('show memory') as cmd:
             if cmd.parse_result:
-                info.memory_usage = cmd.parse_result[0].get(
-                    'used_percent') + '%'
+                info.memory_usage = cmd.parse_result[0].get('used_percent') + '%'
 
     def do_ruijie_os_baseinfo(self, device: Device, info: BaseInfo):
         """获取锐捷设备基本信息"""
@@ -219,8 +223,7 @@ class EachVendorDeviceInfo(Singleton):
 
             for row in cmd.parse_result:
                 if row.get('serial_number'):
-                    info.sn.append(
-                        (row.get('slot_name'), row.get('serial_number')))
+                    info.sn.append((row.get('slot_name'), row.get('serial_number')))
 
         # CPU 利用率
         with device.search_cmd('show cpu') as cmd:
@@ -230,8 +233,9 @@ class EachVendorDeviceInfo(Singleton):
         # Memory 利用率
         with device.search_cmd('show memory') as cmd:
             if cmd.parse_result:
-                info.memory_usage = cmd.parse_result[0].get(
-                    'system_memory_used_rate_precent') + '%'
+                info.memory_usage = (
+                    cmd.parse_result[0].get('system_memory_used_rate_precent') + '%'
+                )
 
     def do_cisco_ios_baseinfo(self, device: Device, info: BaseInfo):
         """获取思科设备基本信息"""
@@ -264,8 +268,7 @@ class EachVendorDeviceInfo(Singleton):
             if cmd.parse_result:
                 total = cmd.parse_result[0].get('memory_total')
                 used = cmd.parse_result[0].get('memory_used')
-                info.memory_usage = str(
-                    int(int(used) / int(total) * 100)) + '%'
+                info.memory_usage = str(int(int(used) / int(total) * 100)) + '%'
 
     def run_analysis_info(self, device: Device):
         """
@@ -277,7 +280,7 @@ class EachVendorDeviceInfo(Singleton):
         """
         info = device.info
 
-        for item in (self.analysis_items + self.append_analysis_items):
+        for item in self.analysis_items + self.append_analysis_items:
             ar = device.analysis_result.get(item[0])
             if not ar._result:  # 如果没有检查结果，则不更新
                 continue
@@ -289,8 +292,11 @@ class EachVendorDeviceInfo(Singleton):
 
 def get_base_info(device: Device, device_info_handler=EachVendorDeviceInfo) -> BaseInfo:
     """获取设备基本信息"""
-    info = device_info_handler() if type(
-        device_info_handler) == type else device_info_handler
+    info = (
+        device_info_handler()
+        if type(device_info_handler) == type
+        else device_info_handler
+    )
     base_info = info.run_baseinfo_func(device)
     info.run_analysis_info(device)
     return base_info

@@ -1,9 +1,11 @@
 import re
 
 from net_inspect.plugins.input_plugin_with_console import (
-    InputPluginWithConsole, simialr_huawei_reg, similar_cisco_reg)
-from net_inspect.plugins.input_plugin_with_smartone import \
-    InputPluginWithSmartOne
+    InputPluginWithConsole,
+    simialr_huawei_reg,
+    similar_cisco_reg,
+)
+from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
 
 
 def test_input_plugin_with_console_simalr_huawei_reg():
@@ -11,7 +13,7 @@ def test_input_plugin_with_console_simalr_huawei_reg():
     test_list = [
         ('<device>display version', 'device'),
         ('[device] dis version', 'device'),
-        ('<GZ-24F-SN1-248.16>display version', 'GZ-24F-SN1-248.16')
+        ('<GZ-24F-SN1-248.16>display version', 'GZ-24F-SN1-248.16'),
     ]
 
     for (line, refer_hostname) in test_list:
@@ -94,7 +96,8 @@ def test_smartone_plugin_state_1(shared_datadir):
 
     input_plugin = InputPluginWithSmartOne()
     result = input_plugin.run(
-        shared_datadir / 'B_FOO_BAR_DS02_21.2.3.4_20220221170516.diag')
+        shared_datadir / 'B_FOO_BAR_DS02_21.2.3.4_20220221170516.diag'
+    )
     cmd_dict = result.cmd_dict
     device_info = result._device_info
     assert device_info.name == 'B_FOO_BAR_DS02'
@@ -107,8 +110,7 @@ def test_smartone_plugin_state_2(shared_datadir):
     """测试 smartone plugin 情况二"""
 
     input_plugin = InputPluginWithSmartOne()
-    result = input_plugin.run(
-        shared_datadir / 'B_FOO_BAR_AR01_21.1.1.1.diag')
+    result = input_plugin.run(shared_datadir / 'B_FOO_BAR_AR01_21.1.1.1.diag')
     cmd_dict = result.cmd_dict
     device_info = result._device_info
     assert device_info.name == 'B_FOO_BAR_AR01'

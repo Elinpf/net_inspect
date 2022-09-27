@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 
 try:
     from ntc_templates import __author__ as ntc_author
-    CHECK_NTC_TEMPLATES = (ntc_author == 'elinpf')
+
+    CHECK_NTC_TEMPLATES = ntc_author == 'elinpf'
 
 except ImportError:
     CHECK_NTC_TEMPLATES = False
@@ -33,9 +34,9 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
     @dataclass
     class TextFsmInfo:
         """textFSM模板信息"""
+
         dir: str = ''
-        index_commands: Dict[str, List[str]] = field(
-            default_factory=lambda: {})
+        index_commands: Dict[str, List[str]] = field(default_factory=lambda: {})
 
     def __init__(self):
 
@@ -47,13 +48,13 @@ net_inspect 使用的是`ntc_templates_elinpf`这个包，与原`ntc_templates`�
 """
             raise ImportError(msg)
 
-        ntc_templates_dir = os.path.join(
-            os.path.dirname(model_file), 'templates')
+        ntc_templates_dir = os.path.join(os.path.dirname(model_file), 'templates')
         self.textfms_info_dict = {
             'external': self.TextFsmInfo(),
             'ntc_templates': self.TextFsmInfo(
                 dir=ntc_templates_dir,
-                index_commands=self._get_index_commands(ntc_templates_dir))
+                index_commands=self._get_index_commands(ntc_templates_dir),
+            ),
         }
 
     def set_external_templates(self, template_dir: str):
@@ -62,12 +63,12 @@ net_inspect 使用的是`ntc_templates_elinpf`这个包，与原`ntc_templates`�
             textfsm_dir: textFSM模板目录
         """
         if not os.path.isdir(template_dir):
-            raise exception.TemplateError(
-                f'外部模板路径:{template_dir!r} 不存在.')
+            raise exception.TemplateError(f'外部模板路径:{template_dir!r} 不存在.')
 
         self.textfms_info_dict['external'].dir = template_dir
         self.textfms_info_dict['external'].index_commands = self._get_index_commands(
-            template_dir)
+            template_dir
+        )
 
     def _get_index_commands(self, textfsm_dir: str) -> Dict[str, List[str]]:
         """将ntc-templates中的index文件提取出来，
@@ -79,8 +80,7 @@ net_inspect 使用的是`ntc_templates_elinpf`这个包，与原`ntc_templates`�
         index_file = os.path.join(textfsm_dir, 'index')
 
         if not os.path.exists(index_file):
-            raise exception.TemplateError(
-                f'外部模板文件夹{textfsm_dir!r}中必须包含`index`文件.')
+            raise exception.TemplateError(f'外部模板文件夹{textfsm_dir!r}中必须包含`index`文件.')
 
         commands = {}
         with open(index_file, 'r') as f:
@@ -127,15 +127,19 @@ net_inspect 使用的是`ntc_templates_elinpf`这个包，与原`ntc_templates`�
                 if type == 'external':
                     continue
                 else:
-                    raise exception.TemplateNotSupperThisCommand(
-                        platform, command)
+                    raise exception.TemplateNotSupperThisCommand(platform, command)
 
             try:
-                res = parse_output(platform=platform,
-                                   command=match_command, data=cmd.content, template_dir=textfsm_info.dir)
+                res = parse_output(
+                    platform=platform,
+                    command=match_command,
+                    data=cmd.content,
+                    template_dir=textfsm_info.dir,
+                )
             except Exception as e:
                 raise exception.TemplateError(
-                    f'platform: {platform!r} cmd:{command!r} {str(e)}')
+                    f'platform: {platform!r} cmd:{command!r} {str(e)}'
+                )
 
             if not res:  # 如果没有解析到结果，则抛出异常提示
                 raise exception.NotParseAnyResult(platform, command)

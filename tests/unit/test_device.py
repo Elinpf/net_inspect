@@ -2,7 +2,8 @@ from net_inspect.domain import Device, DeviceInfo
 
 
 def cmd_dict():
-    d = {'display version': """Huawei Versatile Routing Platform Software
+    d = {
+        'display version': """Huawei Versatile Routing Platform Software
 VRP (R) software, Version 8.180 (NE20E V800R010C10SPC500)
 Copyright (C) 2012-2018 Huawei Technologies Co., Ltd.
 HUAWEI NE20E-S4 uptime is 493 days, 18 hours, 38 minutes 
@@ -14,7 +15,8 @@ BKP  version information:
   PCB         Version : CX68BKP01B REV A
   MPU  Slot  Quantity : 2
   NSP  Slot  Quantity : 1
-  CARD Slot  Quantity : 4"""}
+  CARD Slot  Quantity : 4"""
+    }
 
     return d
 

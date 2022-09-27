@@ -36,8 +36,7 @@ def ensure_spacing_for_multiline_comment(remark):
     if not remarks:
         remarks = (("", remark),)
     # Example remarks: [('comment \n#', '      comment2 '), ('\n  #', 'comment3 # 9')]
-    remark_formatted = "".join(
-        [entry[0] + " " + entry[1].strip() for entry in remarks])
+    remark_formatted = "".join([entry[0] + " " + entry[1].strip() for entry in remarks])
     return remark_formatted
 
 
@@ -166,8 +165,7 @@ def ensure_space_comments(comments):
         ])
         >>>
     """
-    comment_objects = (
-        comment for comment_list in comments for comment in comment_list)
+    comment_objects = (comment for comment_list in comments for comment in comment_list)
     for comment in comment_objects:
         # Some comments are nested inside an additional list
         if not isinstance(comment, list):

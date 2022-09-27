@@ -35,7 +35,7 @@ class LoggerConfig(Singleton):
                 format=log_format,
                 enqueue=True,
                 backtrace=True,
-                diagnose=True
+                diagnose=True,
             )
             self._enable_file_log = True
 

@@ -14,6 +14,7 @@ def reg_extend(reg: str) -> str:
     >>> reg_extend(r'sh[[ow]] ver[[sion]]')
     'sh(o(w)?)? ver(s(i(o(n)?)?)?)?'
     """
+
     def _completion(match):
         word = str(match.group())[2:-2]
         return '(' + ('(').join(word) + ')?' * len(word)
@@ -67,7 +68,7 @@ def clamp_number(num: int, min_num: int, max_num: int) -> int:
     Args:
         num: 数字
         min_num: 最小值
-        max_num: 最大值 
+        max_num: 最大值
 
     Returns:
         int: 限制后的数字
@@ -104,6 +105,7 @@ class SkipWithBlock(Exception):
 
 class Singleton(object):
     """单例类继承"""
+
     _instance = None
 
     def __new__(class_, *args, **kwargs):
