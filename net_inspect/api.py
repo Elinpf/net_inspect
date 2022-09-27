@@ -197,6 +197,10 @@ class NetInspect:
             params: 传递给output_plugin的参数
         """
         if self._plugin_manager.output_plugin:  # 当有output插件的时候执行
+            logger.info(
+                f'start run output, plugin is {self._plugin_manager.output_plugin!r}.'
+            )
+            logger.complete()
             self.cluster.output(file_path, params)
         else:
             logger.info('未指定`output_plugin`, 跳过 `run_output` 函数.')

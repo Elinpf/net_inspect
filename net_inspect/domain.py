@@ -257,7 +257,7 @@ class Device:
                 # 首先判断是否为无效命令
                 if not cmd.is_vaild(self._vendor.INVALID_STR):
                     raise exception.TemplateError(
-                        f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank command.'
+                        f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} 无效命令回显.'
                     )
 
                 parse_result = self._plugin_manager.parse(cmd, self.vendor.PLATFORM)
