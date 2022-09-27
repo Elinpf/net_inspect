@@ -149,7 +149,7 @@ from net_inspect import NetInspect, vendor
 net = NetInspect()
 net.set_plugins(input_plugin='console')
 net.set_external_templates('local_templates')  # 调用本地模板库
-net.run(path='log')
+net.run(input_path='log')
 
 print('total devices:', len(net.cluster.devices))
 
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     net.set_plugins(input_plugin='console')
     net.set_base_info_handler(EachVendorWithClock)  # 设置获取设备基本信息的处理类
     net.set_external_templates('local_templates')
-    net.run(path='log')
+    net.run(input_path='log')
 
     print('total devices:', len(net.cluster.devices))
 
@@ -276,7 +276,7 @@ class AnalysisPluginWithOSPFStatus(AnalysisPluginAbc):
 if __name__ == '__main__':
     net = NetInspect()
     net.set_plugins(input_plugin='console')
-    net.run(path='log')
+    net.run(input_path='log')
 
     print('total devices:', len(net.cluster.devices))
 
@@ -350,7 +350,7 @@ if __name__ == '__main__':
 
     net = NetInspect()
     net.set_plugins(input_plugin='console', output_plugin=Output)
-    cluster = net.run('log', output_plugin_params={
+    cluster = net.run(input_path='log', output_plugin_params={
                     'title': '设备信息'})
 ```
 
