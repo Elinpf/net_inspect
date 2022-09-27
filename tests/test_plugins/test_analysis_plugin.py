@@ -1,5 +1,5 @@
 import pytest
-import logging
+import re
 from net_inspect.domain import Cluster
 from net_inspect import vendor
 from net_inspect.plugins.parse_plugin_with_ntc_templates import (
@@ -33,10 +33,14 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
         """
         Test for huawei version status
         """
-        assert (
-            template['huawei_vrp_display_version.textfsm'][0]['VRP_VERSION'] == '8.180'
+        version_reg = r'\d\.\d{3}'
+        assert re.match(
+            version_reg,
+            template['huawei_vrp_display_version.textfsm'][0]['VRP_VERSION'],
         )
-        assert template['display version'][0]['VRP_VERSION'] == '8.180'  # 简写支持
+        assert re.match(
+            version_reg, template['display version'][0]['VRP_VERSION']
+        )  # 简写支持
 
         with pytest.raises(KeyError):
             template['display version'][0]['vrp_version']  # 与给出的大小写应该对应
