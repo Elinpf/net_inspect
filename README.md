@@ -1,6 +1,8 @@
-[![Python version](https://img.shields.io/badge/python-3.7%2B-orange)](https://github.com/Elinpf/net_inspect)
+[![PyPI](https://img.shields.io/pypi/v/net_inspect?color=orange)](https://pypi.org/project/net-inspect)
+[![Python version](https://img.shields.io/badge/python-3.7%2B-blue)](https://github.com/Elinpf/net_inspect)
 [![GitHub stars](https://img.shields.io/github/stars/Elinpf/net_inspect)](https://github.com/Elinpf/net_inspect/stargazers)
 [![GitHub license](https://img.shields.io/github/license/Elinpf/net_inspect)](https://github.com/Elinpf/net_inspect/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/Elinpf/net_inspect/branch/master/graph/badge.svg?token=SVPWMH4XHY)](https://codecov.io/gh/Elinpf/net_inspect)
 
 ## 前言
 
