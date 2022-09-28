@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Dict, List, Iterator, Type, Tuple
+from typing import TYPE_CHECKING, Callable, Dict, Iterator, List, Tuple, Type
 
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
-from .func import get_command_from_textfsm, snake_case_to_pascal_case, print_log
-from .data import pystr
+from .func import get_command_from_textfsm, snake_case_to_pascal_case
 
 if TYPE_CHECKING:
     from .domain import DefaultVendor, Device
@@ -23,8 +22,7 @@ class AnalysisFunctionInfo:
     vendor_platform: str  # 分析模块的类名称
     vendor: Type[DefaultVendor]  # 厂商的类
     function_name: str  # 分析函数名称
-    function: Callable[[Dict[TEMPLATE, List[KEY]],
-                        AnalysisResult]]    # 存放执行的分析函数
+    function: Callable[[Dict[TEMPLATE, List[KEY]], AnalysisResult]]  # 存放执行的分析函数
     template_keys_list: List[Tuple[TEMPLATE, List[KEY]]]  # 模板文件中的变量名称列表
     template_keys_value: TemplateKeyValue  # 存放模板文件中的变量名称和变量值
     doc: str  # 分析函数的注释文档
@@ -46,7 +44,7 @@ class StoreTemplateKey:
         设置只运行指定的插件
 
         Args:
-            - plugins: 指定的插件列表
+            plugins: 指定的插件列表
         """
         self._only_run_plugins = [plugin.__name__ for plugin in plugins]
 
@@ -55,30 +53,33 @@ class StoreTemplateKey:
         将模板名称和变量名称存入临时存储器中
 
         Args:
-            - template_name: 模板名称
-            - keys: 变量名称列表
+            template_name: 模板名称
+            keys: 变量名称列表
         """
         self._temp_store.append((template_name, keys))
 
-    def get_funcs(self, plugin_name: PLUGIN_NAME, vendor: Type[DefaultVendor]
-                  ) -> Iterator[Callable, TemplateKeyValue]:
+    def get_funcs(
+        self, plugin_name: PLUGIN_NAME, vendor: Type[DefaultVendor]
+    ) -> Iterator[Callable, TemplateKeyValue]:
         """
         获取指定厂商的分析函数, 并且返回模板名称和变量名称的迭代器
 
         如果设置了only_run_plugins，则只运行指定的插件
 
         Args:
-            - plugin_name: 分析插件类名称
-            - vendor: 厂商
+            plugin_name: 分析插件类名称
+            vendor: 厂商
 
         Return:
-            - 分析函数和TemplateKey的迭代器
+            分析函数和TemplateKey的迭代器
         """
         vendor_name = vendor.PLATFORM
         func_list = []
 
         for info in self.filter(plugin_name=plugin_name, vendor_platform=vendor_name):
-            if self._only_run_plugins and plugin_name not in self._only_run_plugins:  # 如果设置了only_run_plugins，则只运行指定的插件
+            if (
+                self._only_run_plugins and plugin_name not in self._only_run_plugins
+            ):  # 如果设置了only_run_plugins，则只运行指定的插件
                 continue
             func_list.append((info.function, info.template_keys_value))
 
@@ -89,18 +90,18 @@ class StoreTemplateKey:
         self,
         plugin_name: PLUGIN_NAME = None,
         vendor_platform: str = None,
-        function_name: str = None
+        function_name: str = None,
     ) -> List[AnalysisFunctionInfo]:
         """
         返回指定的分析函数列表
 
         Args:
-            - plugin_name: 分析插件类名称
-            - vendor_platform: 厂商平台名称
-            - function_name: 分析函数名称
+            plugin_name: 分析插件类名称
+            vendor_platform: 厂商平台名称
+            function_name: 分析函数名称
 
         Return:
-            - 分析函数的列表
+            分析函数的列表
         """
         res = []
         for info in self.store:
@@ -123,8 +124,8 @@ class StoreTemplateKey:
         将存储的模板名称和变量名称放入对应的厂商存储器中
 
         Args:
-            - vendor: 厂商类
-            - func: 厂商的分析函数
+            vendor: 厂商类
+            func: 厂商的分析函数
         """
         plugin_name, function_name = func.__qualname__.split('.', maxsplit=2)
         template_keys_value = TemplateKeyValue(vendor.PLATFORM)
@@ -139,7 +140,7 @@ class StoreTemplateKey:
             function=func,
             template_keys_list=list(self._temp_store),
             template_keys_value=template_keys_value,
-            doc=func.__doc__.strip()
+            doc=func.__doc__.strip(),
         )
 
         self.store.append(af)
@@ -150,8 +151,9 @@ class StoreTemplateKey:
         方法的装饰器，用来确定装饰的方法是对哪个厂商的分析
 
         Args:
-            - vendor: 厂商
+            vendor: 厂商
         """
+
         def func_init(func):
             self.store_vendor(vendor, func)
             return func
@@ -163,12 +165,14 @@ class StoreTemplateKey:
         方法的装饰器，用来确定装饰的方法需要使用哪些模板和内容
 
         Args:
-            - template: 模板文件名
-            - keys: 变量名称列表
+            template: 模板文件名
+            keys: 变量名称列表
         """
+
         def func_init(func):
             self.temp_store(template, keys)
             return func
+
         return func_init
 
 
@@ -176,13 +180,21 @@ analysis = StoreTemplateKey()
 
 
 class AlarmLevel(AlarmLevel):
-
     @property
     def level(self):
         return self._level
 
     @level.setter
     def level(self, level: int):
+        """
+        设置告警级别
+
+        Args:
+            level: 告警级别
+
+        Raises:
+            ValueError: 告警级别不在0-2之间
+        """
         if level < AlarmLevel.NORMAL or level > AlarmLevel.WARNING:
             raise exception.AnalysisLevelError
         self._level = level
@@ -197,8 +209,7 @@ class TemplateKeyValue:
             - vendor_platform: 厂商平台的字符串
         """
         self._vendor_platform = vendor_platform  # 平台名称字符串
-        self._key_store: Dict[TEMPLATE,
-                              Dict[KEY, List[str]]] = {}  # 存储模板的名称和变量对应关系
+        self._key_store: Dict[TEMPLATE, Dict[KEY, List[str]]] = {}  # 存储模板的名称和变量对应关系
 
     def append(self, template: TEMPLATE, keys: List[KEY]):
         """
@@ -225,13 +236,13 @@ class TemplateInfo:
         - 完整命令: display version
 
         Args:
-            - name: 模板名称
+            name: 模板名称
 
-        Return:
-            - 模板变量和值的字典列表
+        Returns:
+            模板变量和值的字典列表
 
-        Exception:
-            - exception.NtcTemplateNotDefined: 使用缩写或者不存在的模板名称时抛出异常
+        Raises:
+            exception.NtcTemplateNotDefined: 使用缩写或者不存在的模板名称时抛出异常
         """
         name = self._from_command_to_template_file(name)
         if not name in self.template_key_value:
@@ -242,10 +253,10 @@ class TemplateInfo:
         """
         将命令还原为模板文件名
         Args:
-            - command 命令
+            command 命令
 
         Return:
-            - 模板文件名
+            模板文件名
 
         >>> self._from_command_to_template_file('display interface status')
         'huawei_os_display_interface_status.textfsm'
@@ -262,7 +273,6 @@ class TemplateInfo:
 
 
 class AnalysisPluginAbc(AnalysisPluginAbstract):
-
     def _get_template_key_value(
         self,
         template_keys: TemplateKeyValue,
@@ -273,15 +283,15 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
         搜索Device中的cmd，将需要用到的模板和值取出来放到返回值中
 
         Args:
-            - template_keys: 模板和值字典
-            - device: 设备对象
+            template_keys: 模板和值字典
+            device: 设备对象
 
-        Return:
-            - 模板和值的字典
+        Returns:
+            模板和值的字典
 
-        Exception:
-            - exception.AnalysisTemplateNameError  名称后缀不是.textfsm
-            - KeyError
+        Raises:
+            exception.AnalysisTemplateNameError  名称后缀不是.textfsm
+            KeyError 模板中的Value不存在
 
         """
         ret = {}
@@ -292,24 +302,20 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 template_file += '.textfsm'
 
             cmd = get_command_from_textfsm(  # 通过模板文件名获得命令
-                device.vendor.PLATFORM, template_file)
+                device.vendor.PLATFORM, template_file
+            )
             cmd_find = device.search_cmd(cmd)  # 搜索命令
-            if not cmd_find:  # 当插件中需要，但是设备命令中不存在时, 给出提示
-                print_log(
-                    f'{pystr.analysis_warning_prefix} device:{device._device_info.name!r} cmd:{cmd!r} no found this command',
-                    verbose=2)
+            if not cmd_find:  # 如果命令不存在，跳过
                 ret[template_file] = []  # 并且返回一个空的列表，作为占位符
                 continue
 
             temp_list = []
             for row in cmd_find._parse_result:  # 将需要的键值取出来
                 try:
-                    _ = {key: row[key.lower()]
-                         for key in keys}
+                    _ = {key: row[key.lower()] for key in keys}
                     temp_list.append(_)
                 except KeyError as e:  # pragma: no cover
-                    raise KeyError(
-                        f'{self.__class__.__name__}模板中的键值{str(e)}不存在')
+                    raise KeyError(f'{self.__class__.__name__}模板中的键值{str(e)}不存在')
 
             ret[template_file] = temp_list
         return ret
@@ -321,8 +327,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             klass_name = self.__class__.__name__
             for func, template_keys in analysis.get_funcs(klass_name, device.vendor):
                 # 执行对应厂商的分析方法
-                template_key_value = self._get_template_key_value(
-                    template_keys, device)
+                template_key_value = self._get_template_key_value(template_keys, device)
 
                 # 没有数据时，说明不存在可以分析的命令，跳过
                 skip_flag = True
@@ -334,8 +339,10 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                     continue
 
                 # 放到数据类中
-                template_info = TemplateInfo(template_key_value=template_key_value,
-                                             vendor_platform=device.vendor.PLATFORM)
+                template_info = TemplateInfo(
+                    template_key_value=template_key_value,
+                    vendor_platform=device.vendor.PLATFORM,
+                )
 
                 each_result = AnalysisResult()
 
@@ -343,8 +350,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                     func(template_info, each_result)
                 except TypeError as e:
                     msg = "方法只需要两个参数，第一个是TemplateInfo，第二个是AnalysisResult, 不需要self"
-                    raise TypeError(
-                        f'{klass_name}.{func.__name__}() {msg}') from e
+                    raise TypeError(f'{klass_name}.{func.__name__}() {msg}') from e
 
                 # 当没有分析结果的时候，说明没有问题，给出一个正常级别提示
                 if not each_result._result:
@@ -355,7 +361,8 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
 
         except exception.NtcTemplateNotDefined as e:
             raise exception.NtcTemplateNotDefined(
-                f"{self.__class__.__name__} 中无法识别对应模板 {e}, 请检查分析方法中调用的模板名是否正确。")
+                f"{self.__class__.__name__} 中无法识别对应模板 {e}, 请检查分析方法中调用的模板名是否正确。"
+            )
 
         for alarm in iter(result):  # 设置告警所属插件类
             if not alarm.plugin_cls:

@@ -3,16 +3,29 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, List, Tuple
 
-from openpyxl.styles import Alignment, Border, Font, Side
-from openpyxl.utils import column_index_from_string, get_column_letter
-from openpyxl.workbook import Workbook
+try:
+    from openpyxl.styles import Alignment, Border, Font, Side
+    from openpyxl.utils import column_index_from_string, get_column_letter
+    from openpyxl.workbook import Workbook
 
-if TYPE_CHECKING:
-    from openpyxl.worksheet.worksheet import Worksheet
+    if TYPE_CHECKING:
+        from openpyxl.worksheet.worksheet import Worksheet
+
+except ImportError:
+    CHECK_IMPORT = False
+
+else:
+    CHECK_IMPORT = True
+
+
+msg = "Please install openpyxl first"
 
 
 class Excel():
     def __init__(self):
+        if not CHECK_IMPORT:
+            raise ImportError(msg)
+
         self.wb, self.sheet = self.init_excel()
         self.next_row = 1  # table的起始行号
 
@@ -30,9 +43,9 @@ class Excel():
         for col in range(1, column_index_from_string(max_col) + 1):
             self.sheet.column_dimensions[get_column_letter(col)].width = width
 
-    def write_row(self, row: List[CellContext]):
+    def write_row(self, row: List[CellContext], merge: List[Tuple[str, str]] = None):
         """写入一行数据"""
-        self.write_rows([row])
+        self.write_rows([row], merge)
 
     def write_rows(
         self,
@@ -104,6 +117,9 @@ class CellContext():
                          italic=False, strike=False, color='000000')
 
     def __init__(self, value: str):
+        if not CHECK_IMPORT:
+            raise ImportError(msg)
+
         self.value = value
         self.style = self.init_style()
 

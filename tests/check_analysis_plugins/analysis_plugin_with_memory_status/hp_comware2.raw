@@ -1,0 +1,7 @@
+-------------------------display memory-------------------------
+Memory statistics are measured in KB:
+Slot 0: 
+             Total      Used      Free    Shared   Buffers    Cached   FreeRatio
+Mem:       1028192    611416    416776         0      1752    227956       16.0%
+-/+ Buffers/Cache:    381708    646484
+Swap:           0         0         0

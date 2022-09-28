@@ -2,38 +2,73 @@ class Error(Exception):
     ...
 
 
-class Continue(Exception):
-    """用于控制循环"""
+class PluginError(Error):
+    """插件类错误的基类"""
 
 
-class TemplateError(Error):
+class TemplateError(PluginError):
     """ntc-template 错误"""
 
 
-class PluginError(Error):
-    ...
+class TemplateNotSupperThisPlatform(TemplateError):
+    """ntc-template 不支持该平台"""
+
+    def __init__(self, platform: str):
+        self.platform = platform
+
+    def __str__(self):
+        return f'platform:{self.platform!r} 暂不支持该平台的解析.'
 
 
-class NotPluginError(Error):
-    ...
+class TemplateNotSupperThisCommand(TemplateError):
+    """ntc-template 不支持该命令的解析"""
+
+    def __init__(self, platform: str, command: str):
+        self.platform = platform
+        self.command = command
+
+    def __str__(self):
+        return f'platform:{self.platform!r} command:{self.command!r} 暂无该平台的textfsm模板文件.'
 
 
-class AnalysisPluginError(Error):
-    ...
+class NotParseAnyResult(TemplateError):
+    """没有解析到结果"""
+
+    def __init__(self, platform: str, command: str):
+        self.platform = platform
+        self.command = command
+
+    def __str__(self):
+        return f'platform:{self.platform!r} cmd:{self.command!r} 未能解析出任何内容, 请检查textfsm模板, 联系仓库维护者或者自定义模板文件.'
+
+
+class PluginNotSpecify(PluginError):
+    """未指定插件"""
+
+
+class InputPluginError(PluginError):
+    """输入插件错误的基类"""
+
+
+# FIXME 不存在
+class NotFoundDevice(InputPluginError):
+    """Input Plugin 中未找到设备"""
+
+
+class AnalysisPluginError(PluginError):
+    """解析插件错误基类"""
 
 
 class AnalysisLevelError(AnalysisPluginError):
-    ...
+    """分析级别错误"""
 
 
-class CommandNotFoundError(AnalysisPluginError):
-    ...
-
-
+# FIXME 不存在
 class AnalysisTemplateNameError(AnalysisPluginError):
     """模板的名称不存在"""
 
 
+# FIXME 不存在
 class AnalysisVendorNotSupport(AnalysisPluginError):
     """分析模块暂不支持该厂商"""
 

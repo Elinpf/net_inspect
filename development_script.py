@@ -12,7 +12,9 @@ from net_inspect.analysis_plugin import analysis
 from net_inspect.bootstrap import bootstrap
 from net_inspect.func import get_command_from_textfsm, snake_case_to_pascal_case
 from tests.test_structured_data_againest_analysis_reference_files import (
-    analysis_device_with_raw_file, transform_to_dict)
+    analysis_device_with_raw_file,
+    transform_to_dict,
+)
 
 if TYPE_CHECKING:
     from net_inspect.domain import Device
@@ -27,14 +29,11 @@ class NotFoundErr(Exception):
 
 def parse_args(command: str = '') -> Namespace:
     args = ArgumentParser()
-    args.add_argument('-p', '--plugin-name', type=str,
-                      help='模块名称，必须指定', required=True)
-    args.add_argument('-g', '--generate', action='store_true',
-                      help='创建Analysis模块文件')
+    args.add_argument('-p', '--plugin-name', type=str, help='模块名称，必须指定', required=True)
+    args.add_argument('-g', '--generate', action='store_true', help='创建Analysis模块文件')
     args.add_argument('-v', '--vendor-platform', type=str, help='指定厂商平台')
     args.add_argument('-f', '--function', type=str, help='指定测试文件的分析函数')
-    args.add_argument('-i', '--index', type=int,
-                      help='创建第几个测试文件', default=0)
+    args.add_argument('-i', '--index', type=int, help='创建第几个测试文件', default=0)
     args.add_argument('-t', '--test', help='测试模块', action='store_true')
     args.add_argument('-y', '--yml', help='创建yml文件', action='store_true')
 
@@ -81,7 +80,8 @@ def generate_file(plugin_name: str, give_function: str | None, index: int):
     file_name = plugin_name + '.py'
     if not os.path.exists(os.path.join(PLUGIN_DIR, file_name)):  # 如果没有插件文件，则创建插件文件
         open(os.path.join(PLUGIN_DIR, file_name), 'w').write(
-            plugin_file_content(plugin_name))
+            plugin_file_content(plugin_name)
+        )
         return
 
     # 如果有插件文件，则读取插件文件的插件，并且创建对应的测试文件
@@ -90,7 +90,8 @@ def generate_file(plugin_name: str, give_function: str | None, index: int):
         func_list = analysis.filter(plugin_name=plugin_name)
     else:
         func_list = analysis.filter(
-            plugin_name=plugin_name, function_name=give_function)
+            plugin_name=plugin_name, function_name=give_function
+        )
 
     if not func_list:
         print('[-] 没有找到对应的分析函数')
@@ -104,14 +105,19 @@ def generate_file(plugin_name: str, give_function: str | None, index: int):
 
         # 拼接测试raw文件名称
         index_str = str(index) if index > 1 else ''
-        raw_file = os.path.join(TEST_ANALYSIS_PLUGIN_DIR,
-                                plugin_name, func_info.vendor_platform + index_str + '.raw')
+        raw_file = os.path.join(
+            TEST_ANALYSIS_PLUGIN_DIR,
+            plugin_name,
+            func_info.vendor_platform + index_str + '.raw',
+        )
 
         # 如果没有创建过，则创建
         if not os.path.exists(raw_file):
             textfsm_list = [row[0] for row in func_info.template_keys_list]
-            cmd_list = [get_command_from_textfsm(
-                func_info.vendor_platform, textfsm) for textfsm in textfsm_list]
+            cmd_list = [
+                get_command_from_textfsm(func_info.vendor_platform, textfsm)
+                for textfsm in textfsm_list
+            ]
             open(raw_file, 'w').write(write_cmds(cmd_list))
 
 
@@ -126,6 +132,7 @@ def write_cmds(cmd_list: list):
 def generate_yml_file(plugin_name: str):
     """创建供于参考的yml文件"""
     from generate_yaml import ensure_yaml_standards
+
     raw_dir = os.path.join(TEST_ANALYSIS_PLUGIN_DIR, plugin_name)
     for raw_file in glob.iglob(os.path.join(raw_dir, '*.raw')):
         device = analysis_device_with_raw_file(raw_file)
@@ -139,7 +146,9 @@ def generate_yml_file(plugin_name: str):
         print()
 
 
-def main(plugin_name: str, function_name: str = '', index: int = 0) -> List[Tuple[str, Device]]:
+def main(
+    plugin_name: str, function_name: str = '', index: int = 0
+) -> List[Tuple[str, Device]]:
     raw_dir = os.path.join(TEST_ANALYSIS_PLUGIN_DIR, plugin_name)
     need_raw_list = []
     for raw_file in glob.iglob(os.path.join(raw_dir, f'*.raw')):
@@ -180,8 +189,7 @@ if __name__ == '__main__':
 
     if args.test:
         index = args.index or 0
-        raw_file_and_devices = main(
-            plugin_name, args.function, index)
+        raw_file_and_devices = main(plugin_name, args.function, index)
         for raw_file, device in raw_file_and_devices:
             analysis_result = device.analysis_result
             print(raw_file)

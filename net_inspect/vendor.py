@@ -30,10 +30,11 @@ class DefaultVendor:
         """子类用于检查设备的厂商以及平台"""
         version_cmd = cls._check_version_command(cmds)
         if version_cmd:
-            return (True if
-                    re.search(cls.KEYWORD_REG,
-                              cmds[version_cmd].content, re.IGNORECASE)
-                    else False)
+            return (
+                True
+                if re.search(cls.KEYWORD_REG, cmds[version_cmd].content, re.IGNORECASE)
+                else False
+            )
 
         return False
 
@@ -41,7 +42,10 @@ class DefaultVendor:
     def _check_version_command(cls, cmds: Dict[str, Cmd]) -> str:
         """子类用于检查版本命令"""
         for cmd in cmds.keys():
-            if re.match(re.compile('('+reg_extend(cls.VERSION_COMMAND)+')$', re.IGNORECASE), cmd):
+            if re.match(
+                re.compile('(' + reg_extend(cls.VERSION_COMMAND) + ')$', re.IGNORECASE),
+                cmd,
+            ):
                 if cmds[cmd].is_vaild(cls.INVALID_STR):
                     return cmd
         return ''

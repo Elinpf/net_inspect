@@ -8,20 +8,28 @@ import yaml
 from net_inspect.analysis_plugin import analysis
 from net_inspect.bootstrap import bootstrap
 from net_inspect.data import pypath
-from net_inspect.domain import (AnalysisResult, Device, DeviceInfo,
-                                InputPluginAbstract)
+from net_inspect.domain import (
+    AnalysisResult,
+    Device,
+    DeviceInfo,
+    InputPluginAbstract,
+    InputPluginResult,
+)
 from net_inspect.func import pascal_case_to_snake_case
 from net_inspect.plugin_manager import PluginManager
-from net_inspect.plugins.parse_plugin_with_ntc_templates import \
-    ParsePluginWithNtcTemplates
+from net_inspect.plugins.parse_plugin_with_ntc_templates import (
+    ParsePluginWithNtcTemplates,
+)
 from net_inspect.vendor import DefaultVendor
 
-command_line_reg = r'^-------------------------(?P<cmd>[^-].*?)-------------------------$'
+command_line_reg = (
+    r'^-------------------------(?P<cmd>[^-].*?)-------------------------$'
+)
 
 
 class InputPluginWithTestRawFile(InputPluginAbstract):
-
-    def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def main(self, file_path: str, stream: str) -> InputPluginResult:
+        result = InputPluginResult()
 
         cmd_dict = {}
         content = []
@@ -39,7 +47,9 @@ class InputPluginWithTestRawFile(InputPluginAbstract):
         if content:
             cmd_dict[command] = '\n'.join(content)
 
-        return cmd_dict, DeviceInfo('TestDevice', '')
+        result.cmd_dict = cmd_dict
+        result.hostname = 'TestDevice'
+        return result
 
 
 def return_test_raw_files() -> List[str]:
@@ -69,6 +79,7 @@ def raw_analysis_test(raw_file: str) -> Tuple[Dict[str, str], Dict[str, str]]:
 
 
 def analysis_device_with_raw_file(raw_file: str) -> Device:
+    """执行分析测试"""
     plugin_name = raw_file.split(os.path.sep)[2]
     device = set_device(raw_file)
     set_analysis_plugin(device, plugin_name)
@@ -87,17 +98,18 @@ def set_device(raw_file: str) -> Device:
             break
 
     if vendor_class is None:
-        raise ValueError(
-            'No vendor class found for raw file: {}'.format(raw_file))
+        raise ValueError('No vendor class found for raw file: {}'.format(raw_file))
 
     device = Device()
     device._vendor = vendor_class
     device._plugin_manager = PluginManager(
-        input_plugin=InputPluginWithTestRawFile, parse_plugin=ParsePluginWithNtcTemplates)
-    cmd_contents_and_deviceinfo = device._plugin_manager.input(raw_file)
+        input_plugin=InputPluginWithTestRawFile,
+        parse_plugin=ParsePluginWithNtcTemplates,
+    )
+    input_result = device._plugin_manager.input(raw_file)
 
-    device.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-    device._device_info = cmd_contents_and_deviceinfo[1]  # 保存设备信息
+    device.save_to_cmds(input_result.cmd_dict)  # 保存命令信息
+    device._device_info = input_result._device_info  # 保存设备信息
     return device
 
 
@@ -159,9 +171,9 @@ def correct_data_in_entries_test(processed, reference):
 
     for i in range(len(reference)):
         for key in reference[i].keys():
-            assert str(processed[i][key]) == reference[i][key], "entry #{0}, key: {1}".format(
-                i, key
-            )
+            assert (
+                str(processed[i][key]) == reference[i][key]
+            ), "entry #{0}, key: {1}".format(i, key)
 
 
 def test_all_functions_has_a_test():
@@ -174,9 +186,13 @@ def test_all_functions_has_a_test():
         plugin_name, func_name = func_info.plugin_name, func_info.function_name
 
         # 如果是分析函数，则检查是否有测试文件
-        template_name_snake_case = pascal_case_to_snake_case(
-            plugin_name)
-        test_raw_file_path = os.path.join(pypath.project_path,
-                                          'tests', 'check_analysis_plugins', template_name_snake_case, func_name + '.raw')
+        template_name_snake_case = pascal_case_to_snake_case(plugin_name)
+        test_raw_file_path = os.path.join(
+            pypath.project_path,
+            'tests',
+            'check_analysis_plugins',
+            template_name_snake_case,
+            func_name + '.raw',
+        )
 
         assert os.path.exists(test_raw_file_path)

@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-import re
 import abc
+import re
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
-from .data import pystr, pyoption
-from .func import print_log, pascal_case_to_snake_case, NoneSkip
-from .vendor import DefaultVendor
 from .base_info import BaseInfo, EachVendorDeviceInfo
+from .func import NoneSkip, pascal_case_to_snake_case
+from .data import pystr
+from .logger import logger
+from .vendor import DefaultVendor
 
 
 class Cluster:
@@ -22,11 +23,15 @@ class Cluster:
 
     def parse(self):
         """递归对每个设备的命令进行解析"""
+        logger.info('start parse')
         self.devices.parse(base_info_handler=self.base_info_handler)
+        logger.info('parse finished')
 
     def analysis(self):
         """递归对每个设备进行分析"""
+        logger.info('start analysis')
         self.devices.analysis(base_info_handler=self.base_info_handler)
+        logger.info('analysis finished')
 
     @property
     def plugin_manger(self) -> PluginManagerAbc:
@@ -39,15 +44,23 @@ class Cluster:
     def search(self, device_name: str) -> List[Device]:
         """搜索设备
 
-        :param device_name: 搜索字符串
-        :return: 设备列表"""
+        Args:
+            device_name: 设备名
+
+        Returns:
+            List[Device]: 设备列表
+        """
         return self.devices.search(device_name)
 
     def input_dir(self, dir_path: str, expend: str | List[str] = None):
         """输入整个目录，对目录中的文件进行提取设备和命令, 并保存到self.devices中
 
-        :param dir_path: 目录路径
-        :param expend: 包含的文件后缀"""
+        Args:
+            dir_path: 目录路径
+            expend: 文件扩展名
+        """
+
+        logger.info(f'input dir: {dir_path!r}')
         devices_list = self.plugin_manager.input_dir(dir_path, expend)
 
         for cmd_contents_and_device_info in devices_list:
@@ -56,30 +69,60 @@ class Cluster:
     def input(self, file_path: str):
         """输入文件，对文件中的设备和命令进行提取，并保存到self.devices中
 
-        :param file_path: 文件路径"""
-        cmd_contents_and_deviceinfo = self.plugin_manager.input(file_path)
-        self.save_device_with_cmds(cmd_contents_and_deviceinfo)
+        Args:
+            file_path: 文件路径
+        """
 
-    def save_device_with_cmds(self,
-                              cmd_contents_and_deviceinfo: Tuple[Dict[str, str], DeviceInfo]):
+        logger.info(f'input file: {file_path!r}')
+        input_plugin_result = self.plugin_manager.input(file_path)
+        self.save_device_with_cmds(input_plugin_result)
+
+    def save_device_with_cmds(self, input_plugin_result: InputPluginResult):
         """将设备和命令保存到self.devices中
 
-        :param device_cmds_and_deviceinfo: 命令和内容的字典 和 设备信息"""
+        Args:
+            cmd_contents_and_deviceinfo: 命令内容和设备信息
+        """
 
-        if not cmd_contents_and_deviceinfo[1].name:  # 如果没有设备名，直接跳过
+        if not input_plugin_result.hostname:  # 如果没有设备名，直接跳过
             return
 
         device_cls = Device()
         device_cls._plugin_manager = self.plugin_manager
-        device_cls.save_to_cmds(cmd_contents_and_deviceinfo[0])  # 保存命令信息
-        device_cls._device_info = cmd_contents_and_deviceinfo[1]  # 保存设备简单信息
+        device_cls.save_to_cmds(input_plugin_result.cmd_dict)  # 保存命令信息
+        device_cls._device_info = input_plugin_result._device_info  # 保存设备简单信息
         self.devices.append(device_cls)
 
     def output(self, file_path: str = '', params: Dict[str, str] = {}):
         """输出到文件
 
-        :param file_path: 文件路径"""
+        Args:
+            file_path: 文件路径
+            params: 传入output_plugin的参数
+        """
         self.plugin_manager._output_plugin.run(self.devices, file_path, params)
+
+    def add_device_with_raw_data(
+        self, hostname: str, ip: str, cmd_contents: Dict[str, str]
+    ):
+        """添加设备和命令
+
+        Args:
+            hostname: 设备名
+            ip: 设备ip
+            cmd_contents: 命令内容
+        """
+        result = InputPluginResult()
+        result.hostname = hostname
+        result.ip = ip
+        result.cmd_dict = cmd_contents
+
+        self.add_device_use_input_plugin_result(result)
+
+    def add_device_use_input_plugin_result(
+        self, input_plugin_result: InputPluginResult
+    ):
+        self.save_device_with_cmds(input_plugin_result)
 
 
 class DeviceList(list):
@@ -94,13 +137,15 @@ class DeviceList(list):
     def __iter__(self) -> Iterator[Device]:
         return self._devices.__iter__()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._devices)
 
     def append(self, device: Device):
         """添加设备
 
-        :param device: 设备"""
+        Args:
+            device: 设备
+        """
         self._devices.append(device)
 
     def parse(self, base_info_handler: EachVendorDeviceInfo):
@@ -120,15 +165,24 @@ class DeviceList(list):
     def search(self, device_name: str) -> List[Device]:
         """查找设备
 
-        :param device_name: 设备信息
-        :return: 设备列表"""
-        return [device for device in self._devices if device_name in device._device_info.name]
+        Args:
+            device_name: 设备名
+
+        Returns:
+            List[Device]: 设备列表
+        """
+        return [
+            device
+            for device in self._devices
+            if device_name in device._device_info.name
+        ]
 
 
 @dataclass
 class DeviceInfo:
     """用于InputPlugin中获取到的设备信息"""
-    name: str
+
+    name: str = ''  # 设备名
     ip: str = ''  # manager_ip
     file_path: str = ''  # 文件路径
 
@@ -164,8 +218,12 @@ class Device:
     def parse_result(self, cmd: str) -> List[dict] | None:
         """解析命令结果
 
-        :param cmd: 命令
-        :return: 命令结果"""
+        Args:
+            cmd: 命令
+
+        Returns:
+            List[dict] | None: 解析结果
+        """
         command = self.search_cmd(cmd)
         if not command:
             return None
@@ -198,19 +256,18 @@ class Device:
             try:
                 # 首先判断是否为无效命令
                 if not cmd.is_vaild(self._vendor.INVALID_STR):
-                    if pyoption.verbose_level > 3:
-                        raise exception.TemplateError(
-                            f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} content is invaild or blank')
-                    continue
-                parse_result = self._plugin_manager.parse(
-                    cmd, self.vendor.PLATFORM)
+                    raise exception.TemplateError(
+                        f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} 无效命令回显.'
+                    )
+
+                parse_result = self._plugin_manager.parse(cmd, self.vendor.PLATFORM)
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
-                print_log(
-                    f"{pystr.parse_waning_prefix} device:{self._device_info.name!r} {str(e)}",
-                    verbose=1)
-                continue
-            except exception.Continue:
+                logger.debug(
+                    f'{pystr.parse_plugin_prefix} device:{self._device_info.name!r} {str(e)}'
+                )
+
+            finally:
                 continue
 
     def analysis(self):
@@ -271,7 +328,11 @@ class Cmd:
     在解析完成后删除命令的内容,并存放应有的解析内容"""
 
     def __init__(self, cmd: str, content: str = ''):
-        """ :params: cmd: 命令的完整名称"""
+        """
+        Args:
+            cmd: 命令
+            content: 命令回显内容
+        """
         self._command: str = ''
         self._content: str = ''
         self._parse_result: List[Dict[str, str]] = []
@@ -329,11 +390,13 @@ class Cmd:
 class PluginManagerAbc(abc.ABC):
     """对插件的管理的抽象接口, 管理output和parse"""
 
-    def __init__(self,
-                 input_plugin: Optional[Type[InputPluginAbstract]] = None,
-                 output_plugin: Optional[Type[OutputPluginAbstract]] = None,
-                 parse_plugin: Optional[Type[ParsePluginAbstract]] = None,
-                 analysis_plugin: List[Type[AnalysisPluginAbstract]] = []):
+    def __init__(
+        self,
+        input_plugin: Optional[Type[InputPluginAbstract]] = None,
+        output_plugin: Optional[Type[OutputPluginAbstract]] = None,
+        parse_plugin: Optional[Type[ParsePluginAbstract]] = None,
+        analysis_plugin: List[Type[AnalysisPluginAbstract]] = [],
+    ):
         self._input_plugin: Optional[InputPluginAbstract] = None
         self._output_plugin: Optional[OutputPluginAbstract] = None
         self._parse_plugin: Optional[ParsePluginAbstract] = None
@@ -359,10 +422,11 @@ class PluginManagerAbc(abc.ABC):
                     plugin_cls = plugin_cls.__class__
                 # 如果不是指定的类型
                 if not issubclass(plugin_cls, globals()[check_type]):
-                    raise TypeError(
-                        f'{plugin_cls.__name__} is not {check_type}')
+                    raise TypeError(f'{plugin_cls.__name__} is not {check_type}')
                 return func(self, plugin_cls)
+
             return inner
+
         return wrapper
 
     def check_cls_list(check_type: str):
@@ -378,11 +442,12 @@ class PluginManagerAbc(abc.ABC):
                         plugin_cls = plugin_cls.__class__
                     # 如果不是指定的类型
                     if not issubclass(plugin_cls, globals()[check_type]):
-                        raise TypeError(
-                            f'{plugin_cls.__name__} is not {check_type}')
+                        raise TypeError(f'{plugin_cls.__name__} is not {check_type}')
                     cls_list.append(plugin_cls)
                 return func(self, cls_list)
+
             return inner
+
         return wrapper
 
     @property
@@ -419,50 +484,104 @@ class PluginManagerAbc(abc.ABC):
     @analysis_plugin.setter
     @check_cls_list("AnalysisPluginAbstract")
     def analysis_plugin(self, plugin_cls_list: List[Type[AnalysisPluginAbstract]]):
-        self._analysis_plugin = [plugin_cls()
-                                 for plugin_cls in plugin_cls_list]
+        self._analysis_plugin = [plugin_cls() for plugin_cls in plugin_cls_list]
 
     def parse(self, cmd: Cmd, platform: str) -> Dict[str, str]:
         """对单个命令的内容进行解析"""
         if self._parse_plugin is None:
-            raise exception.NotPluginError('parse plugin is None')
+            raise exception.PluginNotSpecify('parse plugin is None')
         return self._parse_plugin.run(cmd, platform)
 
     def analysis(self, device: Device) -> AnalysisResult:
         """对设备进行分析, 返回分析结果列表"""
         res = AnalysisResult()
         if not self._analysis_plugin:
-            raise exception.NotPluginError('analysis plugin list is empty')
+            raise exception.PluginNotSpecify('analysis plugin list is empty')
         for plugin in self._analysis_plugin:
             res.merge(plugin.run(device))
 
         return res
 
-    def input(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def input(self, file_path: str) -> InputPluginResult:
         """对单个文件进行设备输入"""
         if self._input_plugin is None:
-            raise exception.NotPluginError('input plugin is None')
+            raise exception.PluginNotSpecify('input plugin is None')
         return self._input_plugin.run(file_path)
 
     def output(self, devices: DeviceList, file_path: str):
         """对设备列表进行输出"""
         if self._output_plugin is None:
-            raise exception.NotPluginError('output plugin is None')
+            raise exception.PluginNotSpecify('output plugin is None')
         self._output_plugin.run(devices, file_path)
 
     @abc.abstractmethod
-    def input_dir(self, dir_path: str, expend: str | List = None) -> List[Tuple[Dict[str, str], DeviceInfo]]:
+    def input_dir(
+        self, dir_path: str, expend: str | List = None
+    ) -> List[InputPluginResult]:
         """对目录中的文件进行设备输入"""
         raise NotImplementedError
 
 
+class InputPluginResult:
+    """输入插件的结果"""
+
+    def __init__(self):
+        self._device_info: DeviceInfo = DeviceInfo()
+        self._cmd_dict: Dict[str, str] = {}
+
+    @property
+    def hostname(self):
+        return self._device_info.name
+
+    @hostname.setter
+    def hostname(self, value: str):
+        self._device_info.name = value
+
+    @property
+    def ip(self):
+        return self._device_info.ip
+
+    @ip.setter
+    def ip(self, value: str):
+        self._device_info.ip = value
+
+    def add_cmd(self, cmd: str, content: str):
+        """添加命令和对应的回显，所有命令将转为小写,
+        如果命令已经存在，则取长的, 如果长度相等，取最新的。
+
+        Args:
+            cmd: 待添加的命令
+            content: 命令对应的回显
+        """
+        cmd = cmd.strip().lower()
+        if cmd in self._cmd_dict and len(self._cmd_dict[cmd]) > len(content):
+            return
+        self._cmd_dict[cmd] = content
+
+    @property
+    def cmd_dict(self) -> Dict[str, str]:
+        return self._cmd_dict
+
+    @cmd_dict.setter
+    def cmd_dict(self, cmd_dict: Dict[str, str]):
+        """直接添加命令字典"""
+        for cmd, content in cmd_dict.items():
+            self.add_cmd(cmd, content)
+
+
 class AlarmLevel:
     """告警级别"""
+
     NORMAL = 0
     FOCUS = 1
     WARNING = 2
 
-    def __init__(self, level: int, message: str = '', plugin_cls: Type[AnalysisPluginAbstract] = None):
+    def __init__(
+        self,
+        level: int,
+        message: str = '',
+        plugin_cls: Type[AnalysisPluginAbstract] = None,
+    ):
         self._level = level
         self.message = message
         self.plugin_cls = plugin_cls
@@ -614,31 +733,38 @@ class PluginAbstract(abc.ABC):
 
 
 class InputPluginAbstract(PluginAbstract):
-    def run(self, file_path: str) -> Tuple[Dict[str, str], DeviceInfo]:
-        """对单个文件进行设备输入"""
+    def run(self, file_path: str) -> InputPluginResult:
+        """对单个文件进行设备输入
+
+        Args:
+            file_path: 文件路径
+
+        Returens:
+            InputPluginResult: 输入插件的返回结果
+        """
 
         with open(file_path, 'r', encoding='utf_8_sig', errors='ignore') as f:
             stream = f.read()
-        cmd_dict, device_info = self.main(file_path, stream)
-        cmd_dict = self._lower_keys(cmd_dict)  # 将所有的key转换为小写
-        device_info.file_path = file_path
-        return cmd_dict, device_info
+        result = self.main(file_path, stream)
+        result._device_info.file_path = file_path
+        return result
 
     @abc.abstractmethod
-    def main(self, file_path: str, stream: str) -> Tuple[Dict[str, str], DeviceInfo]:
+    def main(self, file_path: str, stream: str) -> InputPluginResult:
         """输入插件的具体实现
-        :params: file_path: 文件的路径
-        :params: stream: 文件的内容"""
+
+        Args:
+            file_path: 文件路径
+            stream: 文件内容
+
+        Returns:
+            InputPluginResult: 输入插件的返回结果
+        """
 
         raise NotImplementedError
 
-    def _lower_keys(self, data: Dict[str, str]) -> Dict[str, str]:
-        """将字典的key转为小写"""
-        return {k.lower(): v for k, v in data.items()}
-
 
 class OutputPluginAbstract(PluginAbstract):
-
     @dataclass
     class OutputArgs:
 
@@ -646,14 +772,23 @@ class OutputPluginAbstract(PluginAbstract):
         file_path: str  # 输出文件的路径
         output_params: Dict[str, str]  # 输出文件的参数
 
-    def run(self, devices: DeviceList[Device], path: str, output_params: Optional[Dict[str, str]]):
+    def run(
+        self,
+        devices: DeviceList[Device],
+        path: str,
+        output_params: Optional[Dict[str, str]],
+    ):
         """对设备列表进行输出
-        :params: devices: 设备列表
-        :params: path: 输出文件的路径
-        :params: output_params: 传递输出文件的参数"""
+
+        Args:
+            devices: 设备列表
+            path: 输出文件的路径
+            output_params: 输出文件的参数
+        """
 
         self.args = self.OutputArgs(
-            devices=devices, file_path=path, output_params=output_params)
+            devices=devices, file_path=path, output_params=output_params
+        )
         return self.main()
 
     @abc.abstractmethod
@@ -675,7 +810,6 @@ class ParsePluginAbstract(PluginAbstract):
 
 
 class AnalysisPluginAbstract(PluginAbstract):
-
     @abc.abstractmethod
     def run(self, device: Device) -> AnalysisResult:
         raise NotImplementedError

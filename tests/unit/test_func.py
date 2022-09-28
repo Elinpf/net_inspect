@@ -10,7 +10,8 @@ def test_reg_extend():
 def test_get_command_from_textfsm():
     """从模板文件名中获得命令"""
     cmd = func.get_command_from_textfsm(
-        'huawei_os', 'huawei_os_display_interface_status.textfsm')
+        'huawei_os', 'huawei_os_display_interface_status.textfsm'
+    )
     assert cmd == 'display interface status'
 
 
@@ -54,3 +55,28 @@ def test_match_lower():
     string = 'Normal'
     assert False == func.match_lower(string, 'Normal')
     assert True == func.match_lower(string, 'normal')
+
+
+def test_safe_float2str():
+    test_list = [
+        (0.0, '0.0'),
+        (1, '1.0'),
+        (1.0, '1.0'),
+        (3.9999992, '4.0'),
+    ]
+
+    for test in test_list:
+        assert func.safe_float2str(test[0]) == test[1]
+
+
+def test_safe_str2float():
+    test_list = [
+        ('0.0', 0.0),
+        ('1', 1.0),
+        ('1.0', 1.0),
+        ('3.9999992', 3.9999992),
+        ('err', 0.0),
+    ]
+
+    for test in test_list:
+        assert func.safe_str2float(test[0]) == test[1]

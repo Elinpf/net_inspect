@@ -1,9 +1,11 @@
 import re
 
 from net_inspect.plugins.input_plugin_with_console import (
-    InputPluginWithConsole, simialr_huawei_reg, similar_cisco_reg)
-from net_inspect.plugins.input_plugin_with_smartone import \
-    InputPluginWithSmartOne
+    InputPluginWithConsole,
+    simialr_huawei_reg,
+    similar_cisco_reg,
+)
+from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
 
 
 def test_input_plugin_with_console_simalr_huawei_reg():
@@ -11,7 +13,7 @@ def test_input_plugin_with_console_simalr_huawei_reg():
     test_list = [
         ('<device>display version', 'device'),
         ('[device] dis version', 'device'),
-        ('<GZ-24F-SN1-248.16>display version', 'GZ-24F-SN1-248.16')
+        ('<GZ-24F-SN1-248.16>display version', 'GZ-24F-SN1-248.16'),
     ]
 
     for (line, refer_hostname) in test_list:
@@ -56,9 +58,7 @@ MPU version information :
 5. BootROM  Version  : 1
 """
     res = input_plugin.main('', stream)
-    cmd_dict, _ = res
-    lower_cmd_dict = input_plugin._lower_keys(cmd_dict)
-    assert lower_cmd_dict.get('dis version')
+    assert res.cmd_dict.get('dis version')
 
 
 def test_console_plugin_with_prompt():
@@ -76,8 +76,7 @@ Huawei AR2204-51GE-P Router uptime is 104 weeks, 4 days, 21 hours, 46 minutes
 Error: Unrecognized command found at '^' position.
 """
     res = input_plugin.main('', stream)
-    cmd_dict, _ = res
-    assert not re.search(r'Error:', cmd_dict.get('display version'))
+    assert not re.search(r'Error:', res.cmd_dict.get('display version'))
 
 
 def test_console_plugin_with_file(shared_datadir):
@@ -85,12 +84,11 @@ def test_console_plugin_with_file(shared_datadir):
 
     input_plugin = InputPluginWithConsole()
     res = input_plugin.run(shared_datadir / 'console_input.log')
-    cmd_dict, _ = res
     # 文件中的是 DIS version , 要求改为小写
-    assert cmd_dict.get('dis version')
+    assert res.cmd_dict.get('dis version')
 
     # 文件中有两个dis cpu-usage, 其中一个被截断了，只保留最长的那个
-    assert len(cmd_dict.get('dis cpu-usage').split("\n")) > 20
+    assert len(res.cmd_dict.get('dis cpu-usage').split("\n")) > 20
 
 
 def test_smartone_plugin_state_1(shared_datadir):
@@ -98,9 +96,10 @@ def test_smartone_plugin_state_1(shared_datadir):
 
     input_plugin = InputPluginWithSmartOne()
     result = input_plugin.run(
-        shared_datadir / 'B_FOO_BAR_DS02_21.2.3.4_20220221170516.diag')
-    cmd_dict = result[0]
-    device_info = result[1]
+        shared_datadir / 'B_FOO_BAR_DS02_21.2.3.4_20220221170516.diag'
+    )
+    cmd_dict = result.cmd_dict
+    device_info = result._device_info
     assert device_info.name == 'B_FOO_BAR_DS02'
     assert device_info.ip == '21.2.3.4'
     assert len(cmd_dict) == 13
@@ -111,10 +110,9 @@ def test_smartone_plugin_state_2(shared_datadir):
     """测试 smartone plugin 情况二"""
 
     input_plugin = InputPluginWithSmartOne()
-    result = input_plugin.run(
-        shared_datadir / 'B_FOO_BAR_AR01_21.1.1.1.diag')
-    cmd_dict = result[0]
-    device_info = result[1]
+    result = input_plugin.run(shared_datadir / 'B_FOO_BAR_AR01_21.1.1.1.diag')
+    cmd_dict = result.cmd_dict
+    device_info = result._device_info
     assert device_info.name == 'B_FOO_BAR_AR01'
     assert device_info.ip == '21.1.1.1'
     assert len(cmd_dict) == 16

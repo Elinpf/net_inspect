@@ -1,17 +1,20 @@
 import re
 import sys
 
-from .data import pyoption
-from .logger import log
-
 
 def reg_extend(reg: str) -> str:
     """扩展正则表达式写法，支持简单的逐字匹配
-    e.g
-    r'sh[[ow]] ver[[sion]]'
-    将变成
+
+    Args:
+        reg: 扩展的正则表达式
+
+    Returns:
+        str: 还原成可识别的正则表达式
+
+    >>> reg_extend(r'sh[[ow]] ver[[sion]]')
     'sh(o(w)?)? ver(s(i(o(n)?)?)?)?'
     """
+
     def _completion(match):
         word = str(match.group())[2:-2]
         return '(' + ('(').join(word) + ')?' * len(word)
@@ -21,10 +24,13 @@ def reg_extend(reg: str) -> str:
 
 def get_command_from_textfsm(vendor_platform: str, template: str) -> str:
     """从模板文件名中获得命令
-    :param vendor_platform: 平台名称
-    :param template: 模板文件名
 
-    :return: 命令
+    Args:
+        vendor_platform: 平台名称
+        template: 模板文件名
+
+    Returns:
+        str: 命令
 
     >>> self.get_command('huawei_os', 'huawei_os_display_interface_status.textfsm')
     'display interface status'
@@ -62,7 +68,7 @@ def clamp_number(num: int, min_num: int, max_num: int) -> int:
     Args:
         num: 数字
         min_num: 最小值
-        max_num: 最大值 
+        max_num: 最大值
 
     Returns:
         int: 限制后的数字
@@ -80,23 +86,17 @@ def match_lower(string: str, pattern: str) -> bool:
     return bool(re.match(pattern, string.lower()))
 
 
-def print_log(string: str, verbose: int = 0) -> None:
-    """
-    根据级别打印日志
+def safe_float2str(num: float) -> str:
+    """安全的将浮点数转换为字符串"""
+    return '{:.1f}'.format(num)
 
-    Args:
-        string: 日志内容
-        verbose: 日志级别
 
-    `verbose`级别可以通过`verbose()`方法设置，总共0~3
-    - 0: 日志关闭
-    - 1: 提供Output模块的日志和Parse模块的日志
-    - 2: 追加提供Analysis模块的日志
-    - 3: 追加提供Parse模块不支持命令的信息日志和命令为无效的信息
-    """
-    verbose = clamp_number(verbose, 1, 3)
-    if pyoption.verbose_level >= verbose:
-        log.debug(string)
+def safe_str2float(string: str) -> float:
+    """安全的将字符串转换为浮点数"""
+    try:
+        return float(string)
+    except ValueError:
+        return 0.0
 
 
 class SkipWithBlock(Exception):
@@ -105,6 +105,7 @@ class SkipWithBlock(Exception):
 
 class Singleton(object):
     """单例类继承"""
+
     _instance = None
 
     def __new__(class_, *args, **kwargs):

@@ -19,13 +19,14 @@ def _textfsm_reslut_to_dict(header: list, reslut: list) -> List[Dict[str, str]]:
 
 
 class PluginManager(PluginManagerAbc):
-
-    def input_dir(self, dir_path: str, expend: str | List = None) -> List[Tuple[Dict[str, str], DeviceInfo]]:
+    def input_dir(
+        self, dir_path: str, expend: str | List = None
+    ) -> List[Tuple[Dict[str, str], DeviceInfo]]:
         """对目录中的文件进行设备输入"""
         devices = []
 
         if expend is None:
-            expend = pyoption.log_file_expend
+            expend = pyoption.input_file_expend
         elif expend is str:
             expend = [expend]
 

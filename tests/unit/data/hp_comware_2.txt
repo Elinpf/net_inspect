@@ -1,0 +1,201 @@
+﻿<H3C_AA>screen-length disable
+% Screen-length configuration is disabled for current user.
+<H3C_AA> dis version
+H3C Comware Platform Software
+Comware Software, Version 5.20, Release 2511, Standard
+Copyright (c) 2004-2013 Hangzhou H3C Tech. Co., Ltd. All rights reserved.
+H3C MSR30-40 uptime is 367 weeks, 5 days, 5 hours, 18 minutes
+Last reboot 2014/01/19 01:36:38
+System returned to ROM By Power-up.
+
+CPU type: FREESCALE MPC8349 533MHz
+512M bytes DDR SDRAM Memory
+4M bytes Flash Memory
+Pcb               Version:  4.0
+Logic             Version:  3.0
+Basic    BootROM  Version:  4.00
+Extended BootROM  Version:  4.00
+[SLOT  0]CON                       (Hardware)4.0    (Driver)1.0,   (Cpld)3.0
+[SLOT  0]AUX                       (Hardware)4.0    (Driver)1.0,   (Cpld)3.0
+[SLOT  0]GE0/0                     (Hardware)4.0    (Driver)1.0,   (Cpld)3.0
+[SLOT  0]GE0/1                     (Hardware)4.0    (Driver)1.0,   (Cpld)3.0
+[SLOT  0]CELLULAR0/0               (Hardware)4.0    (Driver)1.0,   (Cpld)3.0
+[SLOT  5]MIM-8E1(75)               (Hardware)3.0    (Driver)1.0,   (Cpld)1.0
+[SLOT  6]MIM-4FE                   (Hardware)4.0    (Driver)1.0,   (Cpld)0.0
+
+<H3C_AA> dir
+Directory of cfa0:/
+
+   0     -rw-  18324480  Oct 16 2012 15:23:10   main.bin
+   1     drw-         -  Nov 04 2013 03:21:18   logfile
+   2     -rw-     16256  Nov 04 2013 03:21:44   p2p_default.mtd
+   3     -rw-    198141  Jan 21 2014 15:18:54   default.diag
+   4     -rw-  27416576  Dec 27 2013 15:13:52   msr30-cmw520-r2511-si.bin
+   5     -rw-     15086  Jan 04 2021 04:11:56   startup.cfg
+   6     -rw-      4425  Jan 04 2021 04:11:52   system.xml
+
+252164 KB total (197010 KB free)
+
+File system type of cfa0: FAT32
+
+<H3C_AA> dis device manuinfo
+slot 0
+DEVICE_NAME          : 30-40
+DEVICE_SERIAL_NUMBER : 210235A19EB13A000042
+MAC_ADDRESS          : 5cdd-704a-ff76
+MANUFACTURING_DATE   : 2013-11-04
+VENDOR_NAME          : H3C
+slot 5
+The card does not support manufacture information.
+slot 6
+The card does not support manufacture information.
+
+
+<H3C_AA>  dis fan
+ Fan   1 State: Normal
+<H3C_AA>  dis power
+ Power   0 State: Normal
+<H3C_AA>  dis cpu
+Unit CPU usage:
+       6% in last 5 seconds
+       4% in last 1 minute
+       5% in last 5 minutes
+
+<H3C_AA>   dis memory
+Memory statistics are measured in KB:
+Slot 0: 
+             Total      Used      Free    Shared   Buffers    Cached   FreeRatio
+Mem:       1028192    611416    416776         0      1752    227956       46.0%
+-/+ Buffers/Cache:    381708    646484
+Swap:           0         0         0
+<H3C_AA>  dis  clock
+06:54:45 UTC Fri 02/05/2021
+<H3C_AA> dis ntp status
+ Clock status: synchronized
+ Clock stratum: 4
+ Reference clock ID: 11.77.0.1
+ Nominal frequency: 100.0000 Hz
+ Actual frequency: 100.0000 Hz
+ Clock precision: 2^18
+ Clock offset: 0.4372 ms
+ Root delay: 26.61 ms
+ Root dispersion: 163.84 ms
+ Peer dispersion: 128.92 ms
+ Reference time: 06:44:38.771 UTC Feb 5 2021(E3C767D6.C56E3715)
+<H3C_AA> dis ip int brief
+*down: administratively down
+(s): spoofing  (l): loopback
+Interface          Physical Protocol IP Address      Description
+Aux0               down     down     --              --
+Cellular0/0        down     down     --              --
+Eth6/0             up       up       --              **** To Liantong MSTP ****
+Eth6/0.321         up       up       11.77.253.1     **** To xxxxxxx30-01->E2...
+Eth6/0.322         up       up       11.77.253.13    **** To xxxxxxx30-01->G2...
+Eth6/0.323         up       up       11.77.253.21    **** To xxxxxxx30-01->G2...
+Eth6/0.324         up       up       11.77.253.25    **** To xxxxxxx30-01->G2...
+Eth6/1             up       up       --              **** To xxxxxxxMSTP ****
+Eth6/1.421         up       up       11.77.253.5     **** To xxxxxxx30-01->E2...
+Eth6/2             up       up       11.77.253.9     **** To xxxxxxx-HR3640-C...
+Eth6/3             up       up       --              **** To xxxxxxx MSTP ****
+Eth6/3.541         up       up       11.77.253.17    **** To xxxxxxx-HR3640-C...
+GE0/0              up       up       11.77.62.194    **** to xxxxxxxS3560X-C0...
+GE0/1              up       up       11.77.63.194    **** to xxxxxxxS3560X-C0...
+Loop0              up       up(s)    11.77.0.3       --
+
+
+<H3C_AA> dis dev manu
+ Chassis 1
+Chassis self
+ DEVICE_NAME          : LS-12511-X-AC
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : AAAA-AAAA-355F
+ MANUFACTURING_DATE   : 2014-06-13
+ VENDOR_NAME          : H3C
+
+ Slot 0
+ DEVICE_NAME          : LSXM1TGS24EB1
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : AAAA-AAAA-D46C
+ MANUFACTURING_DATE   : 2014-05-03
+ VENDOR_NAME          : H3C
+
+ Slot 2
+ DEVICE_NAME          : LSXM1TGS24EB1
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : AAAA-AAAA-D4FC
+ MANUFACTURING_DATE   : 2014-05-03
+ VENDOR_NAME          : H3C
+
+Fan 1
+ DEVICE_NAME          : LSXM110FAN
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : NONE
+ MANUFACTURING_DATE   : 2014-06-14
+ VENDOR_NAME          : H3C
+
+Fan 2
+ DEVICE_NAME          : LSXM110FAN
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : NONE
+ MANUFACTURING_DATE   : 2014-06-14
+ VENDOR_NAME          : H3C
+
+Power 1
+ DEVICE_NAME          : LSTM2PSRA
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MANUFACTURING_DATE   : 2014-06-10
+ VENDOR_NAME          : H3C
+
+Power 2
+ DEVICE_NAME          : LSTM2PSRA
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MANUFACTURING_DATE   : 2014-05-23
+ VENDOR_NAME          : H3C
+
+ Chassis 2
+Chassis self
+ DEVICE_NAME          : LS-12511-X-AC
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : AAAA-AAAA-355F
+ MANUFACTURING_DATE   : 2014-06-13
+ VENDOR_NAME          : H3C
+
+ Slot 0
+ DEVICE_NAME          : LSXM1TGS24EB1
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : AAAA-AAAA-D46C
+ MANUFACTURING_DATE   : 2014-05-03
+ VENDOR_NAME          : H3C
+
+ Slot 2
+ DEVICE_NAME          : LSXM1TGS24EB1
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : AAAA-AAAA-D4FC
+ MANUFACTURING_DATE   : 2014-05-03
+ VENDOR_NAME          : H3C
+
+Fan 1
+ DEVICE_NAME          : LSXM110FAN
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : NONE
+ MANUFACTURING_DATE   : 2014-06-14
+ VENDOR_NAME          : H3C
+
+Fan 2
+ DEVICE_NAME          : LSXM110FAN
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MAC_ADDRESS          : NONE
+ MANUFACTURING_DATE   : 2014-06-14
+ VENDOR_NAME          : H3C
+
+Power 1
+ DEVICE_NAME          : LSTM2PSRA
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MANUFACTURING_DATE   : 2014-06-10
+ VENDOR_NAME          : H3C
+
+Power 2
+ DEVICE_NAME          : LSTM2PSRA
+ DEVICE_SERIAL_NUMBER : 11111111111111110000
+ MANUFACTURING_DATE   : 2014-05-23
+ VENDOR_NAME          : H3C

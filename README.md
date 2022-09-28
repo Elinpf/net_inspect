@@ -1,12 +1,18 @@
+[![PyPI](https://img.shields.io/pypi/v/net_inspect?color=orange)](https://pypi.org/project/net-inspect)
+[![Python version](https://img.shields.io/badge/python-3.7%2B-blue)](https://github.com/Elinpf/net_inspect)
+[![GitHub stars](https://img.shields.io/github/stars/Elinpf/net_inspect)](https://github.com/Elinpf/net_inspect/stargazers)
+[![GitHub license](https://img.shields.io/github/license/Elinpf/net_inspect)](https://github.com/Elinpf/net_inspect/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/Elinpf/net_inspect/branch/master/graph/badge.svg?token=SVPWMH4XHY)](https://codecov.io/gh/Elinpf/net_inspect)
+
 ## 前言
 
 作为网络工程师，需要经常收集设备的设备信息，比如设备CPU利用率、内存利用率、软件版本、序列号、接口状态等，这些信息可以用来监控网络设备的运行状态，也可以用来做设备的资产管理。
 
 在已经收集完成的情况下，我们需要将关键信息提取出来，然后将可用数据按需求格式输出。市面上目前没有针对多厂商的网络设备数据解析工具，厂家只会制作针对自己设备的解析工具。造成使用割裂，并且输出样式也无法做到自定义。
 
-另外，网络工程师学习编程后大部分都是单兵作战，针对自己的使用场景，进行专本的脚本编写，这就导致了脚本的可复用性很差，如果需要在其他场景下使用，就需要重新编写脚本，这样会造成很大的工作量。
+另外，网络工程师学习编程后大部分都是单兵作战，针对自己的使用场景，进行专门的脚本编写，这就导致了脚本的可复用性很差，如果需要在其他场景下使用，就需要重新编写脚本，这样会造成很大的工作量。
 
-之前通常情况下，都会通过`vty` 或者 `console` 连接到设备上，然后通过`show`或者`display`命令获取设备的状态信息，然后通过`textFSM`或者正则表达式解析数据，最后将可用得数据按需求格式进行输出。
+之前通常情况下，都会通过`vty` 或者 `console` 连接到设备上，然后通过`show`或者`display`命令获取设备的状态信息，然后通过`textFSM`或者正则表达式解析数据，最后将可用的数据按需求格式进行输出。
 
 但是，这样的操作方式有很多不便，比如：
 
@@ -21,7 +27,9 @@
 9. 如何在调用`ntc-templates`的同时调用自己写的`textFSM`模板库？
 10. 设计的脚本只针对单一情况，如何解决复用性的问题？
 
-要解决以上问题，就需要用到`net_inspect`这个框架，它可以帮助我们解决以上问题。
+要解决以上问题，就需要用到`net_inspect`这个框架。
+
+它可以让使用者无需关心数据处理的各种细节以及各个厂家的差异。屏蔽了厂商差异，只需要在数据处理完成后通过统一的方式调用即可。
 
 ## net_inspect框架介绍
 
@@ -147,7 +155,7 @@ from net_inspect import NetInspect, vendor
 net = NetInspect()
 net.set_plugins(input_plugin='console')
 net.set_external_templates('local_templates')  # 调用本地模板库
-net.run(path='log')
+net.run(input_path='log')
 
 print('total devices:', len(net.cluster.devices))
 
@@ -219,7 +227,7 @@ if __name__ == '__main__':
     net.set_plugins(input_plugin='console')
     net.set_base_info_handler(EachVendorWithClock)  # 设置获取设备基本信息的处理类
     net.set_external_templates('local_templates')
-    net.run(path='log')
+    net.run(input_path='log')
 
     print('total devices:', len(net.cluster.devices))
 
@@ -274,7 +282,7 @@ class AnalysisPluginWithOSPFStatus(AnalysisPluginAbc):
 if __name__ == '__main__':
     net = NetInspect()
     net.set_plugins(input_plugin='console')
-    net.run(path='log')
+    net.run(input_path='log')
 
     print('total devices:', len(net.cluster.devices))
 
@@ -348,7 +356,7 @@ if __name__ == '__main__':
 
     net = NetInspect()
     net.set_plugins(input_plugin='console', output_plugin=Output)
-    cluster = net.run('log', output_plugin_params={
+    cluster = net.run(input_path='log', output_plugin_params={
                     'title': '设备信息'})
 ```
 

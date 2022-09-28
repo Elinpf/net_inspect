@@ -18,7 +18,9 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
     """
 
     @analysis.vendor(vendor.Huawei)
-    @analysis.template_key('huawei_vrp_display_power.textfsm', ['mode', 'id', 'present', 'state'])
+    @analysis.template_key(
+        'huawei_vrp_display_power.textfsm', ['mode', 'id', 'present', 'state']
+    )
     def huawei_vrp(template: TemplateInfo, result: AnalysisResult):
         """模块状态在线，并且状态不为Normal或者Supply时告警"""
         power = template['display power']
@@ -27,31 +29,35 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
             if not match_lower(row['present'], r'yes|present'):
                 result.add_focus(f"Power {row['id']} 电源不在位")
             elif not match_lower(row['state'], r'normal|supply'):
-                result.add_warning(
-                    f'Power {row["id"]} 电源状态异常')
+                result.add_warning(f'Power {row["id"]} 电源状态异常')
 
     @analysis.vendor(vendor.Cisco)
-    @analysis.template_key('cisco_ios_show_power_status.textfsm', ['ps', 'model', 'status', 'fan_sensor'])
+    @analysis.template_key(
+        'cisco_ios_show_power_status.textfsm', ['ps', 'model', 'status', 'fan_sensor']
+    )
     def cisco_ios(template: TemplateInfo, result: AnalysisResult):
         """模块状态不为good时，报警"""
         for row in template['show power status']:
             if row['status'] != 'good':
-                result.add_warning(
-                    f'{row["ps"]}: {row["model"]} 电源状态异常')
+                result.add_warning(f'{row["ps"]}: {row["model"]} 电源状态异常')
 
     @analysis.vendor(vendor.Ruijie)
-    @analysis.template_key('ruijie_os_show_power.textfsm', ['power_id', 'power_type', 'status'])
+    @analysis.template_key(
+        'ruijie_os_show_power.textfsm', ['power_id', 'power_type', 'status']
+    )
     def ruijie_os(template: TemplateInfo, result: AnalysisResult):
         """模块状态不为ok时，报警"""
         for row in template['show power']:
             if row['power_type'] == 'N/A':
                 continue
             if row['status'] != 'ok':
-                result.add_warning(
-                    f'Power {row["power_id"]} 电源状态异常')
+                result.add_warning(f'Power {row["power_id"]} 电源状态异常')
 
     @analysis.vendor(vendor.Maipu)
-    @analysis.template_key('maipu_mypower_show_system_power.textfsm', ['power_id', 'status', 'work_status', 'power_in'])
+    @analysis.template_key(
+        'maipu_mypower_show_system_power.textfsm',
+        ['power_id', 'status', 'work_status', 'power_in'],
+    )
     def maipu_mypower(template: TemplateInfo, result: AnalysisResult):
         """
         迈普的show system power 分为两种:
@@ -60,13 +66,14 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
         """
         for row in template['show system power']:
             if row['status'].lower() == 'online':
-                if row['work_status'].lower() != 'normal' or row['power_in'].lower() != 'normal':
-                    result.add_warning(
-                        f'Power {row["power_id"]} 状态异常')
+                if (
+                    row['work_status'].lower() != 'normal'
+                    or row['power_in'].lower() != 'normal'
+                ):
+                    result.add_warning(f'Power {row["power_id"]} 状态异常')
             else:
                 if row['status'].lower() != 'normal':
-                    result.add_warning(
-                        f'Power {row["power_id"]} 状态异常')
+                    result.add_warning(f'Power {row["power_id"]} 状态异常')
 
     @analysis.vendor(vendor.H3C)
     @analysis.template_key('hp_comware_display_power.textfsm', ['slot', 'id', 'status'])
@@ -75,4 +82,7 @@ class AnalysisPluginWithPowerStatus(AnalysisPluginAbc):
         for row in template['display power']:
             if row['status'].lower() != 'normal':
                 result.add_warning(
-                    f'Slot {row["slot"]} Power {row["id"]} 状态异常' if row['slot'] else f'{row["id"]} 状态异常')
+                    f'Slot {row["slot"]} Power {row["id"]} 状态异常'
+                    if row['slot']
+                    else f'{row["id"]} 状态异常'
+                )
