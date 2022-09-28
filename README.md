@@ -1,3 +1,7 @@
+[![Python version](https://img.shields.io/badge/python-3.7%2B-orange)](https://github.com/Elinpf/net_inspect)
+[![GitHub stars](https://img.shields.io/github/stars/Elinpf/net_inspect)](https://github.com/Elinpf/net_inspect/stargazers)
+[![GitHub license](https://img.shields.io/github/license/Elinpf/net_inspect)](https://github.com/Elinpf/net_inspect/blob/master/LICENSE)
+
 ## 前言
 
 作为网络工程师，需要经常收集设备的设备信息，比如设备CPU利用率、内存利用率、软件版本、序列号、接口状态等，这些信息可以用来监控网络设备的运行状态，也可以用来做设备的资产管理。
