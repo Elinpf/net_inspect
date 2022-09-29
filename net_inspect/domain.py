@@ -795,6 +795,19 @@ class OutputPluginAbstract(PluginAbstract):
     def main(self):
         raise NotImplementedError
 
+    def check_args(self, *args: str):
+        """检查必须要提供的参数都已经存在, 否则抛出异常
+
+        Args:
+            *args: 期望需要的参数
+
+        Raises:
+            exception.OutputPluginArgsError: 参数不足
+        """
+        for arg in args:
+            if arg not in self.args.output_params:
+                raise exception.OutputParamsNotGiven(self.__class__.__name__, arg)
+
 
 class ParsePluginAbstract(PluginAbstract):
     def run(self, cmd: Cmd, platform: str) -> Dict[str, str]:
