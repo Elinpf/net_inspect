@@ -275,9 +275,6 @@ class Device:
                     f'{pystr.parse_plugin_prefix} device:{self._device_info.name!r} {str(e)}'
                 )
 
-            finally:
-                continue
-
     def analysis(self):
         """对设备进行分析, 需要在parse之后"""
         res = self._plugin_manager.analysis(self)
