@@ -88,6 +88,7 @@ class Cluster:
             return
 
         device_cls = Device()
+        device_cls.vendor = input_plugin_result.vendor
         device_cls._plugin_manager = self.plugin_manager
         device_cls.save_to_cmds(input_plugin_result.cmd_dict)  # 保存命令信息
         device_cls._device_info = input_plugin_result._device_info  # 保存设备简单信息
@@ -249,6 +250,13 @@ class Device:
     def vendor(self) -> Type[DefaultVendor]:
         """返回厂商类"""
         return self._vendor
+
+    @vendor.setter
+    def vendor(self, vendor: Type[DefaultVendor]):
+        """设置厂商类"""
+        if not issubclass(vendor, DefaultVendor):
+            raise TypeError('vendor must be subclass of DefaultVendor')
+        self._vendor = vendor
 
     def parse(self):
         """对每条cmd进行解析"""
@@ -528,6 +536,7 @@ class InputPluginResult:
     def __init__(self):
         self._device_info: DeviceInfo = DeviceInfo()
         self._cmd_dict: Dict[str, str] = {}
+        self.vendor: DefaultVendor = DefaultVendor
 
     @property
     def hostname(self):
