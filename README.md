@@ -268,7 +268,7 @@ if TYPE_CHECKING:
 
 
 class AnalysisPluginWithOSPFStatus(AnalysisPluginAbc):
-    """OPSF status 状态不能为Init"""
+    """OSPF status 状态不能为Init"""
 
     @analysis.vendor(vendor.Huawei)
     @analysis.template_key('huawei_vrp_display_ospf_peer_brief.textfsm', ['neighbor', 'state'])
