@@ -61,7 +61,7 @@ from net_inspect import NetInspect
 
 net = NetInspect()
 net.set_plugins(input_plugin='console')
-net.run(path='log')
+net.run(input_path='log')
 
 print('total devices:', len(net.cluster.devices))
 
@@ -367,6 +367,36 @@ output:
 可以看到，我们自定义了一个输出模块，可以直接调用，而不需要写脚本。
 
 `output_plugin_params`中的所有参数都会传递到`Output`类中的`output_params`变量中，可以直接使用。
+
+### 手动添加设备
+
+有时候我们需要手动添加设备，比如我们需要添加一个设备，但是这个设备没有日志，我们可以手动添加，并且指定设备的厂家，这样就可以使用对应厂家的分析模块。
+
+```py
+from net_inspect import NetInspect, InputPluginResult, vendor
+
+net = NetInspect()
+
+d = InputPluginResult()
+d.add_cmd('display clock', "2021-03-19 10:23:08+08:00")
+d.hostname = 'Device'
+d.vendor = vendor.Huawei
+
+net.add_device(d)
+
+net.run()
+
+for device in net.cluster.devices:
+    print(device.info.hostname)
+    print(device.parse_result('dis clo'))
+```
+
+output:
+
+```text
+Device
+[{'time': '10:23:08', 'timezone': '', 'dayweek': '', 'year': '2021', 'month': '03', 'day': '19'}]
+```
 
 ## 关于贡献
 

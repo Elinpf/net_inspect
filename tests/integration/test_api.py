@@ -2,6 +2,7 @@ import pytest
 from net_inspect.api import NetInspect
 from net_inspect.base_info import BaseInfo, EachVendorDeviceInfo
 from net_inspect.domain import Device, InputPluginResult
+from net_inspect import vendor
 from net_inspect.exception import PluginNotSpecify
 from net_inspect.plugins.input_plugin_with_smartone import InputPluginWithSmartOne
 
@@ -94,6 +95,8 @@ def test_add_device_with_input_plugin_result():
     result.ip = '192.168.1.1'
     result.add_cmd('cmd1', 'content1')
     result.add_cmd('cmd2', 'content2')
+    result.add_cmd('display clock', "2021-03-19 10:23:08+08:00")
+    result.vendor = vendor.Huawei
 
     net = NetInspect()
     net.add_device(result)
@@ -101,6 +104,8 @@ def test_add_device_with_input_plugin_result():
 
     device = net.search('Device1')
     assert device[0].search_cmd('cmd1').content == 'content1'
+
+    assert device[0].vendor == vendor.Huawei
 
 
 def test_add_device_with_raw_data():

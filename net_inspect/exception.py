@@ -75,3 +75,18 @@ class AnalysisVendorNotSupport(AnalysisPluginError):
 
 class NtcTemplateNotDefined(AnalysisPluginError):
     """模板名称不存在"""
+
+
+class OutputPluginError(PluginError):
+    """输出插件错误基类"""
+
+
+class OutputParamsNotGiven(OutputPluginError):
+    """没有向输出插件提供相应的参数"""
+
+    def __init__(self, plugin_name: str, key: str):
+        self.plugin_name = plugin_name
+        self.key = key
+
+    def __str__(self):
+        return f'没有向输出插件 {self.plugin_name!r} 提供 {self.key!r} 参数'
