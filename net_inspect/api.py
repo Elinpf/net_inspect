@@ -210,6 +210,7 @@ class NetInspect:
         input_path: str = '',
         output_file_path: str = '',
         output_plugin_params: Dict[str, str] = {},
+        path: str = '',
     ) -> Cluster:
         """执行所有插件
 
@@ -217,10 +218,18 @@ class NetInspect:
             input_path: 输入路径，可以为空
             output_file_path: 输出文件路径, 可以为空
             output_plugin_params: 传递给output_plugin的参数, 可以为空
+            path: 废弃参数
 
         Returns:
             Cluster: 集群对象
         """
+
+        if path:
+            import rich
+
+            rich.print('[red]NetInspect.run: `path`参数已废弃, 请使用`input_path`参数代替.[/]')
+            input_path = path
+
         self.run_input(input_path)
         self.run_parse()
         self.run_analysis()
