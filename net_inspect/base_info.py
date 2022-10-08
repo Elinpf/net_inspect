@@ -92,12 +92,20 @@ class EachVendorDeviceInfo(Singleton):
     def do_huawei_vrp_baseinfo(self, device: Device, info: BaseInfo):
         """获取华为设备基本信息"""
 
+        # Manager IP
         if not info.ip:
             with device.search_cmd('display ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('interface'), 'loopback0'):
                         info.ip = row.get('ip')
+                        break  # 取到后可以立即返回
 
+                    # 有些设备没有loopback0, 用 vlanif 代替
+                    elif match_lower(row.get('interface'), 'vlanif'):
+                        if not info.ip:
+                            info.ip = row.get('ip')
+
+        # Model & Version & Uptime
         with device.search_cmd('display version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
@@ -137,12 +145,20 @@ class EachVendorDeviceInfo(Singleton):
     def do_hp_comware_baseinfo(self, device: Device, info: BaseInfo):
         """获取华三设备基本信息"""
 
+        # Manager IP
         if not info.ip:
             with device.search_cmd('display ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('interface'), 'loop0|loopback0'):
                         info.ip = row.get('ip')
+                        break
 
+                    # 有些设备没有loopback0, 用 vlanif 代替
+                    elif match_lower(row.get('interface'), 'vlan'):
+                        if not info.ip:
+                            info.ip = row.get('ip')
+
+        # Model & Version & Uptime
         with device.search_cmd('display version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
@@ -151,6 +167,7 @@ class EachVendorDeviceInfo(Singleton):
                 )
                 info.uptime = row.get('uptime')
 
+        # SN
         with device.search_cmd('display device manuinfo') as cmd:
             for row in cmd.parse_result:
                 if row.get('device_serial_number').lower() == 'none':
@@ -178,12 +195,19 @@ class EachVendorDeviceInfo(Singleton):
     def do_maipu_mypower_baseinfo(self, device: Device, info: BaseInfo):
         """获取迈普设备基本信息"""
 
+        # Manager IP
         if not info.ip:
             with device.search_cmd('show ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('interface'), 'loopback0'):
                         info.ip = row.get('ip')
+                        break
 
+                    elif match_lower(row.get('interface'), 'vlan'):
+                        if not info.ip:
+                            info.ip = row.get('ip')
+
+        # Model & Version & Uptime
         with device.search_cmd('show version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('model')
@@ -208,12 +232,19 @@ class EachVendorDeviceInfo(Singleton):
     def do_ruijie_os_baseinfo(self, device: Device, info: BaseInfo):
         """获取锐捷设备基本信息"""
 
+        # Manager IP
         if not info.ip:
             with device.search_cmd('show ip interface brief') as cmd:
                 for row in cmd.parse_result:
                     if match_lower(row.get('interface'), 'loopback 0'):
                         info.ip = row.get('ip')
+                        break
 
+                    elif match_lower(row.get('interface'), 'vlan'):
+                        if not info.ip:
+                            info.ip = row.get('ip')
+
+        # Model & Version & Uptime
         with device.search_cmd('show version') as cmd:
             if cmd.parse_result:
                 temp = cmd.parse_result[0]
@@ -221,6 +252,7 @@ class EachVendorDeviceInfo(Singleton):
                 info.version = temp.get('soft_version')
                 info.uptime = temp.get('uptime')
 
+            # SN
             for row in cmd.parse_result:
                 if row.get('serial_number'):
                     info.sn.append((row.get('slot_name'), row.get('serial_number')))
@@ -240,7 +272,7 @@ class EachVendorDeviceInfo(Singleton):
     def do_cisco_ios_baseinfo(self, device: Device, info: BaseInfo):
         """获取思科设备基本信息"""
 
-        # 当没有IP的时候，主动从配置中获取Loopback0的地址
+        # Manager IP
         if not info.ip:
             with device.search_cmd('show ip interface brief') as cmd:
                 for row in cmd.parse_result:
@@ -248,12 +280,18 @@ class EachVendorDeviceInfo(Singleton):
                         info.ip = row.get('ipaddr')
                         break
 
+                    elif match_lower(row.get('intf'), 'vlan'):
+                        if not info.ip:
+                            info.ip = row.get('ipaddr')
+
+        # Model & Version & Uptime
         with device.search_cmd('show version') as cmd:
             for row in cmd.parse_result:
                 info.model = row.get('hardware')[0]
                 info.version = row.get('version')
                 info.uptime = row.get('uptime')
 
+        # SN
         with device.search_cmd('show inventory') as cmd:
             for row in cmd.parse_result:
                 info.sn.append((row.get('name'), row.get('sn')))

@@ -1,0 +1,583 @@
+[BEGIN] 2020-9-27 15:29:20
+RUIJIE_AA#show clock
+23:26:48 beijing Sun, Sep 27, 2020
+RUIJIE_AA#show version
+System description      : Ruijie High-density IPv6 100G Core Routing Switch(S8607E) By Ruijie Networks
+System start time       : 2019-11-19 00:52:20
+System uptime           : 313:22:34:30
+System hardware version : 1.30
+System software version : S8600E_RGOS 11.0(4)B8
+System patch number     : NA
+System serial number    : G1XXXXXXXX020
+System boot version     : 1.2.25
+Module information:
+  Slot M1 : M8600E-CM
+    Hardware version    : 1.30
+    Boot version        : 1.2.25
+    Software version    : S8600E_RGOS 11.0(4)B8
+    Serial number       : G1XXXXXXXX020
+  Slot 1 : M8600E-48XS-DC
+    Hardware version    : 1.20
+    Boot version        : 1.2.14
+    Software version    : S8600E_RGOS 11.0(4)B8
+    Serial number       : G1XXXXXXXx198
+  Slot M2 : M8600E-CM
+    Hardware version    : 1.30
+    Boot version        : 1.2.25
+    Software version    : S8600E_RGOS 11.0(4)B8
+    Serial number       : G1XXXXXXXXX9A
+RUIJIE_AA#show pro
+RUIJIE_AA#show cpu
+RUIJIE_AA#show cpu
+===============================================
+[Slot 1: M8600E-48XS-DC, Cpu 0]
+CPU Using Rate Information
+CPU utilization in five seconds:13.3%
+CPU utilization in one minute:13.1%
+CPU utilization in five minutes:13.0%
+
+[Slot M2: M8600E-CM, Cpu 0]
+CPU Using Rate Information
+CPU utilization in five seconds:2.7%
+CPU utilization in one minute:1.9%
+CPU utilization in five minutes:1.9%
+
+===============================================
+[Slot M1: M8600E-CM]
+CPU Using Rate Information
+CPU utilization in five seconds:  6.70%
+CPU utilization in one minute:  4.50%
+CPU utilization in five minutes:  4.10%
+
+ NO      5Sec    1Min    5Min Process
+    1   0.00%   0.00%   0.00% init
+    2   0.00%   0.00%   0.00% kthreadd
+    3   0.00%   0.00%   0.00% migration/0
+    4   0.00%   0.00%   0.00% ksoftirqd/0
+    5   0.00%   0.00%   0.00% migration/1
+    6   0.00%   0.00%   0.00% ksoftirqd/1
+   11   0.00%   0.00%   0.00% events/0
+   12   0.00%   0.00%   0.00% events/1
+   15   0.00%   0.00%   0.00% khelper
+   18   0.00%   0.00%   0.00% async/mgr
+   66   0.00%   0.00%   0.00% sync_supers
+   68   0.00%   0.00%   0.00% bdi-default
+   69   0.00%   0.00%   0.00% kblockd/0
+   70   0.00%   0.00%   0.00% kblockd/1
+   84   0.00%   0.00%   0.00% khubd
+   87   0.00%   0.00%   0.00% kmmcd
+  154   0.00%   0.00%   0.00% khungtaskd
+  155   0.00%   0.00%   0.00% kswapd0
+  156   0.00%   0.00%   0.00% aio/0
+  157   0.00%   0.00%   0.00% aio/1
+  160   0.00%   0.00%   0.00% crypto/0
+  161   0.00%   0.00%   0.00% crypto/1
+  200   0.00%   0.00%   0.00% mtdblockd
+  233   0.00%   0.00%   0.00% ubi_bgt0d
+  236   0.00%   0.00%   0.00% ubi_bgt1d
+  239   0.00%   0.00%   0.00% ubi_bgt2d
+  242   0.00%   0.00%   0.00% ubi_bgt3d
+  245   0.00%   0.00%   0.00% ubi_bgt4d
+  246   0.00%   0.00%   0.00% spi_gpio.1
+  249   0.20%   0.20%   0.30% octeon_spi
+  322   0.00%   0.00%   0.00% ubifs_bgt1_1
+  419   0.00%   0.00%   0.00% ubifs_bgt0_0
+  421   0.00%   0.00%   0.00% ubifs_bgt2_0
+  423   0.00%   0.00%   0.00% ubifs_bgt3_0
+  425   0.00%   0.00%   0.00% ubifs_bgt4_0
+  453   0.00%   0.00%   0.00% flush-ubifs_2_0
+  507   0.00%   0.00%   0.00% lmk_ham_mon_thr
+  508   0.00%   0.00%   0.00% drop_cache_wq
+  558   0.00%   0.00%   0.00% hamk_cpu0
+  559   0.00%   0.00%   0.00% hamk_cpu1
+  560   0.00%   0.10%   0.10% ham
+  587   0.00%   0.00%   0.00% coredump-mon
+  622   0.00%   0.00%   0.00% cqueue
+  920   0.10%   0.00%   0.00% tty-admin
+  951   0.00%   0.00%   0.00% cli-guard
+  963   0.80%   0.20%   0.10% cli-server
+  965   0.00%   0.00%   0.00% cli-dump
+  972   0.10%   0.10%   0.10% sysmon
+  993   0.10%   0.00%   0.00% aaad
+ 1016   0.00%   0.00%   0.00% skbk_thread
+ 1030   0.00%   0.00%   0.00% dm_krnl_thread
+ 1078   0.00%   0.00%   0.00% lsm-kthread
+ 1101   0.00%   0.00%   0.00% EFMP-BUFF-CHECK
+ 1104   0.00%   0.00%   0.00% efmp pkt captur
+ 1105   0.00%   0.00%   0.00% efmp_print
+ 1107   0.00%   0.00%   0.00% EFB-TOPF
+ 1108   0.00%   0.00%   0.00% efmp_demo
+ 1111   0.00%   0.00%   0.00% srvd
+ 1121   0.00%   0.00%   0.00% ref_ip_res
+ 1122   0.00%   0.00%   0.00% ref_ip_adj
+ 1123   0.00%   0.00%   0.00% ref_ip_route
+ 1139   0.00%   0.00%   0.00% icmp_error
+ 1142   0.00%   0.00%   0.00% ipv4_rcv_task
+ 1143   0.00%   0.00%   0.00% tcp-acc-00
+ 1144   0.00%   0.00%   0.00% udp-acc-thread
+ 1145   0.00%   0.00%   0.00% kir thread
+ 1155   0.00%   0.00%   0.00% ref_ipv6_res
+ 1156   0.00%   0.00%   0.00% ref_ipv6_adj
+ 1157   0.00%   0.00%   0.00% ref_ipv6_route
+ 1162   0.00%   0.00%   0.00% ipv6_rcv_task
+ 1170   0.00%   0.00%   0.00% timerange
+ 1178   0.00%   0.00%   0.00% skbdemo
+ 1188   0.00%   0.00%   0.00% mplsref_gc
+ 1196   0.10%   0.10%   0.10% lsm.elf
+ 1207   0.00%   0.00%   0.00% packet-copy
+ 1210   0.00%   0.00%   0.00% packet_demo.elf
+ 1220   0.00%   0.00%   0.00% ef_bridge
+ 1228   0.00%   0.00%   0.00% bridge.elf
+ 1236   0.00%   0.00%   0.00% tcpip.elf
+ 1244   0.00%   0.00%   0.00% mstp.elf
+ 1271   0.00%   0.00%   0.00% nsm.elf
+ 1291   0.00%   0.00%   0.00% rpi.elf
+ 1299   0.00%   0.00%   0.00% af-key-cmd
+ 1307   0.00%   0.00%   0.00% ospf.elf
+ 1317   0.00%   0.00%   0.00% rip.elf
+ 1325   0.00%   0.00%   0.00% bgp.elf
+ 1333   0.00%   0.00%   0.00% dns_client.elf
+ 1341   0.00%   0.00%   0.00% isis.elf
+ 1349   0.00%   0.00%   0.00% ospfv3.elf
+ 1358   0.00%   0.00%   0.00% ripng.elf
+ 1389   0.00%   0.00%   0.00% ping.elf
+ 1397   0.00%   0.00%   0.00% mpls.elf
+ 1416   0.00%   0.00%   0.00% ss_mgmt_link_km
+ 1417   0.00%   0.00%   0.00% ss_mgmt_mib_km_
+ 1429   0.00%   0.00%   0.00% mpsp_tx_kthread
+ 1432   0.00%   0.00%   0.00% mng_sk_rx_kthre
+ 1452   0.00%   0.00%   0.00% ldp.elf
+ 1482   0.10%   0.00%   0.00% licns
+ 1506   0.00%   0.00%   0.00% telnetd
+ 1517   0.90%   0.90%   0.90% dm_app
+ 1534   0.00%   0.00%   0.00% dump_memoryinfo
+ 1536   0.00%   0.00%   0.00% sshd
+ 1551   0.00%   0.00%   0.00% telnetc
+ 1559   0.00%   0.00%   0.00% tunnel.elf
+ 1580   0.00%   0.00%   0.00% tunnel_dump_pkt
+ 1581   0.00%   0.00%   0.00% tunnel_atnd_tas
+ 1589   0.00%   0.00%   0.00% sshc
+ 1601   0.00%   0.00%   0.00% netconf.elf
+ 1615   0.00%   0.00%   0.00% tech-support
+ 1800   0.00%   0.00%   0.00% demo_proxy-io2n
+ 1801   0.00%   0.00%   0.00% run_proxy-io2ne
+ 1820   0.00%   0.00%   0.00% demo_proxy-io2n
+ 1821   0.00%   0.00%   0.00% run_proxy-io2ne
+ 1840   0.00%   0.00%   0.00% demo_proxy-io2n
+ 1841   0.00%   0.00%   0.00% run_proxy-io2ne
+ 1860   0.00%   0.00%   0.00% demo_proxy-io2n
+ 1861   0.00%   0.00%   0.00% run_proxy-io2ne
+ 1880   0.00%   0.00%   0.00% demo_proxy-io2n
+ 1881   0.00%   0.00%   0.00% run_proxy-io2ne
+ 1889   0.00%   0.00%   0.00% log-guard
+ 1897   0.00%   0.00%   0.00% password_policy
+ 1907   0.00%   0.00%   0.00% bsp_ha.elf
+ 1909   0.00%   0.00%   0.00% syslogd
+ 1910   0.00%   0.00%   0.00% klogd
+ 1918   0.00%   0.00%   0.00% dev_monitor.elf
+ 1937   0.00%   0.00%   0.00% tipc-debuger
+ 1942   0.00%   0.00%   0.00% upgrade
+ 1943   0.00%   0.00%   0.00% upgrade_mgmt
+ 1944   0.00%   0.00%   0.00% recover_server
+ 1961   0.00%   0.00%   0.00% rdnd_server.
+ 1971   0.00%   0.00%   0.00% grtd_server
+ 1986   0.00%   0.00%   0.00% psh_server
+ 2000   0.20%   0.10%   0.00% fsui
+ 2001   0.00%   0.00%   0.00% flinfod
+ 2014   0.00%   0.00%   0.00% cwmp.elf
+ 2029   0.00%   0.00%   0.00% cwmp_gsoap.elf
+ 2038   0.00%   0.00%   0.00% httpd.elf
+ 2047   0.00%   0.00%   0.00% fpm_cm_cli
+ 2069   0.00%   0.00%   0.00% snmpd
+ 2087   0.00%   0.00%   0.00% rns.elf
+ 2115   0.00%   0.00%   0.00% track.elf
+ 2125   0.00%   0.00%   0.00% lldp.elf
+ 2139   0.00%   0.00%   0.00% msf.elf
+ 2140   0.00%   0.00%   0.00% igmp_snp.elf
+ 2141   0.00%   0.00%   0.00% igmp.elf
+ 2142   0.00%   0.00%   0.00% pimd.elf
+ 2143   0.00%   0.00%   0.00% pdmd.elf
+ 2144   0.00%   0.00%   0.00% msf6.elf
+ 2145   0.00%   0.00%   0.00% mld.elf
+ 2146   0.00%   0.00%   0.00% pim6d.elf
+ 2147   0.00%   0.00%   0.00% mld_snp.elf
+ 2155   0.00%   0.00%   0.00% lacp.elf
+ 2163   0.00%   0.00%   0.00% tftp_tipc_serve
+ 2172   0.00%   0.00%   0.00% gvrpd
+ 2181   0.00%   0.00%   0.00% dldp.elf
+ 2192   0.00%   0.00%   0.00% issu-main
+ 2216   0.00%   0.00%   0.00% fw_group
+ 2224   0.00%   0.00%   0.00% vfw_server
+ 2232   0.00%   0.00%   0.00% security_zone
+ 2245   0.00%   0.00%   0.00% rlog.elf
+ 2279   0.00%   0.00%   0.00% nat_log.elf
+ 2300   0.00%   0.00%   0.00% nat.elf
+ 2310   0.00%   0.00%   0.00% ndmgmt
+ 2318   0.00%   0.00%   0.00% erps.elf
+ 2339   0.00%   0.00%   0.00% rldp.elf
+ 2350   0.00%   0.00%   0.00% efaclk_thread
+ 2361   0.00%   0.00%   0.00% pbr.elf
+ 2369   0.00%   0.10%   0.10% sccd
+ 2377   0.30%   0.30%   0.30% acld
+ 2385   0.10%   0.10%   0.10% wbamain
+ 2393   0.30%   0.00%   0.00% rdsd
+ 2405   0.00%   0.00%   0.00% tacplusd
+ 2413   0.10%   0.10%   0.10% dot1x_core_0
+ 2424   0.00%   0.00%   0.00% dhcp.elf
+ 2440   0.00%   0.00%   0.00% vrrp.elf
+ 2449   0.00%   0.00%   0.00% vrrp_plus.elf
+ 2482   0.00%   0.00%   0.00% urpfk_tx_thread
+ 2490   0.00%   0.00%   0.00% urpf.elf
+ 2498   0.00%   0.00%   0.00% dhcp6.elf
+ 2506   0.00%   0.00%   0.00% dhcpc.elf
+ 2514   0.00%   0.00%   0.00% dns_snp.elf
+ 2525   0.40%   0.30%   0.30% bfd.elf
+ 2536   0.00%   0.00%   0.00% l2gre.elf
+ 2544   0.10%   0.00%   0.00% vmsup.elf
+ 2552   0.10%   0.00%   0.00% qosd.elf
+ 2560   0.00%   0.00%   0.00% ipfix_app
+ 2568   0.00%   0.00%   0.00% ntp.elf
+ 2576   0.00%   0.00%   0.00% sflow_app
+ 2621   0.00%   0.00%   0.00% ftpc_cli.elf
+ 2646   0.00%   0.00%   0.00% rmond
+ 2689   0.00%   0.00%   0.00% ftp_server.elf
+ 2705   0.00%   0.00%   0.00% ksflow_scan
+ 2713   0.00%   0.00%   0.00% cpp_rate_thread
+ 2716   0.00%   0.00%   0.00% nfpp_core
+ 2717   0.00%   0.00%   0.00% nfpp_core_msg
+ 2722   0.00%   0.00%   0.00% bfdp_k_upload_t
+ 2723   0.00%   0.00%   0.00% bfdp_k_debug_th
+ 2724   0.00%   0.00%   0.00% bfdp_k_rx_deal_
+ 2727   0.00%   0.00%   0.00% km_mc_thread
+ 2734   0.00%   0.00%   0.00% flush_vvlan_thr
+ 2742   0.30%   0.20%   0.20% psp_mpsp
+ 2750   0.00%   0.00%   0.00% ms_cm
+ 2774   0.00%   0.00%   0.00% cpsp_proc_msg_t
+ 2777   0.00%   0.00%   0.00% cpsp_proc_ob_pk
+ 2778   0.00%   0.00%   0.00% cpsp_proc_rly_p
+ 2786   0.10%   0.00%   0.00% ssa_process
+ 2794   1.20%   1.10%   1.10% ssc_process
+ 2830   0.10%   0.00%   0.00% openflow
+ 2838   0.00%   0.00%   0.00% reup.elf
+ 2865   0.00%   0.00%   0.00% sh_app
+ 2866   0.00%   0.00%   0.00% demo_proxy-io2n
+ 2868   0.00%   0.00%   0.00% run_proxy-io2ne
+ 2875   0.00%   0.00%   0.00% sh
+ 2894   0.10%   0.10%   0.00% snooping.elf
+ 2902   0.00%   0.00%   0.00% cpurule
+ 2959   0.00%   0.00%   0.00% mtdoops-cli
+ 2970   0.00%   0.00%   0.00% show_platfor
+ 2984   0.10%   0.00%   0.00% span.elf
+ 2993   0.00%   0.00%   0.00% sntp.elf
+ 3001   0.10%   0.10%   0.10% sysha
+ 3143   0.00%   0.00%   0.00% ftpd-tipc
+ 3240   0.00%   0.00%   0.00% tty_secu_enable
+ 3362   0.10%   0.00%   0.00% rl-con/1458
+ 3369   0.00%   0.00%   0.00% rl-con/1459
+ 3681   0.20%   0.10%   0.00% rl-con/1460
+ 4413   0.10%   0.10%   0.00% rl-con/1461
+13143   0.00%   0.00%   0.00% sshd
+31358   0.00%   0.00%   0.00% sshd
+31371   0.30%   0.20%   0.20% rl-con/259
+RUIJIE_AA# show mem
+RUIJIE_AA#show memory 
+System Memory: 4194304KB total, 2333740KB used, 1860564KB free, 55.6% used rate
+Used detail:   706616KB active, 288856KB inactive, 69684KB mapped, 997844KB slab, 174704KB core, 398136KB others
+
+PID	Vsd	Text	Rss	Data	Stack	Total	Process
+31371	0	104	1880	38260	84	42936	rl-con/259
+31358	0	504	3464	83632	84	91856	sshd
+13143	0	504	3404	83632	84	91856	sshd
+4413	0	104	1420	17836	84	21296	rl-con/1461
+3681	0	104	1412	17836	84	21296	rl-con/1460
+3369	0	104	1732	38260	84	42936	rl-con/1459
+3362	0	104	1736	38260	84	42936	rl-con/1458
+3240	0	176	2592	76016	84	83360	tty_secu_enable
+3143	0	52	308	240	84	2100	ftpd-tipc
+3001	0	184	2608	156444	84	160548	sysha
+2993	0	44	2000	8656	84	13484	sntp.elf
+2984	0	124	23412	17308	88	43312	span.elf
+2970	0	12	1412	8788	84	11916	show_platfor
+2959	0	32	2196	41624	84	45708	mtdoops-cli
+2902	0	20	1616	588	84	3868	cpurule
+2894	0	568	32612	82608	84	113532	snooping.elf
+2875	0	928	852	852	84	4704	sh
+2868	0	24	388	164	84	2072	run_proxy-io2ne
+2866	0	24	288	32	84	1940	demo_proxy-io2n
+2865	0	928	772	788	84	4640	sh_app
+2838	0	152	23560	29360	84	57248	reup.elf
+2830	0	984	29328	26164	84	53200	openflow
+2794	0	7140	374556	2501540	84	2549816	ssc_process
+2786	0	16	4200	330032	84	337404	ssa_process
+2750	0	60	2840	103000	84	108236	ms_cm
+2742	0	5324	5272	45204	84	59224	psp_mpsp
+2689	0	108	2528	25064	84	31580	ftp_server.elf
+2646	0	144	3616	41568	84	47948	rmond
+2621	0	44	2032	16844	84	21492	ftpc_cli.elf
+2576	0	92	2808	74344	84	80120	sflow_app
+2568	0	132	3048	17248	84	23752	ntp.elf
+2560	0	208	14752	87012	84	96960	ipfix_app
+2552	0	636	4724	18940	84	27112	qosd.elf
+2544	0	276	25580	50300	84	82872	vmsup.elf
+2536	0	212	24256	8856	84	39368	l2gre.elf
+2525	0	220	2536	8792	84	14704	bfd.elf
+2514	0	28	1932	25048	84	29832	dns_snp.elf
+2506	0	112	2592	16864	84	22552	dhcpc.elf
+2498	0	296	4272	33704	84	41344	dhcp6.elf
+2490	0	112	23156	9048	84	35728	urpf.elf
+2449	0	164	3868	9028	84	16444	vrrp_plus.elf
+2440	0	304	23868	9072	88	36224	vrrp.elf
+2424	0	404	25500	46332	84	78000	dhcp.elf
+2413	0	544	27244	125468	84	158124	dot1x_core_0
+2405	0	108	3568	68280	84	76988	tacplusd
+2393	0	360	5676	100980	84	111232	rdsd
+2385    0	544	99408	218296	84	252476	wbamain
+2377	0	368	26100	39948	84	70212	acld
+2369	0	780	27748	49392	84	78900	sccd
+2361	0	192	4928	9140	84	16996	pbr.elf
+2339	0	120	24092	8824	88	36460	rldp.elf
+2318	0	92	23272	8920	84	36668	erps.elf
+2310	0	256	4260	116796	84	122412	ndmgmt
+2300	0	124	2800	21676	84	26972	nat.elf
+2279	0	16	1716	16976	84	20156	nat_log.elf
+2245	0	32	2224	57804	84	62336	rlog.elf
+2232	0	276	7832	96396	84	101448	security_zone
+2224	0	232	23584	83000	84	108044	vfw_server
+2216	0	316	24220	214824	84	240396	fw_group
+2192	0	64	2952	58116	84	69052	issu-main
+2181	0	64	2388	8828	84	15540	dldp.elf
+2172	0	108	23160	9072	88	34812	gvrpd
+2163	0	16	840	8444	84	10868	tftp_tipc_serve
+2155	0	136	23852	8816	88	35764	lacp.elf
+2147	0	268	24684	8864	88	37328	mld_snp.elf
+2146	0	608	5296	13236	84	21604	pim6d.elf
+2145	0	324	4092	9140	84	17208	mld.elf
+2144	0	332	24672	8816	88	37144	msf6.elf
+2143	0	380	5004	9140	84	17288	pdmd.elf
+2142	0	804	5496	9140	84	17744	pimd.elf
+2141	0	340	4060	9140	84	17244	igmp.elf
+2140	0	372	24804	8864	88	37444	igmp_snp.elf
+2139	0	412	24812	8832	88	37528	msf.elf
+2125	0	416	23756	8928	88	36524	lldp.elf
+2115	0	68	2136	8780	84	13552	track.elf
+2087	0	200	3232	8788	84	14976	rns.elf
+2069	0	480	5132	42196	84	48840	snmpd
+2047	0	36	2012	8976	84	13568	fpm_cm_cli
+2038	0	188	5672	62160	84	80748	httpd.elf
+2029	0	700	3380	29384	84	37020	cwmp_gsoap.elf
+2014	0	404	5144	120064	84	136324	cwmp.elf
+2001	0	16	1648	580	84	9956	flinfod
+2000	0	280	3424	67572	84	77872	fsui
+1986	0	96	2324	131748	84	135920	psh_server
+1971	0	444	4024	214160	84	222916	grtd_server
+1961	0	172	2612	29340	84	34672	rdnd_server.
+1944	0	20	1752	8808	84	18756	recover_server
+1943	0	36	4180	58208	84	71508	upgrade_mgmt
+1942	0	144	5284	140416	84	154416	upgrade
+1937	0	8	576	164	84	1976	tipc-debuger
+1918	0	256	18244	255436	84	261372	dev_monitor.elf
+1910	0	284	1464	9040	84	17592	klogd
+1909	0	284	7152	76688	84	85308	syslogd
+1907	0	8	1064	8384	84	11092	bsp_ha.elf
+1897	0	28	2396	33216	84	38940	password_policy
+1889	0	284	1824	9040	84	17592	log-guard
+1881    0	24	300	32	84	1940	run_proxy-io2ne
+1880	0	24	292	32	84	1940	demo_proxy-io2n
+1861	0	24	404	164	84	2072	run_proxy-io2ne
+1860	0	24	292	32	84	1940	demo_proxy-io2n
+1841	0	24	300	32	84	1940	run_proxy-io2ne
+1840	0	24	292	32	84	1940	demo_proxy-io2n
+1821	0	24	300	32	84	1940	run_proxy-io2ne
+1820	0	24	292	32	84	1940	demo_proxy-io2n
+1801	0	24	404	164	84	2072	run_proxy-io2ne
+1800	0	24	292	32	84	1940	demo_proxy-io2n
+1615	0	132	3272	90752	84	96368	tech-support
+1601	0	232	2736	57832	84	65584	netconf.elf
+1589	0	384	4308	58772	84	66236	sshc
+1559	0	152	2632	8800	84	14812	tunnel.elf
+1551	0	112	3764	148864	84	154640	telnetc
+1536	0	504	3960	82608	84	90832	sshd
+1517	0	2560	20464	718836	84	732696	dm_app
+1506	0	44	2188	20980	84	25972	telnetd
+1482	0	96	3176	123704	84	134300	licns
+1452	0	752	6568	9232	84	24036	ldp.elf
+1397	0	792	26640	9220	84	43060	mpls.elf
+1389	0	160	2408	41468	84	46672	ping.elf
+1358	0	172	5312	9160	84	19044	ripng.elf
+1349	0	908	5864	9160	84	19940	ospfv3.elf
+1341	0	1004	5820	9144	84	20008	isis.elf
+1333	0	76	2360	18288	84	26196	dns_client.elf
+1325	0	1168	6960	9200	84	24188	bgp.elf
+1317	0	344	5488	9164	84	19252	rip.elf
+1307	0	1204	11944	13256	84	24440	ospf.elf
+1299	0	20	1776	16980	84	20396	af-key-cmd
+1291	0	188	4704	9144	84	18964	rpi.elf
+1271	0	988	7664	9220	84	18292	nsm.elf
+1244	0	336	25716	9144	84	41192	mstp.elf
+1236	0	1468	45448	27208	84	60972	tcpip.elf
+1228	0	680	25544	21584	84	52144	bridge.elf
+1210	0	24	1464	592	84	3724	packet_demo.elf
+1196	0	860	7616	33712	84	41924	lsm.elf
+1178	0	48	4208	3164	84	6408	skbdemo
+1170	0	48	2136	8640	84	13992	timerange
+1111	0	12	1952	8636	84	13840	srvd
+1108	0	64	2236	25592	84	29440	efmp_demo
+993	0	368	6292	71620	84	81628	aaad
+972	0	240	4464	190360	84	198720	sysmon
+965	0	316	812	9020	84	17840	cli-dump
+963	0	316	12140	156668	84	165492	cli-server
+951	0	316	1156	9020	84	17840	cli-guard
+920	0	176	4568	104752	84	112096	tty-admin
+587	0	16	864	196	84	2708	coredump-mon
+560	0	88	2448	50676	84	53324	ham
+1	0	36	692	164	84	2004	init
+RUIJIE_AA#  show env
+RUIJIE_AA#  show env
+                         ^
+% Invalid input detected at '^' marker.
+
+RUIJIE_AA#show power
+Chassis-type: RG-S8607E
+Power-redun: no
+Energy-saving: off
+
+power-id  power-type    supply(W)  status      vol-in/out(V)  cur-out(mA)  supply-out(W)
+--------  ------------  ---------  ----------  -------------  -----------  -------------
+1         RG-PA1600I    1600       ok          234   /11.978   8828         106
+2         N/A           N/A        N/A         N/A   /N/A      N/A          N/A
+3         N/A           N/A        N/A         N/A   /N/A      N/A          N/A
+4         RG-PA1600I    1600       ok          239   /11.978   1859         22
+POE1      N/A           N/A        N/A         N/A   /N/A      N/A          N/A
+POE2      N/A           N/A        N/A         N/A   /N/A      N/A          N/A
+
+slot    card_type                        status      require(W)  allocate(W)
+------- -------------------------------- ----------  ----------  -----------
+1       M8600E-48XS-DC                   power-on    212         212
+2       N/A                              N/A         N/A         N/A
+3       N/A                              N/A         N/A         N/A
+4       N/A                              N/A         N/A         N/A
+5       N/A                              N/A         N/A         N/A
+M1      M8600E-CM                        power-on    40          40
+M2      M8600E-CM                        power-on    40          40
+
+total-power(W) redundancy(W) available(W) card-used(W) fan-used(W) free-power(W)
+-------------- ------------- ------------ ------------ ----------- --------------
+3200           0             3200         292          432         2476
+RUIJIE_AA#show fan
+Chassis-type: RG-S8607E
+Fan-id: 1
+    Fan-type:       M07_FAN
+    Serial Number:  G1MXXXXXXX609                   
+
+fan-id  status      mode      speed-level
+------  ----------  --------  -----------
+1       ok          normal    N/A
+RUIJIE_AA#show ip ospf nei
+RUIJIE_AA#show ip ospf neighbor 
+
+OSPF process 100, 13 Neighbors, 13 is Full:
+Neighbor ID     Pri   State                BFD State  Dead Time   Address         Interface
+11.22.254.22      1   Full/ -              -          00:00:38    11.22.63.130    TenGigabitEthernet 1/1
+11.22.254.23      1   Full/ -              -          00:00:35    11.22.63.138    TenGigabitEthernet 1/2
+11.22.254.24      1   Full/ -              -          00:00:37    11.22.63.146    TenGigabitEthernet 1/3
+11.22.254.25      1   Full/ -              -          00:00:38    11.22.63.154    TenGigabitEthernet 1/4
+11.22.254.26      1   Full/ -              -          00:00:33    11.22.63.162    TenGigabitEthernet 1/5
+11.22.254.27      1   Full/ -              -          00:00:38    11.22.63.170    TenGigabitEthernet 1/6
+11.22.254.28      1   Full/ -              -          00:00:36    11.22.63.178    TenGigabitEthernet 1/7
+11.22.254.29      1   Full/ -              -          00:00:33    11.22.63.186    TenGigabitEthernet 1/8
+11.22.254.30      1   Full/ -              -          00:00:38    11.22.63.194    TenGigabitEthernet 1/9
+11.22.254.31      1   Full/ -              -          00:00:38    11.22.63.202    TenGigabitEthernet 1/10
+11.22.254.32      1   Full/ -              -          00:00:37    11.22.63.210    TenGigabitEthernet 1/11
+11.22.254.21      1   Full/ -              -          00:00:37    11.22.63.254    AggregatePort 1
+11.22.1.248       1   Full/ -              -          00:00:39    11.22.237.17    TenGigabitEthernet 1/46
+
+RUIJIE_AA#show vrrp bri
+RUIJIE_AA#show vrrp brief 
+Interface             Grp  Pri   timer   Own  Pre   State   Master addr                               Group addr                              
+RUIJIE_AA#
+RUIJIE_AA#show interface
+RUIJIE_AA#show interface status
+Interface                                Status    Vlan   Duplex   Speed     Type  
+---------------------------------------- --------  ----   -------  --------- ------
+TenGigabitEthernet 1/1                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/2                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/3                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/4                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/5                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/6                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/7                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/8                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/9                   up        routed Full     10G       fiber
+TenGigabitEthernet 1/10                  up        routed Full     10G       fiber
+TenGigabitEthernet 1/11                  up        routed Full     10G       fiber
+TenGigabitEthernet 1/12                  up        routed Full     10G       fiber
+TenGigabitEthernet 1/13                  up        routed Full     10G       fiber
+TenGigabitEthernet 1/14                  up        routed Full     10G       fiber
+TenGigabitEthernet 1/15                  up        routed Full     10G       fiber
+TenGigabitEthernet 1/16                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/17                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/18                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/19                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/20                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/21                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/22                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/23                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/24                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/25                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/26                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/27                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/28                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/29                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/30                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/31                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/32                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/33                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/34                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/35                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/36                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/37                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/38                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/39                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/40                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/41                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/42                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/43                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/44                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/45                  down      1      Unknown  Unknown   fiber
+TenGigabitEthernet 1/46                  up        routed Full     10G       fiber
+TenGigabitEthernet 1/47                  up        routed Full     10G       fiber
+TenGigabitEthernet 1/48                  up        routed Full     10G       fiber
+AggregatePort 1                          up        routed Full     10G       fiber
+RUIJIE_AA# 
+RUIJIE_AA#show ip route
+RUIJIE_AA#show ip route summary
+
+Codes:  NORMAL - Normal route  ECMP - ECMP route  FRR - Fast-Reroute route
+
+  Memory: 132216 bytes
+  Entries: 787, based on route prefixes
+
+                 NORMAL     ECMP       FRR        TOTAL     
+       Connected 35         0          0          35        
+       Static    0          0          0          0         
+       RIP       0          0          0          0         
+       OSPF      720        32         0          752       
+       ISIS      0          0          0          0         
+       BGP       0          0          0          0         
+       TOTAL     755        32         0          787       
+
+RUIJIE_AA# show ip inter bri
+Interface                        IP-Address(Pri)      IP-Address(Sec)                Status                Protocol
+TenGigabitEthernet 1/1           42.1.34.1/30         no address                     up                    up
+TenGigabitEthernet 1/2           42.1.34.5/30         no address                     up                    up
+TenGigabitEthernet 1/3           42.1.34.9/30         no address                     up                    up
+TenGigabitEthernet 1/4           42.1.34.13/30        no address                     up                    up
+TenGigabitEthernet 1/5           42.1.34.17/30        no address                     up                    up
+TenGigabitEthernet 1/6           42.1.34.21/30        no address                     up                    up
+TenGigabitEthernet 1/7           42.1.34.25/30        no address                     up                    up
+TenGigabitEthernet 1/8           42.1.34.29/30        no address                     up                    up
+TenGigabitEthernet 1/9           42.1.34.33/30        no address                     up                    up
+TenGigabitEthernet 1/10          42.1.34.37/30        no address                     up                    up
+TenGigabitEthernet 1/11          42.1.34.41/30        no address                     up                    up
+TenGigabitEthernet 1/12          no address           no address                     down                  down
+VLAN 1                           22.89.0.1/32         no address                     up                    up

@@ -1,0 +1,697 @@
+[BEGIN] 2020-9-27 15:34:39
+<Huawei_AA>!
+<Huawei_AA>dis clock
+2020-09-27 15:42:34
+Sunday
+Time Zone(UTC) : UTC
+<Huawei_AA>!
+<Huawei_AA>dis version
+Huawei Versatile Routing Platform Software
+VRP (R) software, Version 5.170 (S7700 V200R010C00SPC600)
+Copyright (C) 2000-2016 HUAWEI TECH CO., LTD
+Quidway S7706 Terabit Routing Switch uptime is 19 weeks, 5 days, 5 hours, 27 minutes
+BKP 0 version information:
+1. PCB      Version  : LE02BAKI VER.E
+2. Support  PoE      : No
+3. Board    Type     : ES0B00770600
+4. MPU Slot Quantity : 2
+5. LPU Slot Quantity : 6
+
+MPU 7(Master)  : uptime is 19 weeks, 5 days, 5 hours, 26 minutes
+SDRAM Memory Size    : 4096    M bytes
+Flash Memory Size    : 64      M bytes
+NVRAM Memory Size    : 512     K bytes
+EUSB Memory Size     : 1905    M bytes
+MPU version information : 
+1. PCB      Version  : SWC02SRUH000 VER.C
+2. MAB      Version  : 1
+3. Board    Type     : ES1D2SRUH000
+4. CPLD0    Version  : 1504.2300
+5. BootROM  Version  : 020a.0065
+6. BootLoad Version  : 020a.008c
+
+MPU 8(Slave)  : uptime is 19 weeks, 5 days, 5 hours, 25 minutes
+SDRAM Memory Size    : 4096    M bytes
+Flash Memory Size    : 64      M bytes
+NVRAM Memory Size    : 512     K bytes
+EUSB Memory Size     : 1905    M bytes
+MPU version information : 
+1. PCB      Version  : SWC02SRUH000 VER.C
+2. MAB      Version  : 1
+3. Board    Type     : ES1D2SRUH000
+4. CPLD0    Version  : 1504.2300
+5. BootROM  Version  : 020a.0065
+6. BootLoad Version  : 020a.008c
+
+LPU 1  : uptime is 19 weeks, 5 days, 5 hours, 23 minutes
+SDRAM Memory Size    : 1024    M bytes
+Flash Memory Size    : 64      M bytes
+LPU version information : 
+1. PCB      Version  : SWC02X32SX2S VER.A
+2. MAB      Version  : 1
+3. Board    Type     : ES1D2S24SX2S
+4. CPLD0    Version  : 1609.0516
+5. BootROM  Version  : 020a.0065
+6. BootLoad Version  : 020a.0079
+
+CMU 9(Master)  : uptime is 19 weeks, 5 days, 5 hours, 25 minutes
+CMU version information : 
+1. PCB      Version  : LE02CMUA VER.B
+2. MAB      Version  : 8
+3. Board    Type     : EH1D200CMU00
+<Huawei_AA>       
+<Huawei_AA>!
+<Huawei_AA>dis cpu-usage
+CPU Usage Stat. Cycle: 60 (Second)
+CPU Usage            : 8% Max: 83%
+CPU Usage Stat. Time : 2020-09-27  15:42:35 
+CPU utilization for five seconds: 8%: one minute: 8%: five minutes: 7%
+Max CPU Usage Stat. Time : 2020-05-12 10:16:43.
+
+TaskName        CPU  Runtime(CPU Tick High/Tick Low)  Task Explanation
+VIDL                 92%        13/4743bbff       DOPRA IDLE                    
+OS                    7%         1/77825eff       Operation System              
+TICK                  1%         0/3be71540                                     
+1AGA                  0%         0/       0       1AGAGT                        
+AAA                   0%         0/  e4e1c0       AAA  Authen Account Authorize 
+ADPT                  0%         0/       0       ADPT                          
+AGENT_CAPWAP          0%         0/       0       AGENT_CAPWAP                  
+AGENT_WLAN            0%         0/       0       AGENT_WLAN                    
+AGNT                  0%         0/       0       AGNTSNMP agent task           
+AGT6                  0%         0/       0       AGT6SNMP AGT6 task            
+ALM                   0%         0/       0       ALM  Alarm Management         
+AM                    0%         0/       0       AM   Address Management       
+APP                   0%         0/       0       APP                           
+APS                   0%         0/  e4e1c0       APS Automatic Protection
+                                                  Switch                       
+ARP                   0%         0/  e4e1c0       ARP                           
+ARPA                  0%         0/       0       ARPA ARP Adapter              
+ASFM                  0%         0/       0       ASFM                          
+ASMN                  0%         0/       0       ASMNG Access Switch
+                                                  Management                   
+BEAT                  0%         0/  e4e1c0       BEAT Beat Management          
+BFD                   0%         0/ 47868c0       BFD Bidirection Forwarding
+                                                  Detect                       
+BFDA                  0%         0/       0       BFDA BFD Adapter              
+BFDS                  0%         0/ 80befc0       BFDS                          
+BOX_Out               0%         0/ 3938700                                     
+BTRC                  0%         0/       0       BTRC                          
+CAPM                  0%         0/       0       CAPM Capture Packet           
+CCTL                  0%         0/       0       CCTLBulk stat connect control 
+CFM                   0%         0/       0       CFM Configuration file
+                                                  management                   
+CHAL                  0%         0/       0       CHAL Core Hardware Layer      
+CKDV                  0%         0/       0       CKDV                          
+CLKI                  0%         0/       0       CLKI                          
+CMDA                  0%         0/       0       CMDA                          
+COMT                  0%         0/       0       COMT                          
+CSBR                  0%         0/       0       CSBRCompare slave
+                                                  buildrun-info                
+CSPF                  0%         0/  e4e1c0       CSPF task                     
+CSS                   0%         0/       0       CSS Cluster Switch System     
+CSSP                  0%         0/       0       CSSP CSS Protocol Process     
+CWPA                  0%         0/       0       CWPADP                        
+DEFD                  0%         0/ 2aea540       DEFD CPU Defend               
+DEV                   0%         0/ 1c9c380       DEV  Device Management        
+DEVA                  0%         0/       0       DEVA Device Assistant         
+DFSU                  0%         0/       0       DFSU Device Flexible Service
+                                                  Unit                         
+DHCP                  0%         0/       0       DHCP Dynamic Host Config
+                                                  Protocol                     
+DIAG                  0%         0/       0       DIAG                          
+DLDP                  0%         0/       0       DLDP Protocol                 
+DRVD                  0%         0/       0       DRVD                          
+DSMS                  0%         0/       0       DSMS Device adapt to SMS      
+EAP                   0%         0/       0       EAP  Extensible Authen
+                                                  Protocol                     
+ECM                   0%         0/ 2aea540       ECM Ethernet Communicate
+                                                  Manage                       
+ECMS                  0%         0/  e4e1c0       ECMSharedQueue                
+EFMT                  0%         0/       0       EFMTEST 802.3AH Test          
+ELAB                  0%         0/  e4e1c0       ELAB e-label Management       
+EOAM                  0%         0/  e4e1c0       EOAM1AG                       
+ESAP                  0%         0/  e4e1c0       ESAP eSap Adapter             
+EZDT                  0%         0/       0       EZDT                          
+EZOP                  0%         0/       0       EZOP EasyOperation
+                                                  application                  
+EZPP                  0%         0/       0       EZPP EasyOperation packet     
+Eout                  0%         0/       0       Eout ECM Out                  
+FCAT                  0%         0/       0       FCAT Catch Packets for
+                                                  debugging                    
+FECD                  0%         0/       0       FECD Mod Manage Task          
+FIB                   0%         0/       0       FIB Forward Information Base  
+FIB6                  0%         0/       0       FIB6IPv6 FIB                  
+FINT                  0%         0/       0       FINT                          
+FLOW                  0%         0/       0       FLOW SFLOW                    
+FMAT                  0%         0/       0       FMATFault Manage task         
+FMCK                  0%         0/ c845880       FMCK Detect device faults     
+FMES                  0%         0/       0       FMES Output fault information 
+FNTL                  0%         0/ 6422c40       FNTL                          
+FTS                   0%         0/       0       FTS                           
+GEM                   0%         0/       0       GEM task                      
+GEMR                  0%         0/       0       GEMRun task                   
+GLRM                  0%         0/       0       GLRM License Resource Manage  
+GREM                  0%         0/       0       GREM MPU Process GRE packets  
+GRES                  0%         0/       0       GRESM task                    
+GRSA                  0%         0/1bb75640       GRSA                          
+GTL                   0%         0/       0       GTL                           
+GVRP                  0%         0/       0       GVRP Protocol                 
+HACK                  0%         0/       0       HACKtask for HA ACK           
+HGMP                  0%         0/       0       HGMPADP HGMP Adapter          
+HOTT                  0%         0/       0       HOTT                          
+HS2M                  0%         0/ 1c9c380       HS2MHigh available task       
+HTPSRD                0%         0/ 47868c0                                     
+HTTP                  0%         0/ 1c9c380       HTTP                          
+HVRP                  0%         0/       0       HVRP Protocol                 
+IFAD                  0%         0/       0       IFAD Ifnet Adpter             
+IFLP                  0%         0/       0       IFLP                          
+IFNT                  0%         0/       0       IFNTIfnet task                
+IFPD                  0%         0/       0       IFPD Ifnet Product Adapter    
+IFWL                  0%         0/       0       IFWL Ifwlan                   
+INFO                  0%         0/       0       INFOInformation center        
+INPT                  0%         0/       0       INPT                          
+IP                    0%         0/       0       IP                            
+IPCK                  0%         0/ 1c9c380       IPCKIPC task for ack message  
+IPCQ                  0%         0/ c845880       IPCQIPC task for single queue 
+IPCR                  0%         0/ 3938700       IPCR IPC Receive              
+IPCS                  0%         0/  e4e1c0       IPCSharedQueue                
+IPFP                  0%         0/11e1a300       IPFPM                         
+IS2U                  0%         0/       0       IS2U ISSU function Adapter    
+ISC6                  0%         0/       0       ISC6                          
+ISSU                  0%         0/       0       ISSU                          
+ITSK                  0%         0/  e4e1c0       ITSKIPOS common task          
+JOB                   0%         0/       0       JOB Schedule                  
+L2                    0%         0/  e4e1c0       L2                            
+L2IF                  0%         0/ 1c9c380       L2IF                          
+L2PQ                  0%         0/       0       L2PQ                          
+L2V                   0%         0/       0       L2V                           
+L2_E                  0%         0/  e4e1c0       L2_EOAM_Y1731                 
+L2_P                  0%         0/  e4e1c0       L2_PR                         
+L2_R                  0%         0/ 3938700       L2_RING                       
+L2_T                  0%         0/       0       L2_TRUNK                      
+L3M4                  0%         0/       0       L3M4 MPU Manage IPv4 unicast
+                                                  FDB                          
+L3MB                  0%         0/       0       L3MB MPU Process urpf, vrrp
+                                                  etc.                         
+LBDT                  0%         0/  e4e1c0       LBDT Loopback Detect Mpu      
+LCSP                  0%         0/       0       LCSP License Adapter          
+LDCM                  0%         0/       0       LDCM                          
+LDP                   0%         0/       0       LDP task                      
+LDT                   0%         0/ 1c9c380       LDT Loop Detection            
+LDTP                  0%         0/       0       LDTP LDT-Packet Process       
+LINK                  0%         0/       0       LINK                          
+LLDP                  0%         0/  e4e1c0       LLDP Protocol                 
+LNP                   0%         0/       0       LNP task                      
+LOAD                  0%         0/       0       LOAD Load Server              
+LRCV                  0%         0/       0       LRCV                          
+LSPA                  0%         0/       0       LSPA                          
+LSPM                  0%         0/ 3938700       LSPMLsp management            
+LWVP                  0%         0/       0       LWVPSharedQueue               
+LYNC                  0%         0/       0       LYNC                          
+MACL                  0%         0/       0       MACL Access Control List      
+MAD                   0%         0/       0       MAD Task                      
+MADP                  0%         0/       0       MADP MAD proxy Task           
+MCSW                  0%         0/       0       MCSW Mulitcast Switch Adapter 
+MDGW                  0%         0/       0       MDGW                          
+MDRY                  0%         0/       0       MDRY                          
+MERX                  0%         0/       0       MERX Meth Receive             
+METH                  0%         0/  e4e1c0       METH Metropolitan Ethernet    
+MFF                   0%         0/       0       MFF MAC Forced Forwarding     
+MFIB                  0%         0/       0       MFIBMulticast forward info    
+MOD                   0%         0/       0       MOD  Module Management        
+MPAT                  0%         0/       0       MPAT                          
+MPSF                  0%         0/       0       MPSF Mpls SFU Adapter         
+MPSM                  0%         0/  e4e1c0       MPSM Mpls Main Adapter        
+MTP                   0%         0/       0       MTP                           
+MTR                   0%         0/  e4e1c0       MTR Scheduled Memory Usage    
+Mirr                  0%         0/       0       Mirror                        
+NDMB                  0%         0/       0       NDMB MPU Manage IPv6 unicast
+                                                  FDB                          
+NFPT                  0%         0/ 3938700       NFPTNFP timer task            
+NQAF                  0%         0/       0       NQAFTPR                       
+NSA                   0%         0/       0       NSA Netstream Adapter         
+NTLK                  0%         0/ 7270e00       NTLK                          
+NTPT                  0%         0/       0       NTPT task                     
+OAM                   0%         0/ 3938700       OAM OAM                       
+OAM1                  0%         0/       0       OAM1 EOAM Adapter             
+OAMT                  0%         0/       0       OAMT Mpls Oam Adapter         
+OMMS                  0%         0/       0       OMMS                          
+PARITY_CHECK          0%         0/ 1c9c380                                     
+PAT                   0%         0/       0       PAT                           
+PATC                  0%         0/       0       PATCH Maintenance             
+PCAM                  0%         0/       0       PCAM MPU Manage iPCA          
+PGMC                  0%         0/       0       PGMC                          
+PGMP                  0%         0/       0       PGMP                          
+PGMX                  0%         0/       0       PGMX                          
+PM                    0%         0/  e4e1c0       PM  Performance Management    
+PMS                   0%         0/  e4e1c0       PMS PM Server                 
+PNGM                  0%         0/  e4e1c0       PNGM MPU Process icmp reply
+                                                  fast                         
+POE+                  0%         0/       0       POE+ PPP Over Ethernet Plus   
+PPI                   0%         0/ 1c9c380       PPI Product Process Interface 
+PPP                   0%         0/       0       PPP                           
+PRDG                  0%         0/  e4e1c0       PRDG                          
+PROC                  0%         0/       0       PROC                          
+PTAL                  0%         0/       0       PTAL Portal                   
+QDIA                  0%         0/       0       QDIA AUTODIAG Application     
+QOSA                  0%         0/       0       QOSA Quality of Service       
+RACL                  0%         0/       0       RACL Reversed Access Control
+                                                  List                         
+RDS                   0%         0/       0       RDS  Radius                   
+RMON                  0%         0/  e4e1c0       RMONRemote monitoring         
+ROUT                  0%         0/1c9c3800       ROUTRoute task                
+RPCQ                  0%         0/ 1c9c380       RPCQRemote procedure call     
+RSVP                  0%         0/       0       RSVP task                     
+RTMR                  0%         0/ 2aea540       RTMR                          
+SAPP                  0%         0/       0       SAPP                          
+SDKD                  0%         0/ 55d4a80       SDKD                          
+SDKE                  0%         0/       0       SDKE                          
+SECE                  0%         0/       0       SECE Security                 
+SFPM                  0%         0/       0       SFPM                          
+SIMC                  0%         0/       0       SIMC Simulate CPU Usage       
+SIMU                  0%         0/       0       SIMU Simulate Function Task   
+SLAG                  0%         0/       0       SLAG                          
+SMLK                  0%         0/       0       SMLK Smart Link Protocol      
+SNPG                  0%         0/ 1c9c380       SNPG Multicast Snooping       
+SOCK                  0%         0/ 3938700       SOCKPacket schedule and
+                                                  process                      
+SPM                   0%         0/       0       SPM  Smart Power Management   
+SPTM                  0%         0/ 80befc0       SPTM                          
+SRVC                  0%         0/       0       SRVC                          
+STFW                  0%         0/       0       STFW Super task forward       
+STND                  0%         0/       0       STNDStandby task              
+STP                   0%         0/165a0bc0       STP                           
+STRA                  0%         0/  e4e1c0       STRA Source Trail             
+SUPP                  0%         0/ 1c9c380       SUPP Support the device
+                                                  management                   
+TACH                  0%         0/ 3938700       TACHWTACACS                   
+TARP                  0%         0/       0       TARPING                       
+TCBM                  0%         0/       0       TCBM Task callback block
+                                                  monitor                      
+TCTL                  0%         0/       0       TCTLBulk stat transmit
+                                                  control                      
+TM                    0%         0/       0       TM   Transmission Management  
+TNLM                  0%         0/       0       TNLMTunnel management task    
+TNQA                  0%         0/ 1c9c380       TNQAC                         
+TOPO                  0%         0/       0       TOPOMNG Task                  
+TPLC                  0%         0/  e4e1c0       TPLC Template for controller  
+TPLS                  0%         0/       0       TPLS                          
+TRAF                  0%         0/       0       TRAFTraffic Statistics        
+TRAP                  0%         0/       0       TRAPSNMP trap task            
+TRUN                  0%         0/  e4e1c0       TRUNK Product Adapter         
+TTNQ                  0%         0/       0       TTNQAS                        
+TTVP                  0%         0/       0       TTVPLS                        
+TUNL                  0%         0/  e4e1c0       TUNL                          
+UCM                   0%         0/       0       UCM  User Control Management  
+                                          
+<Huawei_AA>
+<Huawei_AA>dis memory-usage
+ Memory utilization statistics at 2020-09-27 15:42:35+00:00
+ System Total Memory Is: 2134900736 bytes
+ Total Memory Used Is: 282889844 bytes
+ Memory Using Percentage Is: 13%
+<Huawei_AA>!
+<Huawei_AA>dis device man
+Slot       Sub   Serial-number            Manu-date
+- - - - - - - - - - - - - - - - - - - - - - - - - - -
+backplane  -     2102XXXXXXXXXXXX0288     2018-11-10       
+1          -     031XXXXXXXXX0235         2018-11-22       
+7          -     031XXXXXXXXX0289         2018-09-30       
+8          -     031XXXXXXXXXX274         2018-09-30       
+<Huawei_AA>         
+<Huawei_AA>!
+<Huawei_AA>dis elabel brief
+Warning: It may take a long time to excute this command. Continue? [Y/N]:y
+Info: It is executing, please wait...
+
+/$[System Integration Version]
+/$SystemIntegrationVersion=3.0
+
+
+[Rack_1]
+[SubRack_1]
+
+
+[BackPlane_1]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=ES0B07706
+BarCode=2102XXXXXXXXXXXX0288
+Item=02113305
+Description=Quidway S7706,ES0B07706,S7706 Assembly Chassis
+Manufactured=2018-11-10
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+                                          
+
+
+[Slot_1]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=ES1D2S24SX2S
+BarCode=031XXXXXXXXXX235
+Item=03031YFH
+Description=Finished Board, S7700, ES1D2S24SX2S, 24-Port 10GE SFP+ Interface and 8-Port GE SFP Interface Card(X2S,SFP+)
+Manufactured=2018-11-22
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+                                          
+
+[Slot_7]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=ES1D2SRUH000
+BarCode=03XXXXXXXXXXX289
+Item=03031FSL
+Description=Finished Board,S7700,ES1D2SRUH000,S7706/S7712,Main Control Unit H
+Manufactured=2018-09-30
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+                                          
+[Daughter_Board_1]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=
+BarCode=
+Item=
+Description=
+Manufactured=
+VendorName=
+IssueNumber=
+CLEICode=
+BOM=
+
+
+[Daughter_Board_2]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=                                
+BarCode=
+Item=
+Description=
+Manufactured=
+VendorName=
+IssueNumber=
+CLEICode=
+BOM=
+
+
+[Slot_8]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=ES1D2SRUH000
+BarCode=031FSLDMJ9000274
+Item=03031FSL                             
+Description=Finished Board,S7700,ES1D2SRUH000,S7706/S7712,Main Control Unit H
+Manufactured=2018-09-30
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+
+[Daughter_Board_1]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=
+BarCode=
+Item=
+Description=
+Manufactured=
+VendorName=
+IssueNumber=
+CLEICode=
+BOM=                                      
+
+
+[Daughter_Board_2]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=
+BarCode=
+Item=
+Description=
+Manufactured=
+VendorName=
+IssueNumber=
+CLEICode=
+BOM=
+
+
+[Slot_9]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+                                          
+[Main_Board]
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=EH1D200CMU00
+BarCode=030NWBDMJ9002482
+Item=03030NWB
+Description=Ethernet switch,EH1D200CMU00,Centralized Monitoring Board
+Manufactured=2018-09-28
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+
+[Slot_11]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]                              
+/$[ArchivesInfo Version]
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=ES0E2FBX
+BarCode=21XXXXXXXXXXXXX00629
+Item=02120760
+Description=Fan box,Quidway S7700,ES0E2FBX,Wide Voltage Fan Box
+Manufactured=2018-11-07
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+
+[Slot_12]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+/$[ArchivesInfo Version]                  
+/$ArchivesInfoVersion=3.0
+
+
+[Board Properties]
+BoardType=ES0E2FBX
+BarCode=210XXXXXXXXXXXXXXX35
+Item=02120760
+Description=Fan box,Quidway S7700,ES0E2FBX,Wide Voltage Fan Box
+Manufactured=2018-11-07
+VendorName=Huawei
+IssueNumber=00
+CLEICode=
+BOM=
+
+
+
+[Slot_13]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+DATE=18_11_02
+SN=210XXXXXXXXXXX006801                   
+TYPE=W2PSA0800
+
+
+
+[Slot_14]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+DATE=18_10_07
+SN=210XXXXXXXXXXXXXX496
+TYPE=W2PSA0800
+
+
+
+[Slot_15]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+DATE=18_11_01
+SN=210XXXXXXXXXXXXX6719                   
+TYPE=W2PSA0800
+
+
+
+[Slot_16]
+/$[Board Integration Version]
+/$BoardIntegrationVersion=3.0
+
+
+[Main_Board]
+DATE=18_10_07
+SN=210XXXXXXXXXXXXX7428
+TYPE=W2PSA0800
+
+
+
+
+
+
+<Huawei_AA>               
+<Huawei_AA>!
+<Huawei_AA>dis fan
+----------------------------------------------------------------------------------------------
+     FanID   FanNum   Online   Register      Speed       Min-speed    Mode      Airflow     
+----------------------------------------------------------------------------------------------
+     FAN1    [1-2]    Present  Registered    60% (2250)      30%      AUTO      Side-to-Back
+                1                                 2250
+                2                                 2250
+     FAN2    [1-2]    Present  Registered    60% (2265)      30%      AUTO      Side-to-Back
+                1                                 2280
+                2                                 2250
+<Huawei_AA>      
+<Huawei_AA>!
+<Huawei_AA>dis power
+--------------------------------------------------------------------------
+ PowerID  Online  Mode   State      Current(A)   Voltage(V)   RealPwr(W)  
+--------------------------------------------------------------------------
+ PWR1     Present AC     Supply     0.08         53.48        4.28
+ PWR2     Present AC     Supply     0.08         53.50        4.28
+ PWR3     Present AC     Supply     2.62         53.43        139.99
+ PWR4     Present AC     Supply     2.37         53.55        126.91
+<Huawei_AA>   
+<Huawei_AA>!
+<Huawei_AA>dis ospf peer brief
+
+	 OSPF Process 100 with Router ID 11.22.255.238
+		  Peer Statistic Information
+ ----------------------------------------------------------------------------
+ Area Id          Interface                        Neighbor id      State    
+ 0.0.0.0          XGigabitEthernet1/0/21           11.22.1.248      Full        
+ 0.0.0.0          Vlanif102                        11.22.255.239    Full        
+ 0.0.0.1          Vlanif122                        11.22.255.239    Full        
+ ----------------------------------------------------------------------------
+ Total Peer(s):     3
+<Huawei_AA>        
+<Huawei_AA>!
+<Huawei_AA>
+<Huawei_AA>dis vrrp brief
+Total:6     Master:6     Backup:0     Non-active:0      
+VRID  State        Interface                Type     Virtual IP     
+----------------------------------------------------------------
+120   Master       Vlanif120                Normal   11.22.12.1     
+121   Master       Vlanif121                Normal   11.22.13.1     
+122   Master       Vlanif122                Normal   11.22.15.1     
+130   Master       Vlanif130                Normal   11.22.8.1      
+131   Master       Vlanif131                Normal   11.22.9.1      
+133   Master       Vlanif133                Normal   11.22.11.1     
+<Huawei_AA>!
+<Huawei_AA>dis ip interface bri
+*down: administratively down
+!down: FIB overload down
+^down: standby
+(l): loopback
+(s): spoofing
+(d): Dampening Suppressed
+(E): E-Trunk down
+The number of interface that is UP in Physical is 10
+The number of interface that is DOWN in Physical is 1
+The number of interface that is UP in Protocol is 10
+The number of interface that is DOWN in Protocol is 1
+
+Interface                         IP Address/Mask      Physical   Protocol  
+Ethernet0/0/0                     unassigned           down       down      
+NULL0                             unassigned           up         up(s)     
+Vlanif102                         11.22.237.37/30      up         up        
+Vlanif120                         11.22.12.8/24        up         up        
+Vlanif121                         11.22.13.8/24        up         up        
+Vlanif122                         11.22.15.8/24        up         up        
+Vlanif130                         11.22.8.8/24         up         up        
+Vlanif131                         11.22.9.8/24         up         up        
+Vlanif133                         11.22.11.8/24        up         up        
+XGigabitEthernet1/0/21            11.22.237.30/30      up         up        
+
+<Huawei_AA>            
+<Huawei_AA>!
+<Huawei_AA>dis ip routing-table statistics 
+Summary Prefixes : 780
+Proto     total      active      added        deleted      freed   
+          routes     routes      routes       routes       routes  
+DIRECT    25         25          120          95           95        
+STATIC    0          0           0            0            0         
+RIP       0          0           0            0            0         
+OSPF      755        755         28533        27778        27778     
+IS-IS     0          0           0            0            0         
+BGP       0          0           0            0            0         
+UNR       0          0           0            0            0         
+Total     780        780         28653        27873        27873     
