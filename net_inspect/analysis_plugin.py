@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Callable, Dict, Iterator, List, Tuple, Type
 
 from . import exception
 from .domain import AlarmLevel, AnalysisPluginAbstract, AnalysisResult
-from .func import get_command_from_textfsm, snake_case_to_pascal_case
+from .func import get_command_from_textfsm, snake_case_to_pascal_case, Singleton
 
 if TYPE_CHECKING:
     from .domain import DefaultVendor, Device
@@ -25,19 +25,34 @@ class AnalysisFunctionInfo:
     function: Callable[[Dict[TEMPLATE, List[KEY]], AnalysisResult]]  # 存放执行的分析函数
     template_keys_list: List[Tuple[TEMPLATE, List[KEY]]]  # 模板文件中的变量名称列表
     template_keys_value: TemplateKeyValue  # 存放模板文件中的变量名称和变量值
+    base_info_keys_list: List[str]  # 存放基本信息的字段列表
     doc: str  # 分析函数的注释文档
 
 
-class StoreTemplateKey:
+class StoreTemplateKey(Singleton):
     """
     用于存放分析插件的支持厂商和需要模板的值
     这个实例时独立于分析插件的实例，分析插件的run方法会调用这个实例对应Plugin和Vendor的分析函数
+
+    这个类为全局单例类，用于存放所有分析插件的信息
     """
 
     def __init__(self):
         self.store: List[AnalysisFunctionInfo] = []
-        self._temp_store = []
+        # 临时存储 template 和 base_info
+        self._temp_store: Dict[str, List[Tuple[str] | str]] = {
+            'template': [],
+            'base_info': [],
+        }
         self._only_run_plugins: List[str] = []  # 只运行指定的插件
+
+    def _clear_temp_store(self):
+        """清空临时存储"""
+
+        self._temp_store = {
+            'template': [],
+            'base_info': [],
+        }
 
     def set_only_run_plugins(self, plugins: List[Type[AnalysisPluginAbstract]]):
         """
@@ -47,16 +62,6 @@ class StoreTemplateKey:
             plugins: 指定的插件列表
         """
         self._only_run_plugins = [plugin.__name__ for plugin in plugins]
-
-    def temp_store(self, template_name: TEMPLATE, keys: List[KEY]):
-        """
-        将模板名称和变量名称存入临时存储器中
-
-        Args:
-            template_name: 模板名称
-            keys: 变量名称列表
-        """
-        self._temp_store.append((template_name, keys))
 
     def get_funcs(
         self, plugin_name: PLUGIN_NAME, vendor: Type[DefaultVendor]
@@ -81,10 +86,12 @@ class StoreTemplateKey:
                 self._only_run_plugins and plugin_name not in self._only_run_plugins
             ):  # 如果设置了only_run_plugins，则只运行指定的插件
                 continue
-            func_list.append((info.function, info.template_keys_value))
+            func_list.append(
+                (info.function, info.template_keys_value, info.base_info_keys_list)
+            )
 
-        for func, temp_keys in func_list:
-            yield func, temp_keys
+        for func, temp_keys, base_info_keys_list in func_list:
+            yield func, temp_keys, base_info_keys_list
 
     def filter(
         self,
@@ -129,7 +136,7 @@ class StoreTemplateKey:
         """
         plugin_name, function_name = func.__qualname__.split('.', maxsplit=2)
         template_keys_value = TemplateKeyValue(vendor.PLATFORM)
-        for template_name, keys in self._temp_store:
+        for template_name, keys in self._temp_store['template']:
             template_keys_value.append(template_name, keys)
 
         af = AnalysisFunctionInfo(
@@ -138,13 +145,14 @@ class StoreTemplateKey:
             vendor=vendor,
             function_name=function_name,
             function=func,
-            template_keys_list=list(self._temp_store),
+            template_keys_list=list(self._temp_store['template']),
             template_keys_value=template_keys_value,
+            base_info_keys_list=self._temp_store['base_info'],
             doc=func.__doc__.strip(),
         )
 
         self.store.append(af)
-        self._temp_store = []
+        self._clear_temp_store()
 
     def vendor(self, vendor: DefaultVendor):
         """
@@ -170,7 +178,21 @@ class StoreTemplateKey:
         """
 
         def func_init(func):
-            self.temp_store(template, keys)
+            self._temp_store['template'].append((template, keys))
+            return func
+
+        return func_init
+
+    def base_info(self, *keys: List[str]):
+        """
+        将需要用到的BaseInfo字段存储起来，在使用的时候调用
+
+        Args:
+            keys: 需要 BaseInfo 中的哪些字段
+        """
+
+        def func_init(func):
+            self._temp_store['base_info'].extend(keys)
             return func
 
         return func_init
@@ -179,6 +201,7 @@ class StoreTemplateKey:
 analysis = StoreTemplateKey()
 
 
+# FIXME 这个类模糊
 class AlarmLevel(AlarmLevel):
     @property
     def level(self):
@@ -218,6 +241,10 @@ class TemplateKeyValue:
         self._key_store[template] = keys
 
 
+class BaseInfoKeyValue(dict):
+    ...
+
+
 @dataclass
 class TemplateInfo:
     """
@@ -226,6 +253,7 @@ class TemplateInfo:
 
     template_key_value: Dict[TEMPLATE, List[Dict[KEY, str]]]  # 模板变量和值的字典
     vendor_platform: str  # 厂商平台的字符串
+    base_info: BaseInfoKeyValue  # BaseInfo的值
 
     def __getitem__(self, name: TEMPLATE) -> List[Dict[KEY, str]]:
         """
@@ -320,14 +348,30 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
             ret[template_file] = temp_list
         return ret
 
+    def _get_base_info_key_value(
+        self, base_info_keys: list, device: Device
+    ) -> BaseInfoKeyValue:
+        """将需要的BaseInfo的键值取出来"""
+        base_info_value = BaseInfoKeyValue()
+        for key in base_info_keys:
+            if not hasattr(device.info, key):
+                raise KeyError(f'{self.__class__.__name__}中的键值{key!r}不在base_info中')
+
+            else:
+                base_info_value[key] = getattr(device.info, key)
+        return base_info_value
+
     def run(self, device: Device) -> AnalysisResult:
         try:
             result = AnalysisResult()
 
             klass_name = self.__class__.__name__
-            for func, template_keys in analysis.get_funcs(klass_name, device.vendor):
+            for func, template_keys, base_info_keys in analysis.get_funcs(
+                klass_name, device.vendor
+            ):
                 # 执行对应厂商的分析方法
                 template_key_value = self._get_template_key_value(template_keys, device)
+                base_info_value = self._get_base_info_key_value(base_info_keys, device)
 
                 # 没有数据时，说明不存在可以分析的命令，跳过
                 skip_flag = True
@@ -335,6 +379,12 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                     if v:
                         skip_flag = False
                         break
+
+                for k, v in base_info_value.items():
+                    if v:
+                        skip_flag = False
+                        break
+
                 if skip_flag:
                     continue
 
@@ -342,6 +392,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 template_info = TemplateInfo(
                     template_key_value=template_key_value,
                     vendor_platform=device.vendor.PLATFORM,
+                    base_info=base_info_value,
                 )
 
                 each_result = AnalysisResult()
