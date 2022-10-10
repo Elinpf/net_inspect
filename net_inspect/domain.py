@@ -216,7 +216,7 @@ class Device:
     def analysis_result(self) -> AnalysisResult:
         return self._analysis_result
 
-    def parse_result(self, cmd: str) -> List[dict] | None:
+    def parse_result(self, cmd: str) -> List[dict]:
         """解析命令结果
 
         Args:
@@ -227,7 +227,7 @@ class Device:
         """
         command = self.search_cmd(cmd)
         if not command:
-            return None
+            return []
 
         return command._parse_result
 

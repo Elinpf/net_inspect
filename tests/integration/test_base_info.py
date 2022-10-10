@@ -51,7 +51,7 @@ def test_run_cisco_ios_base_info(shared_datadir):
             ('GigabitEthernet0/2', 'FNSXXXX2FBJ'),
         ],
         cpu_usage='23%',
-        memory_usage='68%',
+        memory_usage='68.6%',
     )
 
     check_base_info(file_path, expected)
@@ -182,7 +182,7 @@ def test_run_cisco_ios_base_info_manager_ip(shared_datadir):
             ('GigabitEthernet0/2', 'FNSXXXX2FBJ'),
         ],
         cpu_usage='23%',
-        memory_usage='68%',
+        memory_usage='68.6%',
     )
 
     check_base_info(file_path, expected)

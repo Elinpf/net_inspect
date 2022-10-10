@@ -306,7 +306,17 @@ class EachVendorDeviceInfo(Singleton):
             if cmd.parse_result:
                 total = cmd.parse_result[0].get('memory_total')
                 used = cmd.parse_result[0].get('memory_used')
-                info.memory_usage = str(int(int(used) / int(total) * 100)) + '%'
+                info.memory_usage = (
+                    str(round(float(used) / float(total) * 100, 1)) + '%'
+                )
+
+        if not info.memory_usage:  # 有些设备没有show processes memory命令
+            for row in device.parse_result('show processes memory sorted'):
+                total = row.get('memory_total')
+                used = row.get('memory_used')
+                info.memory_usage = (
+                    str(round(float(used) / float(total) * 100, 1)) + '%'
+                )
 
     def run_analysis_info(self, device: Device):
         """
