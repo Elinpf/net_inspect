@@ -64,7 +64,7 @@ class H3C(DefaultVendor):
     PLATFORM = 'hp_comware'  # 新华三在海外用的是 HP Comware
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'H3C Comware Platform Software|H3C Comware Software'
-    INVALID_STR = r'Ambiguous command found at'
+    INVALID_STR = r'Ambiguous command found at|% .* command found at'
 
 
 class Cisco(DefaultVendor):
