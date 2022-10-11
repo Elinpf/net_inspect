@@ -1,7 +1,6 @@
-from typing import Dict, Tuple
 import re
 
-from ..domain import InputPluginAbstract, DeviceInfo, InputPluginResult
+from ..domain import InputPluginAbstract, InputPluginResult
 
 # 类思科的情况
 # device>show version
