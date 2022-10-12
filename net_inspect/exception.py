@@ -50,6 +50,10 @@ class InputPluginError(PluginError):
     """输入插件错误的基类"""
 
 
+class InputFileTypeError(InputPluginError):
+    """输入文件不是期望的形式"""
+
+
 # FIXME 不存在
 class NotFoundDevice(InputPluginError):
     """Input Plugin 中未找到设备"""

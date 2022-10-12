@@ -399,7 +399,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
 
                 try:
                     func(template_info, each_result)
-                except TypeError as e:
+                except TypeError as e:  # pragma: no cover
                     msg = "方法只需要两个参数，第一个是TemplateInfo，第二个是AnalysisResult, 不需要self"
                     raise TypeError(f'{klass_name}.{func.__name__}() {msg}') from e
 
@@ -410,7 +410,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 # 将分析结果放到总结果中
                 result.merge(each_result)
 
-        except exception.NtcTemplateNotDefined as e:
+        except exception.NtcTemplateNotDefined as e:  # pragma: no cover
             raise exception.NtcTemplateNotDefined(
                 f"{self.__class__.__name__} 中无法识别对应模板 {e}, 请检查分析方法中调用的模板名是否正确。"
             )
@@ -420,18 +420,3 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 alarm.plugin_cls = self.__class__
 
         return result
-
-
-def get_func_class_name(func: Callable) -> str:
-    """
-    通过方法获取分析模块的类名称
-    Args:
-        func: AnalysisPluginAbc 中的方法
-
-    Return:
-        AnalysisPluginAbc 子类的字符串
-    """
-    res = inspect.getmembers(func)
-    for name, key in res:
-        if name == '__qualname__':
-            return key.split('.')[0]

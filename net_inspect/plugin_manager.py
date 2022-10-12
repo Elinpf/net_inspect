@@ -1,21 +1,12 @@
 from __future__ import annotations
+
 import os
 from typing import Dict, List, Tuple
 
-from .domain import PluginManagerAbc, DeviceInfo
 from .data import pyoption
-
-
-def _textfsm_reslut_to_dict(header: list, reslut: list) -> List[Dict[str, str]]:
-    """将 TextFSM 的结果与header结合转化为dict"""
-    objs = []
-    for row in reslut:
-        temp_dict = {}
-        for index, element in enumerate(row):
-            temp_dict[header[index].lower()] = element
-        objs.append(temp_dict)
-
-    return objs
+from .domain import DeviceInfo, PluginManagerAbc
+from .exception import InputFileTypeError
+from .logger import logger
 
 
 class PluginManager(PluginManagerAbc):
@@ -34,6 +25,9 @@ class PluginManager(PluginManagerAbc):
             for file in files:
                 if os.path.splitext(file)[-1] in expend:  # 判断文件后缀
                     file_path = os.path.join(root, file)
-                    devices.append(self.input(file_path))
+                    try:
+                        devices.append(self.input(file_path))
+                    except InputFileTypeError:  # pragma: no cover
+                        logger.info('文件不符合input_plugin标准，跳过: {}'.format(file_path))
 
         return devices

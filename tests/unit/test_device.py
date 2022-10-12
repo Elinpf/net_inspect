@@ -50,7 +50,7 @@ class TestDevice:
         cmd = device.search_cmd('dis ver')
         assert cmd.command == 'display version'
 
-    def test_device_search_cmd(self):
+    def test_device_search_cmd_2(self):
         """测试search_cmd命令的上下文功能"""
         device = Device()
         device.save_to_cmds(cmd_dict())

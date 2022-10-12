@@ -74,8 +74,11 @@ class Cluster:
         """
 
         logger.info(f'input file: {file_path!r}')
-        input_plugin_result = self.plugin_manager.input(file_path)
-        self.save_device_with_cmds(input_plugin_result)
+        try:
+            input_plugin_result = self.plugin_manager.input(file_path)
+            self.save_device_with_cmds(input_plugin_result)
+        except exception.InputFileTypeError:  # pragma: no cover
+            logger.info('文件不符合input_plugin标准，跳过: {}'.format(file_path))
 
     def save_device_with_cmds(self, input_plugin_result: InputPluginResult):
         """将设备和命令保存到self.devices中
