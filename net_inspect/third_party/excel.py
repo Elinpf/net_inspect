@@ -11,7 +11,7 @@ try:
     if TYPE_CHECKING:
         from openpyxl.worksheet.worksheet import Worksheet
 
-except ImportError:
+except ImportError:  # pragma: no cover
     CHECK_IMPORT = False
 
 else:
@@ -21,10 +21,10 @@ else:
 msg = "Please install openpyxl first"
 
 
-class Excel():
+class Excel:
     def __init__(self):
         if not CHECK_IMPORT:
-            raise ImportError(msg)
+            raise ImportError(msg)  # pragma: no cover
 
         self.wb, self.sheet = self.init_excel()
         self.next_row = 1  # table的起始行号
@@ -97,28 +97,30 @@ class Excel():
                         start_row=self.next_row + i,
                         start_column=col_start,
                         end_row=self.next_row + i,
-                        end_column=col_end
+                        end_column=col_end,
                     )
         self.next_row += len(rows)  # 更新行号
 
 
-class CellContext():
+class CellContext:
     """对单元格设置进行集成"""
 
     @dataclass
-    class Style():
+    class Style:
         align: str = Alignment(horizontal='center', vertical='center')
         border: str = Border(
             left=Side(border_style='thin', color='000000'),
             right=Side(border_style='thin', color='000000'),
             top=Side(border_style='thin', color='000000'),
-            bottom=Side(border_style='thin', color='000000'))
-        font: str = Font(name='等线', size=10, bold=False,
-                         italic=False, strike=False, color='000000')
+            bottom=Side(border_style='thin', color='000000'),
+        )
+        font: str = Font(
+            name='等线', size=10, bold=False, italic=False, strike=False, color='000000'
+        )
 
     def __init__(self, value: str):
         if not CHECK_IMPORT:
-            raise ImportError(msg)
+            raise ImportError(msg)  # pragma: no cover
 
         self.value = value
         self.style = self.init_style()
@@ -157,11 +159,12 @@ class CellContext():
         bold: bool = False,
         italic: bool = False,
         strike: bool = False,
-        color: str = '000000'
+        color: str = '000000',
     ) -> Style:
         """设置字体"""
         self.style.font = Font(
-            name=name, size=size, bold=bold, italic=italic, strike=strike, color=color)
+            name=name, size=size, bold=bold, italic=italic, strike=strike, color=color
+        )
         return self
 
     def get_style(self) -> Style:

@@ -53,7 +53,7 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
 
         for device in self.args.devices:
             self.report(device)
-        self.excel.save(self.args.path)
+        self.excel.save(self.args.file_path)
 
     def set_values(self):
         """可以用于重载设置Value值"""

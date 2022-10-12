@@ -6,3 +6,5 @@ exclude_lines =
 
 [run]
 source = .
+omit =
+    __main__.py
