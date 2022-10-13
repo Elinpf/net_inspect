@@ -80,7 +80,7 @@ class Maipu(DefaultVendor):
     PLATFORM = 'maipu_mypower'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
     KEYWORD_REG = r'MyPower \(R\) Operating System Software'
-    INVALID_STR = r'Invalid input detected at'
+    INVALID_STR = r'Invalid input detected at|% Unknown command'
 
 
 class Ruijie(DefaultVendor):
