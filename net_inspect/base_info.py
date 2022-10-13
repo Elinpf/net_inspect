@@ -57,9 +57,8 @@ class EachVendorDeviceInfo(Singleton):
     analysis_info_class = AnalysisInfo
     append_analysis_items = []
 
-    def run_baseinfo_func(self, device: Device) -> BaseInfo:
-        """获取基本信息"""
-
+    def run_general_information(self, device: Device) -> BaseInfo:
+        """配置通用基础信息"""
         base_info = self.base_info_class()
         base_info.hostname = device._device_info.name
         base_info.file_path = device._device_info.file_path
@@ -68,6 +67,12 @@ class EachVendorDeviceInfo(Singleton):
         base_info.ip = device._device_info.ip
         base_info.sn = []
         base_info.analysis = self.analysis_info_class()
+
+        return base_info
+
+    def run_baseinfo_func(self, device: Device) -> BaseInfo:
+        """获取基本信息"""
+        base_info = self.run_general_information(device)
 
         platform = device.vendor
         funcs = self.get_funcs(platform, 'baseinfo')

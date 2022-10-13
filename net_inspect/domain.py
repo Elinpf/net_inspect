@@ -7,8 +7,8 @@ from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
 from .base_info import BaseInfo, EachVendorDeviceInfo
-from .func import NoneSkip, pascal_case_to_snake_case
 from .data import pystr
+from .func import NoneSkip, pascal_case_to_snake_case
 from .logger import logger
 from .vendor import DefaultVendor
 
@@ -155,6 +155,15 @@ class DeviceList(list):
     def parse(self, base_info_handler: EachVendorDeviceInfo):
         """递归对每个设备的命令进行解析"""
         for device in self._devices:
+
+            # 当没有设备厂商时，只配置通用信息
+            if device.vendor == DefaultVendor:
+                logger.debug(
+                    f'{pystr.parse_plugin_prefix} 设备 {device._device_info.name!r} 没有匹配到厂商, 跳过.'
+                )
+                device.info = base_info_handler.run_general_information(device)
+                continue
+
             device.parse()
             # 将分析到的基础信息放到Device.info中
             device.info = base_info_handler.run_baseinfo_func(device)
