@@ -95,6 +95,8 @@ def test_cluster_parse_base_info(shared_datadir):
 
 def test_cluster_parse_not_found_vendor(shared_datadir):
     """测试当遇到不支持的设备时的处理, 会给出一个通用信息，但不会有更多了"""
+    from net_inspect.vendor import DefaultVendor
+
     input_plugin = InputPluginWithSmartOne
     parse_plugin = ParsePluginWithNtcTemplates
     plugin_manager = PluginManager(input_plugin=input_plugin, parse_plugin=parse_plugin)
@@ -104,6 +106,7 @@ def test_cluster_parse_not_found_vendor(shared_datadir):
     cluster.input(shared_datadir / 'log_files/Default_Vendor_21.1.1.1.diag')
     cluster.parse()
     device1 = cluster.devices[0]
+    assert device1.vendor == DefaultVendor
     assert device1.info.hostname == 'Default_Vendor'
     assert device1.info.ip == '21.1.1.1'
     assert device1.info.cpu_usage == ''
