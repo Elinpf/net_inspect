@@ -6,12 +6,12 @@ from typing import Dict, List, Tuple
 import pytest
 import yaml
 from net_inspect.analysis_plugin import analysis
+from net_inspect.base_info import EachVendorDeviceInfo
 from net_inspect.bootstrap import bootstrap
 from net_inspect.data import pypath
 from net_inspect.domain import (
     AnalysisResult,
     Device,
-    DeviceInfo,
     InputPluginAbstract,
     InputPluginResult,
 )
@@ -83,7 +83,9 @@ def analysis_device_with_raw_file(raw_file: str) -> Device:
     plugin_name = raw_file.split(os.path.sep)[2]
     device = set_device(raw_file)
     set_analysis_plugin(device, plugin_name)
+    base_info_handler = EachVendorDeviceInfo()
     device.parse()
+    device.info = base_info_handler.run_baseinfo_func(device)
     device.analysis()
     return device
 

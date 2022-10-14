@@ -1,0 +1,376 @@
+MAIPU_AA#more off
+MAIPU_AA#  show ver
+               MyPower (R) Operating System Software
+MP3840 system image file (flash0: /flash/rp9-i-6.3.17.bin), version 6.3.17(integrity), Compiled on Apr  1 2014, 00:55:59
+Copyright (C) 1999 Maipu Communication Technology Co., Ltd. All Rights Reserved.
+
+MP3840 Version Information
+        System ID           : 00017a5f64db
+        Hardware Model      : RM3B-MPU206-4GE with 1024 MBytes DDR SDRAM, 64 MBytes flash
+        Hardware Version    : 030(Hotswap Supported)
+        MPU CPLD Version    : 002
+        Monitor Version     : 1.20(DFS10)
+        Software Version    : 6.3.17(integrity)
+        Software Image File : flash0: /flash/rp9-i-6.3.17.bin
+        Compiled            : Apr  1 2014, 00:55:59 
+
+System Uptime is 345 weeks 4 days
+
+MAIPU_AA#  show filesystem
+
+volume descriptor ptr (pVolDesc):       0x24aac60
+cache block I/O descriptor ptr (cbio):  0x5ff6e60
+auto disk check on mount:               DOS_CHK_REPAIR | DOS_CHK_VERB_2
+max # of simultaneously open files:     22
+file descriptors in use:                0
+# of different files in use:            0
+# of descriptors for deleted files:     0
+# of  obsolete descriptors:             0
+
+current volume configuration:
+ - volume label:        NO LABEL ; (in boot sector:                )
+ - volume Id:           0x132
+ - total number of sectors:     63,356
+ - bytes per sector:            512
+ - # of sectors per cluster:    4
+ - # of reserved sectors:       1
+ - FAT entry size:              FAT16
+ - # of sectors per FAT copy:   62
+ - # of FAT table copies:       2
+ - # of hidden sectors:         4
+ - first cluster is in sector # 140
+ - Update last access date for open-read-close = FALSE
+ - directory structure:         VFAT
+ - root dir start sector:               125
+ - # of sectors per root:               15
+ - max # of entries in root:            240
+
+FAT handler information:
+------------------------
+ - allocation group size:       2 clusters
+ - free space on volume:        21,055,488 bytes(20.08 MB)
+
+MAIPU_AA# show system chassis
+ System Chassis Information (ONLINE)
+ ----------------------------------------------------------------
+           Serial No.:     591XXXXXXXXXX249
+ ----------------------------------------------------------------
+ STATISTICS:         1 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+MAIPU_AA# show system lpu
+ System Card Information(Lpu 0 - OFFLINE)
+ ----------------------------------------------------------------
+ STATISTICS:         0 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Card Information(Lpu 1 - OFFLINE)
+ ----------------------------------------------------------------
+ STATISTICS:         0 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Card Information(Lpu 2 - OFFLINE)
+ ----------------------------------------------------------------
+ STATISTICS:         0 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Card Information(Lpu 3 - OFFLINE)
+ ----------------------------------------------------------------
+ STATISTICS:         0 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Card Information(Lpu 4 - ONLINE)
+ ----------------------------------------------------------------
+                    Type:   LPU_RM3B_4GET4GEFH
+                  Status:   Start Ok
+              Last-Alarm:   0000
+           Card-Port-Num:   8
+        Card-SubSlot-Num:   0
+       Power-INTF-Status:   0000
+       Power-Card-Status:   On
+              Serial No.:   123XXXXXXXXXXX29               Card-Name:   <NULL> 
+             Description:   <NULL>
+    Hardware-Information:
+                                HW-State: 0000
+                             PCB-Version: 1
+                            CPLD-Version: <NULL>
+ ----------------------------------------------------------------
+ STATISTICS:         1 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Card Information(Lpu 5 - ONLINE)
+ ----------------------------------------------------------------
+                    Type:   SJJ1109-B
+                  Status:   Start Ok
+              Last-Alarm:   0000
+           Card-Port-Num:   0
+        Card-SubSlot-Num:   0
+       Power-INTF-Status:   0000
+       Power-Card-Status:   On
+              Serial No.:   25XXXXXXXXXX0008               Card-Name:   <NULL> 
+             Description:   <NULL>
+    Hardware-Information:
+                                HW-State: 0000
+                             PCB-Version: 1
+                            CPLD-Version: <NULL>
+ ----------------------------------------------------------------
+ STATISTICS:         1 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Card Information(Lpu 6 - OFFLINE)
+ ----------------------------------------------------------------
+ STATISTICS:         0 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Card Information(Lpu 7 - OFFLINE)
+ ----------------------------------------------------------------
+ STATISTICS:         0 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+MAIPU_AA# show system fan
+ System FAN Information(Fan 0 - ONLINE)
+ ----------------------------------------------------------------
+                  Status:   NORMAL
+              Last-Alarm:   0000
+              Serial No.:   91XXXXXXXXXXXX01
+             Description:   <NULL>
+ ----------------------------------------------------------------
+ STATISTICS:         1 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+MAIPU_AA# show system power
+ System Power Information(Power 0 - OFFLINE)
+ ----------------------------------------------------------------
+ STATISTICS:         0 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Power Information(Power 1 - ONLINE)
+ ----------------------------------------------------------------
+                  Status:   NORMAL
+              Last-Alarm:   0000
+              Serial No.:   525XXXXXXXXXXXX2
+             Description:   <NULL>
+ ----------------------------------------------------------------
+ STATISTICS:         1 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+ System Power Information(Power 2 - ONLINE)
+ ----------------------------------------------------------------
+                  Status:   NORMAL
+              Last-Alarm:   0000
+              Serial No.:   525XXXXXXXXX0121
+             Description:   <NULL>
+ ----------------------------------------------------------------
+ STATISTICS:         1 IN, 0 OUT, 0 IERR, 0 OERR
+
+
+MAIPU_AA# spy cpu
+MAIPU_AA# show cpu
+
+System monitor result:
+
+NAME          ENTRY         TID   PRI   total % (ticks)  delta % (ticks)
+--------     --------      -----  ---   ---------------  ---------------
+tExcTask     0028ae20    5fce020    0     0% (       0)    0% (       0)
+tLogTask     002a29b8    24b7470    0     0% (       0)    0% (       0)
+tRlimit      005f1ca0    5ebd160    5     0% (       0)    0% (       0)
+tFmmHdle     00b6b5c0    3c2c140    8     0% (       0)    0% (       0)
+tActive      0022b0b8    24b5060   10     0% (       0)    0% (       0)
+tExcTrace    00236bd0    5eda0a0   10     0% (       0)    0% (       0)
+tHamMsg      00b27db8    24de4e0   19     0% (       0)    0% (       0)
+tSysEnvSta   00b301d8    2823060   19     0% (       0)    0% (       0)
+tDmemReapd   00602bc0    24bd0e0   20     0% (       0)    0% (       0)
+tIpamTrap    00d9f410    40f7620   20     0% (       0)    0% (       0)
+tShell0      0025d9f0    28464e0   20     0% (       0)    0% (       0)
+tChSchCtl    00bd5870    40fb160   35     0% (       0)    0% (       0)
+tMdsp        002efef8    3f4e160   35     0% (       0)    0% (       0)
+tSysLog      0097f2b0    5fc7ca0   40     0% (       0)    0% (       0)
+tMbufTask    00a4fc08    4106b80   40     0% (       0)    0% (       0)
+tCGTimer     00bc32d8    3f210e0   40     0% (       0)    0% (       0)
+tSmpro       00c750f0    285f940   40     0% (       0)    0% (       0)
+tHamJob      00b238e0    5eca8e0   45     0% (       0)    0% (       0)
+tGecDet      0032c460    37a7140   45     0% (       0)    0% (       0)
+tBFD_MAgent  00c4dfd0    2dc4ee0   45     0% (       0)    0% (       0)
+tNbiTimer    005a51e8    298a9a0   45     0% (       0)    0% (       0)
+tOSPFH       0112c848    2833200   45     0% (       0)    0% (       0)
+tDosFSDetect 002844e8    5ece040   49     0% (       0)    0% (       0)
+tCGNorHigh   00bc5a78    3c1c100   49     0% (       0)    0% (       0)
+tPPPKpa      00898be0    26dd1c0   49     0% (       0)    0% (       0)
+tNotify      007d6360    5fd3100   50     0% (       0)    0% (       0)
+tSysTimerH   005a51e8    258e920   50     0% (       0)    0% (       0)
+tNetTimer    005a51e8    259a980   50     0% (       0)    0% (       0)
+tNetTask     00848198    3f8fbe0   50     0% (       0)    0% (       0)
+tFwdTask     00848310    3f8a830   50     0% (       0)    0% (       0)
+tLocalStatSy 00e5b3c0    3f23600   50     0% (       0)    0% (       0)
+tCGNorMid    00bc5af8    3c140e0   50     0% (       0)    0% (       0)
+tDdrTask     00b9f740    3f52980   50     0% (       0)    0% (       0)
+tSbeMac0Tx   00bdabd0    37ae180   50     0% (       0)    0% (       0)
+tSbeMac1Tx   00bdabd0    37aa160   50     0% (       0)    0% (       0)
+tIKEd        009b7b18    3c35160   50     0% (       0)    0% (       0)
+tIPSecPostEn 00995e80    364e9a0   50     0% (       0)    0% (       0)
+tIPSecPostDe 00995e10    364a980   50     0% (       0)    0% (       0)
+tIPSecPostSt 00995da0    3646960   50     0% (       0)    0% (       0)
+tIPSecPostSt 00995d30    3642940   50     0% (       0)    0% (       0)
+tTcap        00c85ed0    2ddd120   50     0% (       0)    0% (       0)
+tNBFD        01639ab0    2de4f60   50     0% (       0)    0% (       0)
+tFlowCore    00305930    2986180   50     0% (       0)    0% (       0)
+tTelnetd     00d21560    299aa20   50     0% (       0)    0% (       0)
+tTelnetd6    00d217e0    2996a00   50     0% (       0)    0% (       0)
+tFcGuard     0034dc00    282a1c0   50     0% (       0)    0% (       0)
+tL2TPTm      00a99070    2864f80   50     0% (       0)    0% (       0)
+tL2TPRx      00a99010    286cfa0   50     0% (       0)    0% (       0)
+tL2TPTx      00aa0390    2874fc0   50     0% (       0)    0% (       0)
+tKmemReapd   005ffa28    24b1020   55     0% (       0)    0% (       0)
+tConMSig     002e5c28    3f2d1a0   55     0% (       0)    0% (       0)
+tL2ChipLink  00354cb8    3f571a0   55     0% (       0)    0% (       0)
+tPortLinkTas 003a4d00    37bb1e0   55     0% (       0)    0% (       0)
+tFcDcd       0034ec20    282f1e0   55     0% (       0)    0% (       0)
+tSm1Check5   0040b728    2837220   55     0% (       0)    0% (       0)
+tIPSecFrag   0098b390    379c920   56     0% (       0)    0% (       0)
+tSysTask     005ee680    5ec67d0   60     0% (       0)    0% (       0)
+tLoginRecord 006ceb00    24c4ea0   70     0% (       0)    0% (       0)
+tLoginRecord 006ce600    24f4f60   70     0% (       0)    0% (       0)
+tLocalStat   00e5b380    3f25620   75     0% (       0)    0% (       0)
+tMSTP        00e32fa8    3c064a0   75     0% (       0)    0% (       0)
+tTermSo      005d1640    5ed6940   80     0% (       0)    0% (       0)
+tTermCore    005d2a78    24cd0a0   80     0% (       0)    0% (       0)
+tDDNS        00ce6088    24e4100   80     0% (       0)    0% (       0)
+tAaaRecv     00c38ee0    2dd4100   80     0% (       0)    0% (       0)
+tFlowExpi    00302068    2982160   80     0% (       0)    0% (       0)
+tNTP         008e2188   17016220   80     0% (       0)    0% (       0)
+tPkixd       008db0f0    37b71c0   88     0% (       0)    0% (       0)
+tNetBuffer   00326fc8    24bb620   90     0% (       0)    0% (       0)
+tSysTimerL   005a51e8    5ed2920   90     0% (       0)    0% (       0)
+tTnlFFRcv    0058c970    25860e0   90     0% (       0)    0% (       0)
+tGreFastRcv  00b38018    3f87100   90     0% (       0)    0% (       0)
+tGTL         00b38910    3f828e0   90     0% (       0)    0% (       0)
+tIp6tnlTask  00e75ac0    3f9a9a0   90     0% (       0)    0% (       0)
+tIpFastRcv   00adc448    3f97180   90     0% (       0)    0% (       0)
+tIPTL        00adcbd0    3f92960   90     0% (       0)    0% (       0)
+tNatAlg      00e1cda8    3f42900   90     0% (       0)    0% (       0)
+tELD         00262b08    36569e0   90     0% (       0)    0% (       0)
+tInfoGuide   0112c320    2df4fa0   90     0% (       0)    0% (       0)
+tFwTask      00f11600    27296a0   90     0% (       0)    0% (       0)
+tSshd00      00d3a140    5f298c0   90     0% (       0)    0% (       0)
+tSshd-sh00   0063b308   17020a40   90   100% (       2)  100% (       2)
+tTffsPTask   002c1088    5fea8c0  100     0% (       0)    0% (       0)
+tStaticRt    0062b4c8    24ec120  100     0% (       0)    0% (       0)
+tPortal      00c5a438    284d100  100     0% (       0)    0% (       0)
+tOSPF        0112c820    26d4fc0  100     0% (       0)    0% (       0)
+tSysLogSrv   00984610    26629a0  100     0% (       0)    0% (       0)
+tIpVfrTO     00856d68    40f14c0  110     0% (       0)    0% (       0)
+tAclTask     00c17ff8    3f46120  110     0% (       0)    0% (       0)
+tTrackMsg    00591768    298e9c0  110     0% (       0)    0% (       0)
+tPmtud       0080cc98    40fd680  120     0% (       0)    0% (       0)
+tNameResd    009b73c8    37b29a0  120     0% (       0)    0% (       0)
+tSshd        00d39c38    283be40  120     0% (       0)    0% (       0)
+tSnmpd       006b9f00    26cf180  125     0% (       0)    0% (       0)
+tTrapIf      0066ee68    3f5a1c0  130     0% (       0)    0% (       0)
+tIcmpErr     00851f28    258a810  150     0% (       0)    0% (       0)
+tArpTask     00b089e0    2592850  150     0% (       0)    0% (       0)
+tArs         00c53ce0    3f4bd40  150     0% (       0)    0% (       0)
+tIpubr       00850c80    365a910  150     0% (       0)    0% (       0)
+tStarpTask   00d23d88    40f38e0  160     0% (       0)    0% (       0)
+tSysLogManag 0097f088    24b34a0  200     0% (       0)    0% (       0)
+tVrfMgmt     00567698    5ec20a0  200     0% (       0)    0% (       0)
+tZSelfTask   00d23d88    25828c0  200     0% (       0)    0% (       0)
+tSnmpTmr     006b8b40    2672220  200     0% (       0)    0% (       0)
+tFmmDtct     00f20a58    3c24120  220     0% (       0)    0% (       0)
+tTunnel      0058bd98    40f5500  250     0% (       0)    0% (       0)
+tCGNorLow    00bc5b78    3c0c0c0  251     0% (       0)    0% (       0)
+KERNEL                                    0% (       0)    0% (       0)
+INTERRUPT                                 0% (       0)    0% (       0)
+IDLE                                      0% (       0)    0% (       0)
+TOTAL                                   100% (       2)  100% (       2)
+
+
+MAIPU_AA# no spy cpu
+MAIPU_AA# show memory
+
+SUMMARY
+-------
+        Type    Used bytes                      Free bytes                      Total bytes                     Used percent
+        ----    --------------------            --------------------            ---------------------           ------------
+        heap    130646016 ( 124.6MB)            900833280 ( 859.1MB)            1031479296( 983.7MB)            12.67%
+        CODE    38175280  (  36.4MB)            /                               38175280  (  36.4MB)            /
+        slab    31997612  (  30.5MB)            5299208   (   5.1MB)            37296820  (  35.6MB)            85.79%
+        fpss    4779456   (   4.6MB)            26628672  (  25.4MB)            31408128  (  30.0MB)            15.22%
+        mbuf    58136     (<  0.1MB)            125934312 ( 120.1MB)            125992448 ( 120.2MB)            0.05%
+
+Note:
+        The space of all such memory types exclude code is part of the heap's 
+        used memory,for example:mbuf,slab,and fpss if exists.
+
+STATISTICS
+----------
+                Used bytes                      Free bytes                      Total bytes                     Used percent
+                --------------------            --------------------            ---------------------           ------------
+                136893416 ( 130.6MB)            932761160 ( 889.6MB)            1069654576( 1020.1MB)           12.80%
+MAIPU_AA#  show system module brief
+
+module infomation display:
+
+ Module           Online    State        Name                  SN
+--------------------------------------------------------------------------------
+ Mpu 0            online    Start Ok     MPU_RM3B_206_4GE      591XXXXXXXXXXX49
+ Lpu 4            online    Start Ok     LPU_RM3B_4GET4GEFH    123XXXXXXXXXXX29
+ Lpu 5            online    Start Ok     SJJ1109-B             253XXXXXXXXXXX08
+ Power 1          online    Normal       /                     525XXXXXXXXXXX22
+ Power 2          online    Normal       /                     525XXXXXXXXXXX21
+ Fan 0            online    Normal       /                     910XXXXXXXXXXX01
+MAIPU_AA# show ip interface brief
+Interface                   IP-Address      Status                Protocol Description
+virtual-template1           11.77.255.254   down                  down     **** LianTong-3G ****
+gigaethernet0               11.77.241.10    up                    up       Link to **** WH-SQ-S3560V2-01(Fa0/12) ****
+lo0                         127.0.0.1       up                    up      
+gigaethernet1               11.77.242.10    up                    up       Link to **** WH-SQ-S3560V2-02(Fa0/12) ****
+gigaethernet2               192.168.221.10  down                  down     Link to **** LianTong-3G ****
+gigaethernet3               unassigned      down                  down    
+gigaethernet4/0             unassigned      administratively down down    
+gigaethernet4/1             unassigned      administratively down down    
+gigaethernet4/2             unassigned      administratively down down    
+gigaethernet4/3             unassigned      administratively down down    
+gigaethernet4/4             unassigned      administratively down down    
+gigaethernet4/5             unassigned      administratively down down    
+gigaethernet4/6             unassigned      administratively down down    
+gigaethernet4/7             192.168.1.1     down                  down     test
+vlan10                      29.72.0.60      up                    up       AA_PD_ATM&COUNTER
+null0                       unassigned      up                    up      
+
+MAIPU_AA#  show cpu monitor
+CPU utilization for five seconds: 9%; one minute: 9%; five minutes: 9%
+
+CPU utilization per second in the past 60 seconds:
+
+   8%   9%  10%   7%  10%   8%   8%  10%   9%   8% 
+   9%   8%  10%   9%   9%   9%   8%  10%  10%   8% 
+   9%   5%  11%   8%   8%   9%   7%  10%  10%   7% 
+   9%   6%  10%   9%   8%   8%   7%  11%  10%   7% 
+   8%   9%  12%   9%   8%   9%   9%  10%  10%   8% 
+   7%   7%  11%   9%   8%   8%   8%  16%  10%   8% 
+
+CPU utilization per minute in the past 60 minutes:
+
+   9%   9%   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9%   9%   9% 
+
+CPU utilization per quarter in the past 96 quarters:
+
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+   9%   9%   9%   9%   9%   9%   9%   9% 
+
+CPU peak utilization based on minutes: 22%

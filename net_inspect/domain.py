@@ -7,8 +7,8 @@ from typing import Dict, Iterator, List, Optional, Tuple, Type
 
 from . import exception
 from .base_info import BaseInfo, EachVendorDeviceInfo
-from .func import NoneSkip, pascal_case_to_snake_case
 from .data import pystr
+from .func import NoneSkip, pascal_case_to_snake_case
 from .logger import logger
 from .vendor import DefaultVendor
 
@@ -74,8 +74,11 @@ class Cluster:
         """
 
         logger.info(f'input file: {file_path!r}')
-        input_plugin_result = self.plugin_manager.input(file_path)
-        self.save_device_with_cmds(input_plugin_result)
+        try:
+            input_plugin_result = self.plugin_manager.input(file_path)
+            self.save_device_with_cmds(input_plugin_result)
+        except exception.InputFileTypeError:  # pragma: no cover
+            logger.info('文件不符合input_plugin标准，跳过: {}'.format(file_path))
 
     def save_device_with_cmds(self, input_plugin_result: InputPluginResult):
         """将设备和命令保存到self.devices中
@@ -152,6 +155,15 @@ class DeviceList(list):
     def parse(self, base_info_handler: EachVendorDeviceInfo):
         """递归对每个设备的命令进行解析"""
         for device in self._devices:
+
+            # 当没有设备厂商时，只配置通用信息
+            if device.vendor == DefaultVendor:
+                logger.debug(
+                    f'{pystr.parse_plugin_prefix} device:{device._device_info.name!r} 没有匹配到厂商, 跳过.'
+                )
+                device.info = base_info_handler.run_general_information(device)
+                continue
+
             device.parse()
             # 将分析到的基础信息放到Device.info中
             device.info = base_info_handler.run_baseinfo_func(device)
@@ -216,7 +228,7 @@ class Device:
     def analysis_result(self) -> AnalysisResult:
         return self._analysis_result
 
-    def parse_result(self, cmd: str) -> List[dict] | None:
+    def parse_result(self, cmd: str) -> List[dict]:
         """解析命令结果
 
         Args:
@@ -227,7 +239,7 @@ class Device:
         """
         command = self.search_cmd(cmd)
         if not command:
-            return None
+            return []
 
         return command._parse_result
 

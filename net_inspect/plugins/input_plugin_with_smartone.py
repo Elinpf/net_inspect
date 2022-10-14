@@ -2,7 +2,8 @@ import os
 import re
 from typing import Dict, Tuple
 
-from ..domain import InputPluginAbstract, DeviceInfo, InputPluginResult
+from ..domain import DeviceInfo, InputPluginAbstract, InputPluginResult
+from ..exception import InputFileTypeError
 
 """
 这个插件是分析的从OSmartOne平台获取的输入文件，有两种情况
@@ -50,6 +51,9 @@ class InputPluginWithSmartOne(InputPluginAbstract):
         result = InputPluginResult()
 
         match = re.match(device_info_reg, os.path.basename(file_path))
+
+        if not match:
+            raise InputFileTypeError(file_path)
 
         result.hostname = match.group('name')
         result.ip = match.group('ip')

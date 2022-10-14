@@ -50,7 +50,7 @@ class TestDevice:
         cmd = device.search_cmd('dis ver')
         assert cmd.command == 'display version'
 
-    def test_device_search_cmd(self):
+    def test_device_search_cmd_2(self):
         """测试search_cmd命令的上下文功能"""
         device = Device()
         device.save_to_cmds(cmd_dict())
@@ -65,6 +65,24 @@ class TestDevice:
         with device.search_cmd('other cmd') as cmd:
             for row in cmd.parse_result:
                 assert False
+
+    def test_device_prase_result(self):
+        """测试解析结果方法"""
+
+        device = Device()
+        device.save_to_cmds(cmd_dict())
+
+        for row in device.parse_result('dis ver'):
+            assert row['uptime'] == '493 days, 18 hours, 38 minutes'
+
+    def test_device_no_prase_result(self):
+        """测试解析结果方法没有内容时，正常返回"""
+
+        device = Device()
+        device.save_to_cmds(cmd_dict())
+
+        for row in device.parse_result('dis ver'):
+            assert False
 
 
 def test_device_info():

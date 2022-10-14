@@ -64,7 +64,7 @@ class H3C(DefaultVendor):
     PLATFORM = 'hp_comware'  # 新华三在海外用的是 HP Comware
     VERSION_COMMAND = 'dis[[play]] ver[[sion]]'
     KEYWORD_REG = r'H3C Comware Platform Software|H3C Comware Software'
-    INVALID_STR = r'Ambiguous command found at'
+    INVALID_STR = r'Ambiguous command found at|% .* found at'
 
 
 class Cisco(DefaultVendor):
@@ -80,7 +80,7 @@ class Maipu(DefaultVendor):
     PLATFORM = 'maipu_mypower'
     VERSION_COMMAND = 'sh[[ow]] ver[[sion]]'
     KEYWORD_REG = r'MyPower \(R\) Operating System Software'
-    INVALID_STR = r'Invalid input detected at'
+    INVALID_STR = r'Invalid input detected at|% Unknown command'
 
 
 class Ruijie(DefaultVendor):

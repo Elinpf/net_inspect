@@ -78,12 +78,26 @@ class AnalysisPluginWithTest(AnalysisPluginAbc):
         # sotred 这个是不存在的，但是会给个空列表，if 会判定为 False
         assert not template['cisco_ios_show_processes_memory_sorted.textfsm']
 
+    @analysis.vendor(vendor.Huawei)
+    @analysis.base_info('version', 'cpu_usage')
+    def huawei_vrp_test(template: TemplateInfo, result: AnalysisResult):
+        """
+        测试基础信息
+        """
+        assert template.base_info['version']
+        assert template.base_info['cpu_usage']
+
+        with pytest.raises(KeyError):
+            template.base_info['memory_usage']
+
+        result.add_normal('test_base_info_normal')
+
 
 def init_analysis_plugin(
     shared_datadir, file: str = '', analysis_plugins: list = []
 ) -> Cluster:
     """通用初始化Cluster函数"""
-    file = file or 'B_FOO_BAR_AR01_21.1.1.1.diag'
+    file = file or 'B_FOO_BAR_AR01_21.1.1.1.diag'  # huawei_vrp
 
     input_plugin = InputPluginWithSmartOne
     parse_plugin = ParsePluginWithNtcTemplates
@@ -178,3 +192,16 @@ def test_analysis_plugin_with_two_templates(shared_datadir):
     """测试有两个template的AnalysisPlugin"""
     cluster = init_analysis_plugin(shared_datadir, 'CISCO_BAD_MEMORY_21.2.2.2.diag')
     result = cluster.devices[0].analysis_result
+
+
+def test_analysis_plugin_with_base_info(shared_datadir):
+    """测试base_info的提取情况"""
+    cluster = init_analysis_plugin(shared_datadir)
+    result = cluster.devices[0].analysis_result
+    for alarm in result:
+        if alarm.message == 'test_base_info_normal':
+            assert alarm.plugin_name == 'AnalysisPluginWithTest'
+            assert alarm.level == AlarmLevel.NORMAL
+            return
+
+    assert False

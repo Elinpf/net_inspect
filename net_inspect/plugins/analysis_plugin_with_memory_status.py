@@ -17,80 +17,52 @@ class AnalysisPluginWithMemoryStatus(AnalysisPluginAbc):
     """
 
     @analysis.vendor(vendor.Huawei)
-    @analysis.template_key(
-        'huawei_vrp_display_memory-usage.textfsm', ['MEMORY_USING_PERCENT']
-    )
-    def huawei_vrp(template_info: TemplateInfo, result: AnalysisResult):
+    @analysis.base_info('memory_usage')
+    def huawei_vrp(template: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
         """
-        for row in template_info['display memory-usage']:
-            check_memory_usage(row['MEMORY_USING_PERCENT'], result)
+        check_memory_usage(template.base_info['memory_usage'], result)
 
     @analysis.vendor(vendor.Cisco)
-    @analysis.template_key(
-        'cisco_ios_show_processes_memory_sorted.textfsm',
-        ['memory_total', 'memory_used'],
-    )
-    @analysis.template_key(
-        'cisco_ios_show_processes_memory.textfsm', ['memory_total', 'memory_used']
-    )
-    def cisco_ios(template_info: TemplateInfo, result: AnalysisResult):
+    @analysis.base_info('memory_usage')
+    def cisco_ios(template: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
         """
-        for row in template_info['show processes memory sorted']:
-            check_memory_usage(
-                float(row['memory_used']) / float(row['memory_total']) * 100, result
-            )
-
-        for row in template_info['show processes memory']:
-            check_memory_usage(
-                float(row['memory_used']) / float(row['memory_total']) * 100, result
-            )
+        check_memory_usage(template.base_info['memory_usage'], result)
 
     @analysis.vendor(vendor.Ruijie)
-    @analysis.template_key(
-        'ruijie_os_show_memory.textfsm', ['system_memory_used_rate_precent']
-    )
-    def ruijie_os(template_info: TemplateInfo, result: AnalysisResult):
+    @analysis.base_info('memory_usage')
+    def ruijie_os(template: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
         """
-        for row in template_info['show memory']:
-            check_memory_usage(row['system_memory_used_rate_precent'], result)
+        check_memory_usage(template.base_info['memory_usage'], result)
 
     @analysis.vendor(vendor.Maipu)
-    @analysis.template_key('maipu_mypower_show_memory.textfsm', ['used_percent'])
-    def maipu_mypower(template_info: TemplateInfo, result: AnalysisResult):
+    @analysis.base_info('memory_usage')
+    def maipu_mypower(template: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
         """
-        for row in template_info['show memory']:
-            check_memory_usage(row['used_percent'], result)
+        check_memory_usage(template.base_info['memory_usage'], result)
 
     @analysis.vendor(vendor.H3C)
-    @analysis.template_key(
-        'hp_comware_display_memory.textfsm', ['used_rate', 'free_rate']
-    )
-    def hp_comware(template_info: TemplateInfo, result: AnalysisResult):
+    @analysis.base_info('memory_usage')
+    def hp_comware(template: TemplateInfo, result: AnalysisResult):
         """
         内存利用率高于80%，则告警。
         """
-        for row in template_info['display memory']:
-            if row['used_rate']:
-                check_memory_usage(row['used_rate'], result)
-
-            elif row['free_rate']:
-                check_memory_usage(100 - float(row.get('free_rate')), result)
+        check_memory_usage(template.base_info['memory_usage'], result)
 
 
-def check_memory_usage(memory_usage: float | str, result: AnalysisResult):
+def check_memory_usage(memory_usage: str, result: AnalysisResult):
     if memory_usage == '':
         return
 
-    if isinstance(memory_usage, str):
-        memory_usage = safe_str2float(memory_usage)
+    # 去除百分号，转换为float
+    memory_usage = safe_str2float(memory_usage[:-1])
 
     if memory_usage > 80:
         result.add_warning(f"内存利用率达到{round(memory_usage,1)}%")
