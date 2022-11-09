@@ -1,3 +1,4 @@
 from net_inspect.cli import app
 
-app()
+if __name__ == '__main__':
+    app()
