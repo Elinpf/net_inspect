@@ -414,7 +414,7 @@ class Cmd:
         if isinstance(self._parse_result, StoreFunc):
             try:
                 self._parse_result = self._parse_result()
-            except exception.NotParseAnyResult as e:
+            except exception.TemplateError as e:
                 self._parse_result = []
                 logger.debug(e)
 
