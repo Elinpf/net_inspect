@@ -277,7 +277,7 @@ class Device:
         for _, cmd in self.cmds.items():
             try:
                 # 首先判断是否为无效命令
-                if not cmd.is_vaild(self._vendor.INVALID_STR):
+                if not cmd.check_valid(self._vendor.INVALID_STR):
                     raise exception.TemplateError(
                         f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} 无效命令回显.'
                     )
@@ -394,7 +394,7 @@ class Cmd:
         """
         self._parse_result = result
 
-    def is_vaild(self, invalid_str: Optional[str] = None) -> bool:
+    def check_valid(self, invalid_str: Optional[str] = None) -> bool:
         """判断命令的内容是否为有效内容
         Args:
             invalid_str: 如果命令的内容包含这个字符串，则认为命令无效
