@@ -59,7 +59,7 @@ def test_cluster_for_parse_file(shared_datadir):
     cluster.plugin_manager = plugin_manager
     cluster.input(shared_datadir / 'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
     cluster.parse()
-    res = cluster.devices[0].cmds['dis version']._parse_result
+    res = cluster.devices[0].cmds['dis version'].parse_result
     assert res[0]['vrp_version'] == '8.180'
 
 
@@ -74,7 +74,7 @@ def test_cluster_cmd_search_function(shared_datadir):
     cluster.parse()
     cmd = cluster.devices[0].search_cmd('dis ver')
     assert cmd.command == 'dis version'
-    res = cmd._parse_result
+    res = cmd.parse_result
     assert res[0]['vrp_version'] == '8.180'
 
 

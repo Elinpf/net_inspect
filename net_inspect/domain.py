@@ -8,13 +8,15 @@ from typing import Dict, Iterator, List, Optional, Tuple, Type
 from . import exception
 from .base_info import BaseInfo, EachVendorDeviceInfo
 from .data import pystr
-from .func import NoneSkip, pascal_case_to_snake_case
+from .func import NoneSkip, StoreFunc, pascal_case_to_snake_case
 from .logger import logger
 from .vendor import DefaultVendor
 
 
 class Cluster:
     """作为设备的集合"""
+
+    attributes: Tuple[str, ...] = ['plugin_manager', 'devices', 'base_info_handler']
 
     def __init__(self):
         self._plugin_manager: PluginManagerAbc = None
@@ -241,7 +243,7 @@ class Device:
         if not command:
             return []
 
-        return command._parse_result
+        return command.parse_result
 
     def save_to_cmds(self, cmd_contents: Dict[str, str]):
         """将分割好的命令字典保存到设备的命令列表中"""
@@ -280,7 +282,9 @@ class Device:
                         f'platform: {self._vendor.PLATFORM!r} cmd: {cmd.command!r} 无效命令回显.'
                     )
 
-                parse_result = self._plugin_manager.parse(cmd, self.vendor.PLATFORM)
+                parse_result = StoreFunc(
+                    self._plugin_manager.parse, cmd, self.vendor.PLATFORM
+                )
                 cmd.update_parse_reslut(parse_result)
             except exception.TemplateError as e:
                 logger.debug(
@@ -352,7 +356,7 @@ class Cmd:
         """
         self._command: str = ''
         self._content: str = ''
-        self._parse_result: List[Dict[str, str]] = []
+        self._parse_result: List[Dict[str, str]] | StoreFunc = []
 
         self.command = cmd
         self.content = content
@@ -381,8 +385,13 @@ class Cmd:
     def content(self, stream: str):
         self._content = stream
 
-    def update_parse_reslut(self, result: List[Dict[str, str]]):
-        """在取到解析结果后，更新解析结果"""
+    def update_parse_reslut(self, result: List[Dict[str, str]] | StoreFunc):
+        """在取到解析结果后，更新解析结果, 也可以传入一个 StoreFunc, 作为延迟执行
+
+        Args:
+            result: 解析结果
+
+        """
         self._parse_result = result
 
     def is_vaild(self, invalid_str: Optional[str] = None) -> bool:
@@ -401,6 +410,14 @@ class Cmd:
 
     @property
     def parse_result(self) -> List[Dict[str, str]]:
+        """返回解析结果"""
+        if isinstance(self._parse_result, StoreFunc):
+            try:
+                self._parse_result = self._parse_result()
+            except exception.NotParseAnyResult as e:
+                self._parse_result = []
+                logger.debug(e)
+
         return self._parse_result
 
 
