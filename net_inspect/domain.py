@@ -410,7 +410,11 @@ class Cmd:
 
     @property
     def parse_result(self) -> List[Dict[str, str]]:
-        """返回解析结果"""
+        """返回解析结果, 如果是 StoreFunc 则执行并返回结果
+
+        Returns:
+            List[Dict[str, str]]: 解析结果
+        """
         if isinstance(self._parse_result, StoreFunc):
             try:
                 self._parse_result = self._parse_result()
