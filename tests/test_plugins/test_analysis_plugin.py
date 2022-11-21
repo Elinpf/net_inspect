@@ -120,7 +120,7 @@ def init_analysis_plugin(
 def test_analysis_plugin_with_cluster(shared_datadir):
     """测试AnalysisPlugin插件，能够正确获取templates中的信息"""
     cluster = init_analysis_plugin(shared_datadir)
-    res = cluster.devices[0].cmds['dis version']._parse_result
+    res = cluster.devices[0].cmds['dis version'].parse_result
     assert res[0]['vrp_version'] == '8.180'
 
     result = cluster.devices[0]._analysis_result
