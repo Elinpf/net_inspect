@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, List, Tuple
+from typing import TYPE_CHECKING, List, Tuple, Optional
 
 from ..domain import OutputPluginAbstract
 from ..third_party.excel import CellContext, Excel
@@ -41,10 +41,18 @@ class OutputPluginWithExcelReport(OutputPluginAbstract):
         sn_lines: int = 10  # 序列号至少行数
 
     def __init__(self):
-        self.excel = Excel()
+        self._excel: Optional[Excel] = None
         self.next_row = 1  # table的起始行号
 
         self.values = self.Values()
+
+    @property
+    def excel(self) -> Excel:
+        if not self._excel:
+            self._excel = Excel()
+        
+        return self._excel
+        
 
     def main(self):
         """主程序"""

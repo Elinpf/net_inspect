@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, List, Tuple
 
 try:
@@ -105,18 +104,21 @@ class Excel:
 class CellContext:
     """对单元格设置进行集成"""
 
-    @dataclass
     class Style:
-        align: str = Alignment(horizontal='center', vertical='center')
-        border: str = Border(
-            left=Side(border_style='thin', color='000000'),
-            right=Side(border_style='thin', color='000000'),
-            top=Side(border_style='thin', color='000000'),
-            bottom=Side(border_style='thin', color='000000'),
-        )
-        font: str = Font(
-            name='等线', size=10, bold=False, italic=False, strike=False, color='000000'
-        )
+        def __init__(self):
+            if not CHECK_IMPORT:
+                raise ImportError(msg)  # pragma: no cover
+
+            self.align: str = Alignment(horizontal='center', vertical='center')
+            self.border: str = Border(
+                left=Side(border_style='thin', color='000000'),
+                right=Side(border_style='thin', color='000000'),
+                top=Side(border_style='thin', color='000000'),
+                bottom=Side(border_style='thin', color='000000'),
+            )
+            self.font: str = Font(
+                name='等线', size=10, bold=False, italic=False, strike=False, color='000000'
+            )
 
     def __init__(self, value: str):
         if not CHECK_IMPORT:
