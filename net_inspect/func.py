@@ -99,6 +99,18 @@ def safe_str2float(string: str) -> float:
         return 0.0
 
 
+class StoreFunc:
+    """存储函数的类，用于延迟调用函数"""
+
+    def __init__(self, func, *args, **kwargs):
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self):
+        return self.func(*self.args, **self.kwargs)
+
+
 class SkipWithBlock(Exception):
     pass
 

@@ -46,7 +46,7 @@ class DefaultVendor:
                 re.compile('(' + reg_extend(cls.VERSION_COMMAND) + ')$', re.IGNORECASE),
                 cmd,
             ):
-                if cmds[cmd].is_vaild(cls.INVALID_STR):
+                if cmds[cmd].check_valid(cls.INVALID_STR):
                     return cmd
         return ''
 

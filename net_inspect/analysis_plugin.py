@@ -338,7 +338,7 @@ class AnalysisPluginAbc(AnalysisPluginAbstract):
                 continue
 
             temp_list = []
-            for row in cmd_find._parse_result:  # 将需要的键值取出来
+            for row in cmd_find.parse_result:  # 将需要的键值取出来
                 try:
                     _ = {key: row[key.lower()] for key in keys}
                     temp_list.append(_)

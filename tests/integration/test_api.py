@@ -49,7 +49,7 @@ def test_run_parse(shared_datadir):
     net.run_input(shared_datadir / 'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
 
     net.run_parse()
-    res = net.cluster.devices[0].cmds['dis version']._parse_result
+    res = net.cluster.devices[0].cmds['dis version'].parse_result
     assert res[0]['vrp_version'] == '8.180'
 
 
@@ -60,7 +60,7 @@ def test_run_parse_with_default(shared_datadir):
     net.run_input(shared_datadir / 'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
 
     net.run_parse()
-    res = net.cluster.devices[0].cmds['dis version']._parse_result
+    res = net.cluster.devices[0].cmds['dis version'].parse_result
     assert res[0]['vrp_version'] == '8.180'
 
 
@@ -71,7 +71,7 @@ def test_run_parse_with_default2(shared_datadir):
     cluster = net.run_input(shared_datadir / 'log_files/B_FOO_BAR_AR01_21.1.1.1.diag')
 
     cluster.parse()
-    res = cluster.devices[0].cmds['dis version']._parse_result
+    res = cluster.devices[0].cmds['dis version'].parse_result
     assert res[0]['vrp_version'] == '8.180'
 
 
