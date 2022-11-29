@@ -43,22 +43,29 @@ class Excel:
         for col in range(1, column_index_from_string(max_col) + 1):
             self.sheet.column_dimensions[get_column_letter(col)].width = width
 
-    def write_row(self, row: List[CellContext], merge: List[Tuple[str, str]] = None):
+    def write_row(self, row: List[CellContext | str], merge: List[Tuple[str, str]] = None):
         """写入一行数据"""
         self.write_rows([row], merge)
 
     def write_rows(
         self,
-        rows: List[List[CellContext]],
+        rows: List[List[CellContext | str]],
         merge: List[Tuple[str, str]] = None,
     ):
         """
         这个方法是按行来进行写入的, 并且合并操作是每行都会执行一次
 
         Args:
-            - rows 每行数据的每个数据
+            - rows: 每行数据的每个数据
+            - merge: 合并单元格的范围, 例如: [('A', 'B'), ('C', 'D')]
 
         """
+        # 将 str 转化为 CellContext
+        for row_list in rows:
+            for i, row in enumerate(row_list):
+                if isinstance(row, str):
+                    row_list[i] = CellContext(row)
+
 
         # 获取要跳过的列
         skip_cols = []
