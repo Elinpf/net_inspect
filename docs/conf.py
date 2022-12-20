@@ -5,7 +5,6 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import net_inspect
 import sphinx_rtd_theme
 
 project = 'net_inspect'
