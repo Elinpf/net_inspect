@@ -8,7 +8,22 @@ Welcome to net_inspect's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: 目录
+   :glob:
+
+   contents/introduction
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API 参考
+
+   reference/api
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 其他
+
+   others/console_input
 
 
 

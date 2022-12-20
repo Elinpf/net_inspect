@@ -4,3 +4,5 @@ dist
 coverage.xml
 poetry.lock
 .problem
+
+docs/_build
