@@ -34,7 +34,7 @@ class NetInspect:
         self._plugin_manager.analysis_plugin = self._plugins.get_analysis_plugin_list()
         self.cluster._plugin_manager = self._plugin_manager
 
-    def enbale_console_log(self, level: str = '', log_format: str = ''):
+    def enable_console_log(self, level: str = '', log_format: str = ''):
         """启用控制台日志
 
         Args:
@@ -162,7 +162,7 @@ class NetInspect:
 
     def set_external_templates(self, templates_dir: str):
         """设置外部模板目录
-        
+
         Args:
             templates_dir: 模板目录路径
         """

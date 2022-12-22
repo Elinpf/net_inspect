@@ -114,9 +114,9 @@ def main(
     net = NetInspect()
     net.set_plugins(input_plugin=input_plugin, output_plugin=output_plugin)
     if verbose == 1:
-        net.enbale_console_log('INFO')
+        net.enable_console_log('INFO')
     elif verbose == 2:
-        net.enbale_console_log('DEBUG')
+        net.enable_console_log('DEBUG')
 
     if plugin_list:
         print()
