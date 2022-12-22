@@ -128,6 +128,11 @@ class Cluster:
     def add_device_use_input_plugin_result(
         self, input_plugin_result: InputPluginResult
     ):
+        """通过 ``InputPluginResult`` 添加设备
+
+        Args:
+            input_plugin_result: ``InputPluginResult`` 对象
+        """
         self.save_device_with_cmds(input_plugin_result)
 
 
@@ -203,7 +208,7 @@ class DeviceInfo:
 
 
 class Device:
-    """作为设备的抽象"""
+    """设备类，用于保存每台设备的信息，并完成对设备的综合解析和查询工作"""
 
     def __init__(self):
         self.cmds: Dict[str, Cmd] = {}
@@ -216,7 +221,11 @@ class Device:
 
     @property
     def info(self) -> BaseInfo:
-        """设备基础信息，会在parse和analysis后更新"""
+        """设备基础信息，会在parse和analysis后更新
+
+        Returns:
+            BaseInfo: 设备基础信息
+        """
         if self._base_info is None:
             return BaseInfo()
         return self._base_info
@@ -231,10 +240,10 @@ class Device:
         return self._analysis_result
 
     def parse_result(self, cmd: str) -> List[dict]:
-        """解析命令结果
+        """获取解析命令结果, 参数 **cmd** 会自动进行模糊匹配。
 
         Args:
-            cmd: 命令
+            cmd: 需要获取解析结果的命令, 支持模糊匹配
 
         Returns:
             List[dict] | None: 解析结果
@@ -246,7 +255,11 @@ class Device:
         return command.parse_result
 
     def save_to_cmds(self, cmd_contents: Dict[str, str]):
-        """将分割好的命令字典保存到设备的命令列表中"""
+        """将分割好的命令字典保存到设备的命令列表中
+
+        Args:
+            cmd_contents: 命令字典
+        """
         for command, content in cmd_contents.items():
             cmd = Cmd(command)
             cmd.content = content
@@ -256,7 +269,7 @@ class Device:
             self.check_vendor()
 
     def check_vendor(self):
-        """检查厂商"""
+        """检查厂商, 无返回值，会直接修改设备的厂商属性"""
         vendor = self.vendor.check_vendor(self.cmds)
         self._vendor = vendor
 
@@ -301,10 +314,10 @@ class Device:
         查找命令, 返回Cmd类
 
         Args:
-
             cmd_name: 命令名
-        Return
-            Cmd类 或者 None
+
+        Returns:
+            Cmd | None: 命令类或者是个可以执行for的None类
         """
         res = None  # type: Tuple[Cmd, int]
         cmd_name_split = cmd_name.split()
@@ -369,6 +382,7 @@ class Cmd:
 
     @property
     def command(self) -> str:
+        """返回命令字符串"""
         return self._command
 
     @command.setter
@@ -378,7 +392,8 @@ class Cmd:
         self._command = ' '.join(cmd.split())
 
     @property
-    def content(self):
+    def content(self) -> str:
+        """返回回显字符串"""
         return self._content
 
     @content.setter
@@ -390,7 +405,6 @@ class Cmd:
 
         Args:
             result: 解析结果
-
         """
         self._parse_result = result
 
@@ -570,6 +584,7 @@ class InputPluginResult:
 
     @property
     def hostname(self):
+        """设备名称"""
         return self._device_info.name
 
     @hostname.setter
@@ -578,6 +593,7 @@ class InputPluginResult:
 
     @property
     def ip(self):
+        """管理IP"""
         return self._device_info.ip
 
     @ip.setter
@@ -599,6 +615,7 @@ class InputPluginResult:
 
     @property
     def cmd_dict(self) -> Dict[str, str]:
+        """返回命令字典"""
         return self._cmd_dict
 
     @cmd_dict.setter
@@ -790,7 +807,7 @@ class InputPluginAbstract(PluginAbstract):
 
     @abc.abstractmethod
     def main(self, file_path: str, stream: str) -> InputPluginResult:
-        """输入插件的具体实现
+        """重载此方法进行输入
 
         Args:
             file_path: 文件路径
@@ -832,6 +849,7 @@ class OutputPluginAbstract(PluginAbstract):
 
     @abc.abstractmethod
     def main(self):
+        """重载此方法进行输出"""
         raise NotImplementedError
 
     def check_args(self, *args: str):

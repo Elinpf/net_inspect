@@ -5,7 +5,6 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import sphinx_rtd_theme
 
 project = 'net_inspect'
 copyright = '2022, Elinpf'
@@ -22,6 +21,8 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     'sphinx_copybutton',
 ]
+
+master_doc = 'index'
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

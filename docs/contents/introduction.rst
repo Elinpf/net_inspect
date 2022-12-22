@@ -5,6 +5,8 @@
 
 使用 ``net_inspect`` 可以很方便的做到处理批量设备信息，多厂商型号设备数据统一调度和输出。
 
+特性：
+
 * 无需对设备进行特殊配置，只需要在设备上执行命令即可获取设备信息。
 * 智能识别设备名称，厂商，型号，版本，序列号等信息。
 * 智能分析设备的运行状态
@@ -33,7 +35,7 @@
 
     pip uninstall ntc-templates
 
-请放心 ``ntc-templates-elinpf`` 完全兼容 ``ntc-templates``，并且多了很多国产设备的支持。
+请放心 ``ntc-templates-elinpf`` 完全兼容 ``ntc-templates``，并且支持更多国产设备的命令。
 
 
 快速上手
@@ -78,7 +80,7 @@ logs 目录下包含了三台设备的console信息，分别是一台华为交�
             info.version, info.model, info.cpu_usage]))
 
 
-上面的代码展示了如何使用 ``net_inspect`` 进行批量设备信息的解析，然后不同厂商的信息内容通过统一的接口调用，
+上面的代码展示了如何使用 ``net_inspect`` 的 :obj:`~net_inspect.NetInspect` 进行批量设备信息的解析，然后不同厂商的信息内容通过统一的接口调用，
 将指定内容输出到屏幕上。
 
 输出内容如下::

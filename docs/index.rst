@@ -12,12 +12,22 @@ Welcome to net_inspect's documentation!
    :glob:
 
    contents/introduction
+   contents/framework
+   contents/base
+   contents/advance
 
 .. toctree::
    :maxdepth: 2
    :caption: API 参考
 
    reference/api
+   reference/cluster
+   reference/device
+   reference/cmd
+   reference/base_info
+   reference/input_plugin_result
+   reference/plugins
+   reference/vendor
 
 .. toctree::
    :maxdepth: 2

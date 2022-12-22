@@ -1,6 +1,6 @@
-net_inspect.api
-----------------
+NetInspect.API
+===============
 
-.. automodule:: net_inspect.api
+.. autoclass:: net_inspect.NetInspect
     :members:
     :undoc-members:
