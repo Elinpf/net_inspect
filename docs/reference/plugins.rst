@@ -6,8 +6,10 @@ Plugins 抽象
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 .. autoclass:: net_inspect.domain.OutputPluginAbstract
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

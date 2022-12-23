@@ -98,6 +98,44 @@ index 文件如下::
 启用日志
 --------
 
-net_inspect 默认不会输出任何日志，如果需要启用日志，可以使用 :meth:`~net_inspect.NetInspect.enable_console_log` 方法::
+net_inspect 默认不会输出任何日志，如果需要启用控制台日志，可以使用 :meth:`~net_inspect.NetInspect.enable_console_log` 方法::
 
-    net.enbale_console_log(level='DEBUG')
+    net.enable_console_log(level='DEBUG')
+
+或者想将日志保存在文件中，可以使用 :meth:`~net_inspect.NetInspect.enable_file_log` 方法::
+
+    net.enable_file_log(file_path='net_inspect.log', level='DEBUG', rotation='5MB')
+
+* ``file_path``: 日志文件路径
+* ``level``: 日志级别
+* ``rotation``: 日志文件大小，当日志文件大小超过 ``rotation`` 指定的大小时，会自动轮转日志文件
+
+运行
+-----
+
+在设置完成后，可以使用 :meth:`~net_inspect.NetInspect.run` 方法运行 net_inspect::
+
+    net.run(input_path='logs')
+
+
+此时 net_inspect 其实是依次执行了以下4个步骤:
+
+#. :meth:`~net_inspect.NetInspect.run_input`
+#. :meth:`~net_inspect.NetInspect.run_parse`
+#. :meth:`~net_inspect.NetInspect.run_analysis`
+#. :meth:`~net_inspect.NetInspect.run_output`
+
+.. note::
+
+    如果想单独执行某个步骤，可以使用 :meth:`~net_inspect.NetInspect.run_input` 、:meth:`~net_inspect.NetInspect.run_parse` 、:meth:`~net_inspect.NetInspect.run_analysis` 、:meth:`~net_inspect.NetInspect.run_output` 方法
+
+.. note::
+
+    如果没有指定 ``output_plugin`` 则会自动跳过 :meth:`~net_inspect.NetInspect.run_output` 步骤
+
+执行完成后，设备的所有信息会保存在 :attr:`~net_inspect.NetInspect.cluster` 属性中, :attr:`~net_inspect.NetInspect.cluster` 表示设备集群，
+是一个 :class:`~net_inspect.Cluster` 对象，可以通过 :attr:`~net_inspect.cluster.Cluster.devices` 属性获取设备列表::
+
+    print(len(net.cluster.devices))
+
+

@@ -6,6 +6,11 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('..'))
+
 project = 'net_inspect'
 copyright = '2022, Elinpf'
 author = 'Elinpf'
