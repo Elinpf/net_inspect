@@ -113,7 +113,7 @@ net_inspect 默认不会输出任何日志，如果需要启用控制台日志�
 运行
 -----
 
-在设置完成后，可以使用 :meth:`~net_inspect.NetInspect.run` 方法运行 net_inspect::
+在设置完成后，就可以使用 :meth:`~net_inspect.NetInspect.run` 方法运行 net_inspect::
 
     net.run(input_path='logs')
 
@@ -138,4 +138,135 @@ net_inspect 默认不会输出任何日志，如果需要启用控制台日志�
 
     print(len(net.cluster.devices))
 
+使用BaseInfo
+--------------
 
+net_inspect 会自动收集识别设备的基本信息，包括设备名称、设备厂商、设备类型、本版、IP、序列号信息、CPU利用率等等。
+
+这些信息都存放在 :attr:`~net_inspect.Device.info` 中，是一个 :class:`~net_inspect.BaseInfo` 对象::
+
+    for device in net.cluster.devices:
+        print(device.info)
+
+其中一台的输出信息如下::
+
+    BaseInfo(
+        hostname='Switch_C',
+        file_path='logs\\Switch_C.log',
+        vendor='H3C',
+        vendor_platform='hp_comware',
+        model='S9508E-V',
+        version='5.20 Release: 1238P08',
+        uptime='255 weeks, 5 days, 8 hours, 20 minutes',
+        ip='24.45.254.254',
+        sn=[
+            ('LSR2GP24LEB1', '210xxxxxxxxxxxx00041'),
+            ('LSR2GT48LEB1', '210xxxxxxxxxxxx00038'),
+            ('LSR1SRP2B1', '21023xxxxxxxxxxxx039'),
+            ('LSR1SRP2B1', '21023xxxxxxxxxxxx009')
+        ],
+        cpu_usage='1%',
+        memory_usage='20%',
+        analysis=AnalysisInfo(cpu=False, memory=False, fan=False, power=None)
+    )
+
+例如想获取设备的版本信息，可以使用 :attr:`~net_inspect.BaseInfo.version` 属性::
+
+        print(device.info.version)
+
+里面还包含了 :class:`~net_inspect.AnalysisInfo` 对象，用于标记设备的CPU、内存、风扇、电源是否正常::
+
+    print(device.info.analysis)
+
+输出如下::
+
+    AnalysisInfo(cpu=False, memory=False, fan=False, power=None)
+
+每个属性的意思是是否异常，如果为 ``True`` 表示异常，如果为 ``False`` 表示正常，如果为 ``None`` 表示未知。
+
+
+搜索设备
+------------
+
+通过 **名称** 搜索设备，可以使用 :meth:`~net_inspect.NetInspect.search` 方法，返回的是符合设备名称的 :class:`~net_inspect.Device` 集合 ``List[Device]`` ::
+
+    for device in net.search('Switch_C'):
+        print(device.info.hostname)
+
+
+获取解析结果
+-------------
+
+在 :class:`~net_inspect.Device` 中有个 :meth:`~net_inspect.Device.parse_result` 方法，
+获取设备对命令的解析结果::
+
+    for row in device.parse_result('show ip int bri'):
+        print(row)
+
+返回类型是 ``List[dict]`` , 输出部分结果如下::
+
+    {'interface': 'LoopBack0', 'ip': '24.44.1.248', 'mask': '32', 'physical': 'up', 'protocol': 'up(s)'}
+    {'interface': 'NULL0', 'ip': 'unassigned', 'mask': '', 'physical': 'up', 'protocol': 'up(s)'}
+    {'interface': 'Vlanif100', 'ip': '11.22.237.25', 'mask': '30', 'physical': 'up', 'protocol': 'up'}
+    {'interface': 'Vlanif101', 'ip': '11.22.237.130', 'mask': '28', 'physical': 'up', 'protocol': 'up'}
+    {'interface': 'Vlanif102', 'ip': '11.22.237.146', 'mask': '28', 'physical': 'up', 'protocol': 'up'}
+    {'interface': 'Vlanif103', 'ip': '11.22.236.74', 'mask': '29', 'physical': 'up', 'protocol': 'up'}
+    {'interface': 'XGigabitEthernet1/0/0', 'ip': '11.22.1.6', 'mask': '30', 'physical': 'up', 'protocol': 'up'}
+    {'interface': 'XGigabitEthernet1/0/1', 'ip': '11.22.1.65', 'mask': '30', 'physical': 'up', 'protocol': 'up'}
+
+可以看到，是对设备的 ``show ip int bri`` 命令的解析，这个命令的全称是 ``show ip interface brief``,
+:meth:`~net_inspect.Device.parse_result` 方法会自动对命令进行模糊识别， 使用 **简写** 也可以准确识别到命令，
+解析出来的内容为 `ntc-templates-elinpf <https://github.com/Elinpf/ntc-templates>`_ 中模板的解析结果。
+例如这个案例中，由于设备厂商是 ``Huawei``, 所以对应的模板是
+`huawei_vrp_show_ip_interface_brief.textfsm <https://github.com/Elinpf/ntc-templates/blob/master/ntc_templates/templates/huawei_vrp_display_ip_interface_brief.textfsm>`_ ，
+
+如果我们想只将接口状态提取出来， 可以这么做
+
+.. code-block:: python
+    :emphasize-lines: 8-14
+
+    from net_inspect import NetInspect
+
+    net = NetInspect()
+
+    net.set_input_plugin('console')
+    net.run('logs')
+
+    for device in net.cluster.devices:
+        for row in device.parse_result('dis ip int bri'):
+            print(
+                'device: `{}` interface: `{}` status is `{}`'.format(
+                    device.info.hostname, row['interface'], row['protocol']
+                )
+            )
+
+
+部分输出结果如下::
+
+    device: `Switch_A` interface: `Ethernet0/0/0` status is `down`
+    device: `Switch_A` interface: `LoopBack0` status is `up(s)`
+    device: `Switch_A` interface: `NULL0` status is `up(s)`
+    device: `Switch_A` interface: `Vlanif100` status is `up`
+    device: `Switch_A` interface: `Vlanif101` status is `up`
+    device: `Switch_A` interface: `Vlanif102` status is `up`
+    device: `Switch_A` interface: `Vlanif103` status is `up`
+    device: `Switch_A` interface: `XGigabitEthernet1/0/0` status is `up`
+    device: `Switch_A` interface: `XGigabitEthernet1/0/1` status is `up`
+    device: `Switch_A` interface: `XGigabitEthernet1/0/2` status is `up`
+
+获取执行命令内容
+-----------------
+
+当需要获取设备执行命令的内容(content)时，可以使用 :meth:`~net_inspect.Device.search_cmd` 方法::
+
+    with device.search_cmd('show version') as cmd:
+        print(cmd.content)
+
+.. note::
+
+    :meth:`~net_inspect.Device.search_cmd` 方法返回的是一个上下文管理器，返回 :class:`~net_inspect.Cmd` 类
+
+.. note::
+
+    :meth:`~net_inspect.Device.search_cmd` 方法所需要的参数可以是命令的简写，支持模糊查询
+    

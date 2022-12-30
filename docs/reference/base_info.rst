@@ -1,5 +1,5 @@
-BaseInfo
-==========
+net_inspect.BaseInfo
+======================
 
 .. autoclass:: net_inspect.BaseInfo
     :members:

@@ -41,6 +41,61 @@
 增加base_info条目
 -----------------
 
-在 :class:`~net_inspect.BaseInfo` 中，我们定义了一些基本的信息，必须 ``hostname``, ``ip``, ``cpu_usage`` 等等，
-但是有时候我们还需要增加一些自定义的字段，方便后续调用。
+在 :class:`~net_inspect.BaseInfo` 中，net_inspect 定义了一些基本的信息，比如 ``hostname``, ``ip``, ``cpu_usage`` 等等， 实现跨设备类型的统一调用。
+但是有时候还需要增加一些自定义的字段，方便后续统一调用。
+
+
+例如，我们需要增加一个 ``clock`` 字段，用于获取设备的时钟信息，我们可以这样做:
+
+.. code-block:: python
+    :emphasize-lines: 5,10,27
+
+    from net_inspect import NetInspect, EachVendorDeviceInfo, BaseInfo, Device
+
+
+    class AppendClock(BaseInfo):
+        clock: str = ''  # 时钟信息
+
+
+    class EachVendorWithClock(EachVendorDeviceInfo):
+
+        base_info_class = AppendClock  # 设置base_info的类
+
+        def do_huawei_vrp_baseinfo_2(self, device: Device, info: AppendClock):
+            # 添加do_<vendor_platform>_baseinfo_<something>方法，可以自动运行
+            for row in device.parse_result('display clock'):
+                info.clock = f'{row["year"]}-{row["month"]}-{row["day"]} {row["time"]}'
+
+        def do_hp_comware_baseinfo_2(self, device: Device, info: AppendClock):
+            for row in device.parse_result('display clock'):
+                info.clock = f'{row["year"]}-{row["month"]}-{row["day"]} {row["time"]}'
+
+        # ... 可自行其他厂商的do_<vendor_platform>_baseinfo_<something>方法
+
+
+    if __name__ == '__main__':
+        net = NetInspect()
+        net.set_plugins(input_plugin='console')
+        net.set_base_info_handler(EachVendorWithClock)  # 设置获取设备基本信息的处理类
+        net.run(input_path='log')
+
+        print('total devices:', len(net.cluster.devices))
+
+        for device in net.cluster.devices:
+            info = device.info  # type: AppendClock
+            print(' | '.join([info.hostname, info.clock]))
+
+执行的输出结果如下::
+
+    total devices: 3
+    Switch_A | 2021-03-19 10:23:08
+    Switch_B | 2021-03-19 10:24:17
+    Switch_C | 2021-03-19 10:32:17
+
+可以看到，我们增加 ``huawei_vrp`` 和 ``hp_comware`` 平台的 ``clock`` 信息，使用 ``device.info.clock`` 进行统一调用。
+
+.. note::
+    
+    没有实现 ``clock`` 的平台，将会以空字符串作为默认值
+
 

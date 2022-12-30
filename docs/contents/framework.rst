@@ -17,7 +17,10 @@ base_info        基本信息组件
 input_plugin
 -------------
 
-input_plugin 的作用是将文件中的内容读取到内存中，提取设备名称。然后将对应的 ``cmd - contents`` 内容写入到
+net_inspect 在执行 :meth:`~net_inspect.NetInspect.run_input` 方法时，会将路径下的所有 ``.txt`` 和 ``.log`` 文件作为输入，
+然后将文件内容作为参数传递给 input_plugin。
+
+input_plugin 的作用是将设备名称提取出来，并且将对应的 ``cmd - contents`` 内容写入到
 :class:`~net_inspect.InputPluginResult` 返回。
 
 完成这一步，就可以得到 :class:`~net_inspect.Device` 对象了。
