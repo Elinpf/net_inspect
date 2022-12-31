@@ -626,7 +626,13 @@ class InputPluginResult:
 
 
 class AlarmLevel:
-    """告警级别"""
+    """分析模块执行后，会对告警提供告警级别，并且记录告警内容
+    
+    告警分为3级:
+    * ``0`` - 正常消息，无告警
+    * ``1`` - 需要关注的告警
+    * ``2`` - 需要立即处理的告警
+    """
 
     NORMAL = 0
     FOCUS = 1
@@ -643,7 +649,8 @@ class AlarmLevel:
         self.plugin_cls = plugin_cls
 
     @property
-    def level(self):
+    def level(self) -> int:
+        """级别"""
         return self._level
 
     @level.setter
@@ -654,6 +661,7 @@ class AlarmLevel:
 
     @property
     def plugin_name(self) -> str:
+        """分析插件的类名"""
         if self.plugin_cls is None:
             return ''
         return self.plugin_cls.__name__
@@ -675,7 +683,7 @@ class AlarmLevel:
 
     @property
     def above_focus(self) -> bool:
-        """是否包含关注级别, 即至少包含关注级别"""
+        """是否在关注级别及以上"""
         return self._level >= AlarmLevel.FOCUS
 
     @property
@@ -725,16 +733,17 @@ class AnalysisResult:
         获取指定插件的结果
 
         ``plugin_name`` 可以写的形式：
-        - 完整插件名称 (e.g 'AnalysisPluginWithPowerStatus)
-        - 下划线 (e.g 'analysis_plugin_with_power_status')
-        - 全小写 (e.g 'analysispluginwithpowerstatus')
-        - 简写 (e.g 'power status')
+
+        * 完整插件名称 (e.g ``AnalysisPluginWithPowerStatus`` )
+        * 下划线 (e.g ``analysis_plugin_with_power_status`` )
+        * 全小写 (e.g ``analysispluginwithpowerstatus`` )
+        * 简写 (e.g ``power status`` 或者 ``power_status'`` )
 
         Args:
-            - plugin_name: 插件名称
+            plugin_name: 插件名称
 
         Return:
-            - AlarmLevel: AlarmLevel对象
+            AlarmLevel: AlarmLevel对象
         """
         ret = AnalysisResult()
         for alarm in self._result:

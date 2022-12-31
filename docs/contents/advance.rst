@@ -77,7 +77,7 @@
         net = NetInspect()
         net.set_plugins(input_plugin='console')
         net.set_base_info_handler(EachVendorWithClock)  # 设置获取设备基本信息的处理类
-        net.run(input_path='log')
+        net.run(input_path='logs')
 
         print('total devices:', len(net.cluster.devices))
 
@@ -96,6 +96,66 @@
 
 .. note::
     
-    没有实现 ``clock`` 的平台，将会以空字符串作为默认值
+    没有实现 ``clock`` 的平台，将会以空字符串作为默认值。
+
+增加分析条目
+-------------
+
+net_inspect 同样可以增加自定义的分析条目，会在 :meth:`~net_inspect.NetInspect.run_analysis` 执行的时候自动运行。
+
+例如，我们需要增加一个检查OSPF邻居状态的分析模块
+
+.. code-block:: python
+    :emphasize-lines: 5,10,27
+
+    from __future__ import annotations
+
+    from typing import TYPE_CHECKING
+    from net_inspect import NetInspect, vendor
+    from net_inspect.analysis_plugin import analysis, AnalysisPluginAbc
+
+    if TYPE_CHECKING:
+        from net_inspect.analysis_plugin import TemplateInfo
+        from net_inspect.domain import AnalysisResult
 
 
+    class AnalysisPluginWithOSPFStatus(AnalysisPluginAbc):
+        """OSPF status 状态不能为Init"""
+
+        @analysis.vendor(vendor.Huawei)
+        @analysis.template_key('huawei_vrp_display_ospf_peer_brief.textfsm', ['neighbor', 'state'])
+        def huawei_vrp(template: TemplateInfo, result: AnalysisResult):
+            """华为状态检查"""
+            for row in template['display ospf peer brief']:
+                if row['state'].lower() == 'init':
+                    result.add_warning(f'{row["neighbor"]} is in init state')
+
+
+    if __name__ == '__main__':
+        net = NetInspect()
+        net.set_plugins(input_plugin='console')
+        net.run(input_path='log')
+
+        print('total devices:', len(net.cluster.devices))
+
+        for device in net.cluster.devices:
+            ospf_status = device.analysis_result.get('ospf status')
+            warning_list = []
+            for alarm in ospf_status:
+                if alarm.is_warning:
+                    warning_list.append(alarm.message)
+
+            print(' | '.join([device.info.hostname, ', '.join(warning_list)]))
+
+
+这样就得到了一个可重复利用的分析模块，后续在想要检查OSPF邻居状态的时候，只需要调用这个模块即可。
+
+这里只添加了 ``huawei_vrp`` 这一个平台，其他平台增加方法同上。
+
+编写这个需要注意：
+
+#. ``@analysis.template_key`` 中第一个参数是 ``textfsm`` 文件名称， 第二个是文件
+#. 类方法不需要self这个关键字。
+#. 结果加入到result中即可，不需要返回值。
+#. 整个过程不用单独设置，所有信息会直接写入analysis全局变量中。
+#. 类注释和方法注释必须要写，因为会用到这个注释作为分析结果的标题。

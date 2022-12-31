@@ -63,7 +63,7 @@ def print_analysis_list():
         rows.append([plugin_name, ', '.join(sorted(vendors)), str(len(vendors))])
 
     # 打印表格
-    print_table('分析模块支持的厂商平台', ['插件名称', '厂商', '数量'], rows)
+    print_table('分析模块支持的厂商平台', ['插件名称', '支持平台', '数量'], rows)
     print()
 
 
@@ -105,7 +105,7 @@ def main(
     ),
     plugin_list: bool = typer.Option(False, '--plugin-list', '-l', help='显示插件列表'),
     analysis_list: bool = typer.Option(
-        False, '--analysis-list', '-L', help='显示分析插件所支持的厂商列表'
+        False, '--analysis-list', '-L', help='显示分析插件所支持的平台列表'
     ),
     base_info_list: bool = typer.Option(
         False, '--base-info-list', '-b', help='显示基础信息属性列表'

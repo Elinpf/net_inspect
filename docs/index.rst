@@ -25,8 +25,9 @@ Welcome to net_inspect's documentation!
    reference/device
    reference/cmd
    reference/base_info
-   reference/input_plugin_result
    reference/plugins
+   reference/input_plugin_result
+   reference/analysis_result
    reference/vendor
 
 .. toctree::

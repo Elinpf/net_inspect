@@ -143,7 +143,7 @@ net_inspect 默认不会输出任何日志，如果需要启用控制台日志�
 
 net_inspect 会自动收集识别设备的基本信息，包括设备名称、设备厂商、设备类型、本版、IP、序列号信息、CPU利用率等等。
 
-这些信息都存放在 :attr:`~net_inspect.Device.info` 中，是一个 :class:`~net_inspect.BaseInfo` 对象::
+这些信息都存放在 :attr:`~net_inspect.Device.info` 中，是 :class:`~net_inspect.BaseInfo` 的实例::
 
     for device in net.cluster.devices:
         print(device.info)
@@ -270,3 +270,33 @@ net_inspect 会自动收集识别设备的基本信息，包括设备名称、�
 
     :meth:`~net_inspect.Device.search_cmd` 方法所需要的参数可以是命令的简写，支持模糊查询
     
+
+获取分析结果
+------------
+
+net_inspect 有 ``analysis_plugin`` 模块，可以做一定程度的设备运行情况分析，比如设备的内存使用率，CPU使用率是否在正常范围，
+电源和风扇是否处于正常状态等。
+
+.. note::
+
+    使用命令行命令 ``net_inspect -l`` 查看当前支持的分析插件
+
+    使用命令行命令 ``net_inspect -L`` 查看分析插件支持的厂商平台
+
+可以通过 :attr:`~net_inspect.Device.analysis_result` 属性获取分析结果, 是 :class:`~net_inspect.domain.AnalysisResult` 的实例，
+此时的 ``analysis_result`` 是包含了所有分析插件的结果，如果只想获取某个分析插件的结果，可以使用
+使用 :meth:`~net_inspect.domain.AnalysisResult.get` 方法可以获取单独插件的 ``analysis_result``::
+
+    # 获取所有分析插件的结果
+    for alarm in device.analysis_result:
+        print(alarm.message)
+
+    # or 获取单独插件的结果
+    cpu_status = device.analysis_result.get('cpu_status')
+    for alarm in cpu_status:
+        if alarm.above_focus: # 只获取关注级别以上的告警
+            print(alarm.message)
+
+    
+    
+

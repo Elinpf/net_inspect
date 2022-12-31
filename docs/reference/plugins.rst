@@ -13,3 +13,9 @@ Plugins 抽象
     :undoc-members:
     :show-inheritance:
     :inherited-members:
+
+.. autoclass:: net_inspect.analysis_plugin.AnalysisPluginAbc
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
