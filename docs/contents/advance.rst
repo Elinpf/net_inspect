@@ -106,7 +106,7 @@ net_inspect 同样可以增加自定义的分析条目，会在 :meth:`~net_insp
 例如，我们需要增加一个检查OSPF邻居状态的分析模块
 
 .. code-block:: python
-    :emphasize-lines: 5,10,27
+    :emphasize-lines: 5,15-17
 
     from __future__ import annotations
 
@@ -154,7 +154,7 @@ net_inspect 同样可以增加自定义的分析条目，会在 :meth:`~net_insp
 
 编写这个需要注意：
 
-#. ``@analysis.template_key`` 中第一个参数是 ``textfsm`` 文件名称， 第二个是文件
+#. ``@analysis.template_key`` 中第一个参数是 ``textfsm`` 文件名称， 第二个是其中将要用到的变量。
 #. 类方法不需要self这个关键字。
 #. 结果加入到result中即可，不需要返回值。
 #. 整个过程不用单独设置，所有信息会直接写入analysis全局变量中。
