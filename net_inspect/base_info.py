@@ -43,7 +43,17 @@ class BaseInfo:
 
 
 class EachVendorDeviceInfo(Singleton):
-    """可以重载这个类，实现不同的输出格式, 重写或者增加以`do_`开头的方法"""
+    """
+    这个类的作用是实现各个厂商设备的基本信息获取，将获取到的信息转换格式保存到BaseInfo类中
+
+    ``base_info_class`` , ``analysis_info_class`` , ``append_analysis_items`` 均可以重载
+
+    自行写入方法::
+
+        def do_<vendor_platform>_baseinfo_<func_name>(device: Device, base_info: BaseInfo):
+            ...
+
+    """
 
     analysis_items = [
         ('cpu_status', 'cpu'),
@@ -327,9 +337,9 @@ class EachVendorDeviceInfo(Singleton):
         """
         更新设备检查信息, 重载追加的内容也会添加进来
 
-        如果没有检查信息，则为``None``，
-        如果检查信息为告警级别，则为``True``
-        如果检查信息为正常或者关注级别，则为``False``
+        如果没有检查信息，则为 ``None`` ，
+        如果检查信息为告警级别，则为 ``True``
+        如果检查信息为正常或者关注级别，则为 ``False``
         """
         info = device.info
 
