@@ -5,6 +5,8 @@
 [![codecov](https://codecov.io/gh/Elinpf/net_inspect/branch/master/graph/badge.svg?token=SVPWMH4XHY)](https://codecov.io/gh/Elinpf/net_inspect)
 [![Documentation Status](https://readthedocs.org/projects/net-inspect/badge/?version=latest)](https://net-inspect.readthedocs.io/zh/latest/?badge=latest)
 
+[net_inspect 教程](https://net-inspect.readthedocs.io/zh/latest/)
+
 ## 前言
 
 作为网络工程师，需要经常收集设备的设备信息，比如设备CPU利用率、内存利用率、软件版本、序列号、接口状态等，这些信息可以用来监控网络设备的运行状态，也可以用来做设备的资产管理。

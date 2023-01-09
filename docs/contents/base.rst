@@ -68,20 +68,21 @@ index 文件编写 `规则 <https://github.com/Elinpf/ntc-templates#index-file>`
 假设我们需要添加三个厂商的 ``clock`` 模板, 文件夹结构如下::
 
     ├── local_templates
+    │   ├── cisco_ios_show_clock.textfsm
     │   ├── huawei_vrp_display_clock.textfsm
     │   ├── hp_comware_display_clock.textfsm
-    │   ├── cisco_ios_show_clock.textfsm
     │   ├── index
 
 index 文件如下::
 
     Template, Hostname, Platform, Command
 
+    cisco_ios_show_clock.textfsm, .*, cisco_ios, sh[[ow]] clo[[ck]]
+
     huawei_vrp_display_clock.textfsm, .*, huawei_vrp, dis[[play]] clo[[ck]]
 
     hp_comware_display_clock.textfsm, .*, hp_comware, di[[splay]] clo[[ck]]
 
-    cisco_ios_show_clock.textfsm, .*, cisco_ios, sh[[ow]] clo[[ck]]
 
 设置模板库路径
 ^^^^^^^^^^^^^^
