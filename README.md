@@ -3,6 +3,9 @@
 [![GitHub stars](https://img.shields.io/github/stars/Elinpf/net_inspect)](https://github.com/Elinpf/net_inspect/stargazers)
 [![GitHub license](https://img.shields.io/github/license/Elinpf/net_inspect)](https://github.com/Elinpf/net_inspect/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/Elinpf/net_inspect/branch/master/graph/badge.svg?token=SVPWMH4XHY)](https://codecov.io/gh/Elinpf/net_inspect)
+[![Documentation Status](https://readthedocs.org/projects/net-inspect/badge/?version=latest)](https://net-inspect.readthedocs.io/zh/latest/?badge=latest)
+
+[net_inspect 教程](https://net-inspect.readthedocs.io/zh/latest/)
 
 ## 前言
 

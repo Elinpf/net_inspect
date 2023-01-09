@@ -34,7 +34,7 @@ class NetInspect:
         self._plugin_manager.analysis_plugin = self._plugins.get_analysis_plugin_list()
         self.cluster._plugin_manager = self._plugin_manager
 
-    def enbale_console_log(self, level: str = '', log_format: str = ''):
+    def enable_console_log(self, level: str = '', log_format: str = ''):
         """启用控制台日志
 
         Args:
@@ -83,15 +83,27 @@ class NetInspect:
         }
 
     def get_input_plugins(self) -> Dict[str, Type[PluginAbstract]]:
-        """取得所有的输入插件"""
+        """取得所有的输入插件
+
+        Returns:
+            返回所有的输入插件的字典类型
+        """
         return self._plugins.input_plugins
 
     def get_output_plugins(self) -> Dict[str, Type[PluginAbstract]]:
-        """取得所有的输出插件"""
+        """取得所有的输出插件
+
+        Returns:
+            返回所有的输出插件的字典类型
+        """
         return self._plugins.output_plugins
 
     def get_parse_plugins(self) -> Dict[str, Type[PluginAbstract]]:
-        """取得所有的解析插件"""
+        """取得所有的解析插件
+
+        Returns:
+            返回所有的解析插件的字典类型
+        """
         return self._plugins.parse_plugins
 
     def get_analysis_plugins(self) -> Dict[str, Type[PluginAbstract]]:
@@ -100,21 +112,30 @@ class NetInspect:
 
     def set_input_plugin(self, plugin_cls: Type[InputPluginAbstract] | str):
         """设置输入插件
-        :param plugin_cls: 插件类或者插件名称"""
+
+        Args:
+            plugin_cls: 插件类或者插件名称
+        """
         if type(plugin_cls) == str:
             plugin_cls = self._plugins.get_input_plugin(plugin_cls)
         self._plugin_manager.input_plugin = plugin_cls
 
     def set_output_plugin(self, plugin_cls: Type[OutputPluginAbstract] | str):
         """设置输出插件
-        :param plugin_cls: 插件类或者插件名称"""
+
+        Args:
+            plugin_cls: 插件类或者插件名称
+        """
         if type(plugin_cls) == str:
             plugin_cls = self._plugins.get_output_plugin(plugin_cls)
         self._plugin_manager.output_plugin = plugin_cls
 
     def set_parse_plugin(self, plugin_cls: Type[ParsePluginAbstract] | str):
         """设置解析插件
-        :param plugin_cls: 插件类或者插件名称"""
+
+        Args:
+            plugin_cls: 插件类或者插件名称
+        """
         if type(plugin_cls) == str:
             plugin_cls = self._plugins.get_parse_plugin(plugin_cls)
         self._plugin_manager.parse_plugin = plugin_cls
@@ -140,7 +161,11 @@ class NetInspect:
             self.set_parse_plugin(parse_plugin)
 
     def set_external_templates(self, templates_dir: str):
-        """设置外部模板目录"""
+        """设置外部模板目录
+
+        Args:
+            templates_dir: 模板目录路径
+        """
         self._plugin_manager.parse_plugin.set_external_templates(templates_dir)
 
     @logger.catch(reraise=True)

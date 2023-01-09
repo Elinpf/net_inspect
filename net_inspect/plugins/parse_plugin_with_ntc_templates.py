@@ -26,7 +26,7 @@ except ImportError:
 
 class ParsePluginWithNtcTemplates(ParsePluginAbstract):
     """
-    使用ntc-templates解析命令
+    使用ntc-templates-elinpf解析命令
     仓库地址：
         https://github.com/Elinpf/ntc-templates
     """
