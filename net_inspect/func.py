@@ -99,6 +99,25 @@ def safe_str2float(string: str) -> float:
         return 0.0
 
 
+# 创建一个对大小写不敏感的字典类
+class CaseInsensitiveDict(dict):
+    def __init__(self, *args, **kwargs):
+        self.update(*args, **kwargs)
+
+    def __setitem__(self, key, value):
+        super(CaseInsensitiveDict, self).__setitem__(key.lower(), value)
+
+    def __getitem__(self, key):
+        return super(CaseInsensitiveDict, self).__getitem__(key.lower())
+
+    def __delitem__(self, key):
+        return super(CaseInsensitiveDict, self).__delitem__(key.lower())
+
+    def update(self, *args, **kwargs):
+        for key, value in dict(*args, **kwargs).items():
+            self[key] = value
+
+
 class StoreFunc:
     """存储函数的类，用于延迟调用函数"""
 

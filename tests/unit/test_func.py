@@ -80,3 +80,50 @@ def test_safe_str2float():
 
     for test in test_list:
         assert func.safe_str2float(test[0]) == test[1]
+
+
+def test_case_insensitive_dict():
+    """测试忽略大小写的字典"""
+    t = func.CaseInsensitiveDict()
+    t['VERSION'] = '1.0'
+    t['uptime'] = '1 day'
+
+    assert t['VERSION'] == '1.0'
+    assert t['version'] == '1.0'
+
+    assert t['uptime'] == '1 day'
+
+    del t['uptime']
+    assert 'uptime' not in t
+
+    del t['VERSION']
+    assert 'VERSION' not in t
+    assert 'version' not in t
+
+
+def test_case_insensitive_dict_2():
+    """测试忽略大小写的字典的update方法"""
+    t = {'VERSION': '1.0', 'uptime': '1 day'}
+
+    t2 = func.CaseInsensitiveDict()
+    t2.update(t)
+
+    del t
+
+    assert t2['VERSION'] == '1.0'
+    assert t2['version'] == '1.0'
+    assert t2['UPTIME'] == '1 day'
+    assert t2['uptime'] == '1 day'
+
+
+def test_case_insensitive_dict_3():
+    """测试忽略大小写的字典的__init__方法"""
+    t = {'VERSION': '1.0', 'uptime': '1 day'}
+
+    t2 = func.CaseInsensitiveDict(t)
+    del t
+
+    assert t2['VERSION'] == '1.0'
+    assert t2['version'] == '1.0'
+    assert t2['UPTIME'] == '1 day'
+    assert t2['uptime'] == '1 day'

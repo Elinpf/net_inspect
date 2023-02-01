@@ -66,7 +66,7 @@ class TestDevice:
             for row in cmd.parse_result:
                 assert False
 
-    def test_device_prase_result(self):
+    def test_device_parse_result(self):
         """测试解析结果方法"""
 
         device = Device()
@@ -75,7 +75,7 @@ class TestDevice:
         for row in device.parse_result('dis ver'):
             assert row['uptime'] == '493 days, 18 hours, 38 minutes'
 
-    def test_device_no_prase_result(self):
+    def test_device_no_parse_result(self):
         """测试解析结果方法没有内容时，正常返回"""
 
         device = Device()
@@ -83,6 +83,17 @@ class TestDevice:
 
         for row in device.parse_result('dis ver'):
             assert False
+
+    def test_device_parse_result_with_ignore_case(self):
+        """测试解析结果方法，忽略大小写"""
+
+        """测试解析结果方法"""
+
+        device = Device()
+        device.save_to_cmds(cmd_dict())
+
+        for row in device.parse_result('DIS VER'):
+            assert row['UPTIME'] == '493 days, 18 hours, 38 minutes'
 
 
 def test_device_info():
