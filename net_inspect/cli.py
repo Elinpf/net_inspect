@@ -6,12 +6,16 @@ import rich_typer as typer
 from rich import print
 from rich.console import Console
 from rich.table import Table
+from rich.panel import Panel
 
-from . import NetInspect, __version__
+from . import NetInspect, __version__, exception
 from .analysis_plugin import analysis
+from .func import print_err
 
 if TYPE_CHECKING:
     from .domain import PluginAbstract
+    from plugins.parse_plugin_with_ntc_templates import ParsePluginWithNtcTemplates
+    from textfsm.clitable import CliTable
 
 
 app = typer.RichTyper(add_completion=False)
@@ -22,6 +26,29 @@ BANNER = (
     f"[b]Network Inspect[/b] [magenta]v{__version__}[/] 🤑\n\n[dim]网络设备数据结构化分析框架[/]\n"
 )
 URL = "♥ https://github.com/Elinpf/net_inspect"
+
+
+def print_table(table_name: str, items: list, rows: list):
+    """打印表格"""
+    table = Table(title=f"[bold reverse cyan]{table_name}[/]", title_justify='left')
+    for item in items:
+        table.add_column(item)
+    for row in rows:
+        table.add_row(*row)
+
+    table.expand = True
+    console.print(table, justify='left')
+
+
+def print_panel(title: str, items: list, rows: list):
+    table = Table(highlight=True, box=None, show_header=False)
+    for item in items:
+        table.add_column(item)
+    for row in rows:
+        table.add_row(*row)
+
+    panel = Panel(table, border_style="dim", title=title, title_align="left")
+    console.print(panel)
 
 
 def print_plugin_list(all_plugins: Dict[str, Dict[str, Type[PluginAbstract]]]):
@@ -35,18 +62,6 @@ def print_plugin_list(all_plugins: Dict[str, Dict[str, Type[PluginAbstract]]]):
 
         print_table(plugin_type, column_names, row_list)
         print()
-
-
-def print_table(table_name: str, items: list, rows: list):
-    """打印表格"""
-    table = Table(title=f"[bold reverse cyan]{table_name}[/]", title_justify='left')
-    for item in items:
-        table.add_column(item)
-    for row in rows:
-        table.add_row(*row)
-
-    table.expand = True
-    console.print(table, justify='left')
 
 
 def print_analysis_list():
@@ -86,7 +101,22 @@ def print_base_info_list():
     print()
 
 
-@app.command(
+def print_ntc_template_value(clitable: CliTable, template_name: str):
+    """打印ntc_templates中的模板VALUE"""
+
+    values = clitable.header.values
+
+    rows = []
+    for value in values:
+        rows.append([value.lower()])
+
+    print()
+    print_panel(f'[red]{template_name}[/] 中的 [blue]VALUES[/]', ['VALUES'], rows)
+    print()
+
+
+@app.callback(
+    invoke_without_command=True,
     banner=BANNER,
     banner_justify='center',
     context_settings=CONTEXT_SETTINGS,
@@ -136,3 +166,37 @@ def main(
     if input_path:
         net.run(input_path=input_path, output_file_path=output_path)
         exit()
+
+
+@app.command(
+    context_settings=CONTEXT_SETTINGS,
+    epilog=URL,
+)
+def textfsm(
+    ctx: typer.Context,
+    external_path: str = typer.Option('', '--external-path', '-e', help='设置外部模板路径'),
+    platform: str = typer.Option(..., '--platform', '-p', help='厂商平台'),
+    command: str = typer.Option(..., '--command', '-c', help='命令'),
+):
+    """查看模板仓库中模板的 [blue]VALUES[/]"""
+
+    net = NetInspect()
+
+    plg = net.get_parse_plugins()[
+        'ParsePluginWithNtcTemplates'
+    ]()  # type: ParsePluginWithNtcTemplates
+
+    if external_path:
+        plg.set_external_templates(external_path)
+
+    try:
+        res = plg.get_clitable(command, platform)
+        template_name = "{platform}_{command}.textfsm".format(
+            platform=res['platform'], command=res['command'].replace(' ', '_')
+        )
+        print_ntc_template_value(res['clitable'], template_name)
+    except exception.TemplateNotSupperThisPlatform as e:
+        print_err(f'模板仓库不支持此平台: {e.platform}')
+
+    except exception.TemplateNotSupperThisCommand as e:
+        print_err(f"模板仓库中没有找到此命令: {e.command!r}")

@@ -1,6 +1,23 @@
 import re
 import sys
 
+import rich
+
+
+def print_err(text: str):
+    """打印错误信息"""
+    rich.print(f'[[red]x[/]] {text}')
+
+
+def print_good(text: str):
+    """打印成功信息"""
+    rich.print(f'[[green]✓[/]] {text}')
+
+
+def print_warn(text: str):
+    """打印警告信息"""
+    rich.print(f'[[yellow]![/]] {text}')
+
 
 def reg_extend(reg: str) -> str:
     """扩展正则表达式写法，支持简单的逐字匹配

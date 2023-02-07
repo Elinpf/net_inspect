@@ -1,0 +1,8 @@
+Value VRP_VERSION (\S+)
+Value PRODUCT_VERSION (.+)
+Value MODEL (.+)
+
+
+Start
+  ^.*software,\s+Version\s+${VRP_VERSION}\s+\(${PRODUCT_VERSION}\)
+  ^(HUAWEI|Quidway)\s+${MODEL}\s+uptime\s+is -> Record

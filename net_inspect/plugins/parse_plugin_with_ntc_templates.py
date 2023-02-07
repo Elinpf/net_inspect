@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import os
 import re
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List
 
 from ntc_templates.parse import __file__ as model_file
-from ntc_templates.parse import parse_output
+from ntc_templates.parse import get_clitable, parse_output
 
 from .. import exception
 from ..domain import ParsePluginAbstract
@@ -104,11 +105,14 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
 
         return commands
 
-    def main(self, cmd: Cmd, platform: str) -> Dict[str, str]:
-        """对命令进行解析
-        :param cmd: 命令对象
-        :param platform: 命令所属平台, e.g. huawei_os"""
-        command = cmd.command
+    @contextmanager
+    def _pre_parse(self, command: str, platform: str):
+        """预处理重复内容
+
+        Args:
+            command: 命令
+            platform: 命令所属平台
+        """
         for type, textfsm_info in self.textfms_info_dict.items():
             if platform not in textfsm_info.index_commands:  # 检查是否有匹配的平台
                 if type == 'external':  # 如果是外部的textFSM模板，则进入ntc_templates中
@@ -129,6 +133,22 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
                 else:
                     raise exception.TemplateNotSupperThisCommand(platform, command)
 
+            yield (match_command, textfsm_info)
+            break
+
+    def main(self, cmd: Cmd, platform: str) -> Dict[str, str]:
+        """识别是否为index中的命令，如果是则使用textFSM解析
+
+        Args:
+            cmd: Cmd类
+            platform: 命令所属平台, e.g. huawei_os
+
+        Returns:
+            解析后的结果
+        """
+        command = cmd.command
+
+        with self._pre_parse(command, platform) as (match_command, textfsm_info):
             try:
                 res = parse_output(
                     platform=platform,
@@ -143,4 +163,28 @@ class ParsePluginWithNtcTemplates(ParsePluginAbstract):
 
             if not res:  # 如果没有解析到结果，则抛出异常提示
                 raise exception.NotParseAnyResult(platform, command)
+            return res
+
+    def get_clitable(self, command: str, platform: str) -> dict:
+        """通过执行一个空内容的textfsm文件，获得一个字典
+
+        Args:
+            command: 命令
+            platform: 命令所属平台
+
+        Returns:
+            {'command': str, 'platform': str, 'clitable': CliTable}
+        """
+        with self._pre_parse(command, platform) as (match_command, textfsm_info):
+            try:
+                clitable = get_clitable(
+                    platform=platform, command=command, template_dir=textfsm_info.dir
+                )
+            except Exception as e:
+                raise exception.TemplateError(
+                    f'platform: {platform!r} cmd:{command!r} {str(e)}'
+                )
+
+            res = {'command': match_command, 'platform': platform, 'clitable': clitable}
+
             return res
