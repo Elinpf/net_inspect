@@ -255,6 +255,11 @@ net_inspect 会自动收集识别设备的基本信息，包括设备名称、�
     device: `Switch_A` interface: `XGigabitEthernet1/0/1` status is `up`
     device: `Switch_A` interface: `XGigabitEthernet1/0/2` status is `up`
 
+.. note::
+
+    如果想查看对应模板中的 ``VALUE`` , 可以使用命令行命令 ``net_inspect textfsm -p <platform> -c <command>`` 查看，
+    例如： ``net_inspect textfsm -p huawei_vrp -c "dis ip int bri"``
+
 获取执行命令内容
 -----------------
 
