@@ -38,6 +38,10 @@
 
 请放心 ``ntc-templates-elinpf`` 完全兼容 ``ntc-templates``，并且支持更多国产设备的命令。
 
+安装完成后，通过命令行 ``net_inspect --help`` 查看是否安装成功。
+
+.. image:: /_static/help_menu.png
+    :align: center
 
 快速上手
 ---------

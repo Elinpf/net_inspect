@@ -1,6 +1,23 @@
 import re
 import sys
 
+import rich
+
+
+def print_err(text: str):
+    """打印错误信息"""
+    rich.print(f'[[red]x[/]] {text}')
+
+
+def print_good(text: str):
+    """打印成功信息"""
+    rich.print(f'[[green]✓[/]] {text}')
+
+
+def print_warn(text: str):
+    """打印警告信息"""
+    rich.print(f'[[yellow]![/]] {text}')
+
 
 def reg_extend(reg: str) -> str:
     """扩展正则表达式写法，支持简单的逐字匹配
@@ -97,6 +114,25 @@ def safe_str2float(string: str) -> float:
         return float(string)
     except ValueError:
         return 0.0
+
+
+# 创建一个对大小写不敏感的字典类
+class CaseInsensitiveDict(dict):
+    def __init__(self, *args, **kwargs):
+        self.update(*args, **kwargs)
+
+    def __setitem__(self, key, value):
+        super(CaseInsensitiveDict, self).__setitem__(key.lower(), value)
+
+    def __getitem__(self, key):
+        return super(CaseInsensitiveDict, self).__getitem__(key.lower())
+
+    def __delitem__(self, key):
+        return super(CaseInsensitiveDict, self).__delitem__(key.lower())
+
+    def update(self, *args, **kwargs):
+        for key, value in dict(*args, **kwargs).items():
+            self[key] = value
 
 
 class StoreFunc:

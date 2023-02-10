@@ -57,3 +57,43 @@ def test_verbose_vv(shared_datadir):
 
     assert result.exit_code == 0
     assert 'DEBUG' in result.stdout
+
+
+def test_textfsm_values():
+    """测试 textfsm 参数"""
+    result = runner.invoke(app, split("textfsm -p huawei_vrp -c 'dis ver'"))
+    assert result.exit_code == 0
+    assert 'huawei_vrp_display_version.textfsm' in result.stdout
+    assert 'vrp_version' in result.stdout
+
+
+def test_textfsm_not_command():
+    """测试 textfsm 参数没找到可用命令的情况"""
+    result = runner.invoke(app, split("textfsm -p huawei_vrp -c 'not command'"))
+    assert result.exit_code == 0
+    assert '模板仓库中没有找到此命令' in result.stdout
+
+
+def test_textfsm_not_platform():
+    """测试 textfsm 参数没找支持厂商平台的情况"""
+    result = runner.invoke(app, split("textfsm -p no_platform -c 'not command'"))
+    assert result.exit_code == 0
+    assert '模板仓库不支持此平台' in result.stdout
+
+
+def test_textfsm_external_template(shared_datadir):
+    """测试 textfsm 参数使用外部模板"""
+    path = str(shared_datadir / 'external_templates').replace('\\', '\\\\')
+    result = runner.invoke(app, split(f"textfsm -p huawei_vrp -c 'dis ver' -e {path}"))
+    assert result.exit_code == 0
+    assert 'uptime' not in result.stdout
+
+
+def test_textfsm_external_template_2(shared_datadir):
+    """测试 textfsm 参数使用外部模板的新增平台"""
+    path = str(shared_datadir / 'external_templates').replace('\\', '\\\\')
+    result = runner.invoke(
+        app, split(f"textfsm -p test_external -c 'dis ver' -e {path}")
+    )
+    assert result.exit_code == 0
+    assert 'model' in result.stdout

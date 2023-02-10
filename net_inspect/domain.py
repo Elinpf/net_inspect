@@ -8,7 +8,7 @@ from typing import Dict, Iterator, List, Optional, Tuple, Type
 from . import exception
 from .base_info import BaseInfo, EachVendorDeviceInfo
 from .data import pystr
-from .func import NoneSkip, StoreFunc, pascal_case_to_snake_case
+from .func import NoneSkip, StoreFunc, pascal_case_to_snake_case, CaseInsensitiveDict
 from .logger import logger
 from .vendor import DefaultVendor
 
@@ -431,7 +431,12 @@ class Cmd:
         """
         if isinstance(self._parse_result, StoreFunc):
             try:
-                self._parse_result = self._parse_result()
+                res = []
+                tmp_dict = self._parse_result()
+                for dict in tmp_dict:
+                    res.append(CaseInsensitiveDict(dict))
+                self._parse_result = res
+
             except exception.TemplateError as e:
                 self._parse_result = []
                 logger.debug(e)
