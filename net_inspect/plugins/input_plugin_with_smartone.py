@@ -94,5 +94,5 @@ class InputPluginWithSmartOne(InputPluginAbstract):
         if content:
             cmd_dict[command] = '\n'.join(content)
 
-        result.cmd_dict = cmd_dict
+        result.merge_cmd_dict(cmd_dict)
         return result

@@ -625,7 +625,14 @@ class InputPluginResult:
 
     @cmd_dict.setter
     def cmd_dict(self, cmd_dict: Dict[str, str]):
-        """直接添加命令字典"""
+        """直接添加命令字典
+        #! 此方法将被废弃, 改用 ``merge_cmd_dict`` 方法
+        """
+        for cmd, content in cmd_dict.items():
+            self.add_cmd(cmd, content)
+
+    def merge_cmd_dict(self, cmd_dict: Dict[str, str]):
+        """合并命令字典"""
         for cmd, content in cmd_dict.items():
             self.add_cmd(cmd, content)
 
