@@ -37,6 +37,84 @@
 只需要这样定义一下， net_inspect 在执行的时候会自动识别出来。并将对应的 ``juniper_junos`` 模板调用执行解析。
 
 
+自定义输入模块
+--------------
+
+由于各个网络管理平台平台或者自动化工具输出的日志格式不尽相同，
+所以 net_inspect 提供了自定义输入模块的功能，可以自定义输入模块，实现自己的信息解析逻辑。
+
+以一个网管平台的采集信息为例，采集的 ``日志文件名`` 格式如下:
+
+.. code-block:: text
+
+    <hostname>_<ip>_<date>.diag
+
+例如:
+
+.. code-block:: text
+
+    A_FOO_BAR_DR01_127.0.0.1_20220221180010.diag
+
+
+而采集的 ``日志内容`` 格式如下:
+
+.. code-block:: text
+
+    -------------------------dis clock-------------------------
+
+    17:05:11 bj Mon 02/21/2022
+    Time Zone : bj add 08:00:00
+
+
+
+    -------------------------dis version-------------------------
+
+    H3C Comware Platform Software
+    Comware Software, Version 5.20, Release 2202
+    Copyright (c) 2004-2010 Hangzhou H3C Tech. Co., Ltd. All rights reserved.
+    H3C S5500-28C-EI uptime is 115 weeks, 1 day, 8 hours, 37 minutes
+
+    H3C S5500-28C-EI with 1 Processor
+    256M    bytes SDRAM
+    32768K  bytes Flash Memory
+
+    Hardware Version is REV.C
+    CPLD Version is 002
+    Bootrom Version is 609
+    [SubSlot 0] 24GE+4SFP Hardware Version is REV.C
+
+我们需要做的事情就是将 ``hostname``, ``ip(可选)``, ``每个执行命令`` 和 ``执行命令回显`` 提取出来交给 net_inspect 处理。
+
+我们需要定义一个 ``InputPlugin`` 类，继承自 :class:`~net_inspect.domain.InputPluginAbstract` 类，实现 ``main`` 方法。
+
+.. literalinclude:: /_static/custom_input_plugin_demo.py
+   :encoding: utf-8
+   :language: python
+
+输出结果如下：
+
+.. code-block:: text
+
+    [+] B_FOO_BAR_DS02 H3C S5500-28C-EI clock: 2022-02-21 17:05:11
+
+从上面的示例中，可以看到，实现了 ``InputPlugin`` 的 ``main`` 方法。
+其中 :meth:`~net_inspect.domain.InputPluginAbstract.main` 方法的参数如下：
+
+1. ``file_path`` 输入的单个日志文件名称
+2. ``stream`` 输入的日志文件内容
+
+返回指定的是一个 :class:`~net_inspect.domain.InputPluginResult` 类，需要做到:
+
+1. 设置设备名称
+2. 通过 :meth:`~net_inspect.domain.InputPluginResult.add_cmd` 方法添加每个执行的命令和返回的内容
+
+
+最后将 ``InputPlugin`` 类注册到 net_inspect 中，即可使用。
+
+.. code-block:: python
+
+    net.set_input_plugin(CustomInputPlugin)
+
 
 增加base_info条目
 -----------------
